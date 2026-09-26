@@ -1,0 +1,7 @@
+query,Precision@5,Precision@10,Reciprocal_Rank,Relevant@10
+natural language processing,1.0,1.0,1.0,10.0
+machine learning,1.0,1.0,1.0,10.0
+transformer based text classification,0.8,0.8,0.5,8.0
+information retrieval,1.0,1.0,1.0,10.0
+knowledge graphs,1.0,1.0,1.0,10.0
+MEAN,0.96,0.96,0.9,9.6
