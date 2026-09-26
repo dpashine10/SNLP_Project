@@ -1,15 +1,14 @@
 import pandas as pd
 from pathlib import Path
-import os
 
-os.chdir("/Users/divy/College/NLP/Project")
-PAPERS_PATH = "data/processed/papers.csv"
-AUTHORS_PATH = "data/processed/paper_author.csv"
-OUTPUT_PATH = "data/processed/researcher_profiles.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PAPERS_PATH = PROJECT_ROOT / "Data/processed/papers.csv"
+AUTHORS_PATH = PROJECT_ROOT / "Data/processed/paper_author.csv"
+OUTPUT_PATH = PROJECT_ROOT / "Data/processed/researcher_profiles.csv"
 
 
 def main():
-    Path("data/processed").mkdir(parents=True, exist_ok=True)
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     papers = pd.read_csv(
         PAPERS_PATH,
@@ -31,7 +30,7 @@ def main():
     merged = authors.merge(
         papers,
         on="work_id",
-        how="left"
+        how="inner"
     )
 
     # Make sure text fields are strings
@@ -61,8 +60,9 @@ def main():
     # Group all research work belonging to each researcher
     profiles = (
         merged
-        .groupby(["author_id", "author_name"])
+        .groupby("author_id")
         .agg(
+            author_name=("author_name", "first"),
             n_papers=("work_id", "nunique"),
             paper_ids=("work_id", lambda x: "|".join(x.astype(str).unique())),
             profile_text=("paper_text", lambda x: " ".join(x))

@@ -1,10 +1,10 @@
 import pandas as pd
+from pathlib import Path
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import os
-os.chdir("/Users/divy/College/NLP/Project")
 
-PROFILE_PATH = "Data/processed/researcher_profiles.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROFILE_PATH = PROJECT_ROOT / "Data/processed/researcher_profiles.csv"
 
 
 def main():
@@ -18,7 +18,8 @@ def main():
         lowercase=True,
         stop_words="english",
         ngram_range=(1, 2),
-        max_features=20000
+        max_features=20000,
+        sublinear_tf=True
     )
 
     profile_vectors = vectorizer.fit_transform(
