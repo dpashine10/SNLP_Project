@@ -1,11 +1,11 @@
 import pandas as pd
 from pathlib import Path
-import os
+from pathlib import Path
 
-os.chdir("/Users/divy/College/NLP/Project")
-PAPERS_PATH = "data/processed/papers.csv"
-AUTHORS_PATH = "data/processed/paper_author.csv"
-OUTPUT_PATH = "data/processed/researcher_profiles.csv"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PAPERS_PATH = PROJECT_ROOT / "Data" / "processed" / "papers.csv"
+AUTHORS_PATH = PROJECT_ROOT / "Data" / "processed" / "paper_author.csv"
+OUTPUT_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
 
 
 def main():

@@ -1,10 +1,11 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import os
-os.chdir("/Users/divy/College/NLP/Project")
-PROFILE_PATH = "Data/processed/researcher_profiles.csv"
-OUTPUT_PATH = "Data/processed/evaluation_candidates.csv"
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROFILE_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
+OUTPUT_PATH = PROJECT_ROOT / "Data" / "processed" / "evaluation_candidates.csv"
 
 QUERIES = [
     "natural language processing",
