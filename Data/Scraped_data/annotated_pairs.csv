@@ -1,0 +1,51 @@
+profile_a,profile_b,label,annotation_reason
+LU_ENG_04,IIT_CSE_01,1,Artificial intelligence and data-oriented computing
+LU_ENG_04,JNU_SCIS_01,1,"AI, machine learning and big-data analytics"
+LU_COM_08,DU_CSE_10,1,Data mining
+LU_COM_08,JNU_SCIS_06,1,Data and statistical modelling
+LU_ART_08,JNU_SCIS_04,1,Language/computational cross-disciplinary work
+LU_ART_10,BHU_02,1,Remote sensing/GIS and geography
+LU_ART_10,IIT_TARA_03,1,Mapping techniques and social planning
+LU_SCI_03,JNU_CHE_01,1,Chemistry and synthetic organic chemistry
+LU_SCI_03,IIT_CHE_07,1,"Chemistry, theory/computation and materials"
+LU_SCI_07,JNU_PHY_03,1,Condensed matter/materials physics
+LU_SCI_07,JNU_PHY_08,1,2D materials/energy materials
+LU_SCI_02,BHU_05,1,Plant science/agriculture/biotechnology
+LU_SCI_05,BHU_03,1,Geology and earth science
+LU_SCI_08,JNU_SCIS_02,1,Statistics/statistical physics/computation
+LU_ART_06,DU_UNI_09,1,Social science and social justice
+LU_EDU_01,DU_UNI_18,1,Education and interdisciplinary technology
+LU_ART_12,IIT_IEOR_01,1,Economics/logistics and supply chain
+JNU_SCIS_03,JNU_CHE_04,1,Computational biophysics and biomolecular research
+JNU_SCIS_05,IIT_CSE_02,1,Wireless networks/communication systems
+IIT_IEOR_02,DU_CSE_16,1,Machine learning
+IIT_TARA_01,IIT_TARA_05,1,Energy management and energy policy
+IIT_CHE_03,IIT_CHE_05,1,Materials/spectroscopy/physical chemistry
+JNU_PHY_13,JNU_PHY_08,1,2D materials and energy storage
+BHU_04,DU_UNI_02,1,Environment and sustainability/climate
+BHU_01,DU_CSE_12,1,Neural networks/deep learning
+LU_ART_15,IIT_MAT_01,0,Persian literature vs number theory
+LU_ART_01,IIT_CHE_04,0,Archaeology vs inorganic chemistry
+LU_COM_03,BHU_14,0,Finance/risk vs physics
+LU_ART_07,JNU_PHY_10,0,Sanskrit/Prakrit vs cosmology
+LU_EDU_01,IIT_MAT_04,0,Education vs algebra
+LU_FA_01,IIT_IEOR_07,0,Fine arts vs queueing theory
+LU_SCI_09,DU_CSE_01,0,Zoology vs algorithms
+LU_COM_07,BHU_03,0,Entrepreneurship vs geology
+LU_SCI_01,IIT_MAT_06,0,Biochemistry vs number theory
+LU_ART_14,IIT_CSE_02,0,Area studies vs computing systems
+JNU_PHY_07,BHU_06,0,String theory vs library science
+JNU_CHE_02,DU_UNI_12,0,Crystal engineering vs leadership/governance
+JNU_MAT_01,BHU_13,0,Number theory vs performing arts
+JNU_SCIS_01,LU_ART_15,0,Bioinformatics vs Persian literature
+IIT_TARA_04,DU_UNI_05,0,Thermodynamics/energy vs language/literature
+IIT_MAT_03,BHU_11,0,Algebraic groups vs political science
+IIT_CHE_08,LU_ART_03,0,Organic chemistry vs history
+DU_CSE_06,LU_ART_13,0,Computer graphics vs anthropology
+DU_CSE_20,BHU_12,0,Steganography vs history
+DU_UNI_04,IIT_IEOR_04,0,Bhartiya Gyan Parampara vs ML/operations research
+BHU_12,IIT_CHE_11,0,History vs organic/theoretical chemistry
+BHU_06,JNU_PHY_14,0,Library science vs magnetic materials
+BHU_10,IIT_MAT_08,0,Sociology vs number theory
+BHU_15,DU_UNI_09,0,Chemistry vs social justice
+JNU_PHY_05,DU_UNI_07,0,Spintronics vs entrepreneurship
