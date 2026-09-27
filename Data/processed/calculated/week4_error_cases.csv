@@ -1,0 +1,29 @@
+query,author_id,author_name,relevant,tfidf_rank,semantic_rank
+natural language processing,https://openalex.org/A5008116509,David L. Waltz,1,1,8
+natural language processing,https://openalex.org/A5009605043,Magdalena Luszczynska,1,5,6
+natural language processing,https://openalex.org/A5015602781,Karen Livescu,1,8,4
+natural language processing,https://openalex.org/A5018230694,Eric Brill,1,10,2
+natural language processing,https://openalex.org/A5066987539,Bonnie Lynn Nash-Webber,1,3,10
+natural language processing,https://openalex.org/A5090002679,James F. Allen,1,9,1
+natural language processing,https://openalex.org/A5103085805,Timothy J. Baldwin,1,7,3
+natural language processing,https://openalex.org/A5109208983,Roger C. Schank,1,2,9
+machine learning,https://openalex.org/A5007489034,Ninghao Liu,1,2,6
+machine learning,https://openalex.org/A5013963697,Yalın Baştanlar,1,6,4
+machine learning,https://openalex.org/A5018711331,Pedro Domingos,1,4,8
+machine learning,https://openalex.org/A5072191151,Mengnan Du,1,3,7
+machine learning,https://openalex.org/A5074537073,Thomas G. Dietterich,1,8,1
+machine learning,https://openalex.org/A5091012089,Mustafa Özuysal,1,7,5
+transformer based text classification,https://openalex.org/A5008078679,Muna Sulieman Al-Hawawreh,0,1,10
+transformer based text classification,https://openalex.org/A5021878400,Noam Shazeer,1,6,4
+transformer based text classification,https://openalex.org/A5072898802,Martín Müller,1,2,9
+transformer based text classification,https://openalex.org/A5076683869,Peter J. Liu,1,7,5
+information retrieval,https://openalex.org/A5020310155,Jon George Rokne,1,7,2
+information retrieval,https://openalex.org/A5066265052,Reda Alhajj,1,6,1
+information retrieval,https://openalex.org/A5125635347,Jirong Wen,1,4,6
+information retrieval,https://openalex.org/A5140985364,Tong Ruan,1,5,7
+knowledge graphs,https://openalex.org/A5004286514,Ciyuan Peng,1,3,7
+knowledge graphs,https://openalex.org/A5014287041,Juan Sequeda,1,8,4
+knowledge graphs,https://openalex.org/A5041698136,Claudio Gutiérrez,1,7,3
+knowledge graphs,https://openalex.org/A5059512471,Tianxing Wu,1,5,9
+knowledge graphs,https://openalex.org/A5074737251,Eva Blomqvist,1,6,1
+knowledge graphs,https://openalex.org/A5089615958,Feng Xia,1,2,6

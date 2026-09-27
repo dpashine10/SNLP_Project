@@ -1,0 +1,16 @@
+query,Model,Precision@5,Precision@10,Recall@5,Recall@10,MRR,NDCG@10,Relevant@10,TotalRelevantInPool
+natural language processing,TF-IDF Baseline,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+natural language processing,Sentence Transformer,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+natural language processing,Hybrid,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+machine learning,TF-IDF Baseline,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+machine learning,Sentence Transformer,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+machine learning,Hybrid,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+transformer based text classification,TF-IDF Baseline,0.8,0.8,0.5,1.0,0.5,0.8232006379497264,8.0,8.0
+transformer based text classification,Sentence Transformer,1.0,0.8,0.625,1.0,1.0,0.9963488021549354,8.0,8.0
+transformer based text classification,Hybrid,1.0,0.8,0.625,1.0,1.0,1.0,8.0,8.0
+information retrieval,TF-IDF Baseline,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+information retrieval,Sentence Transformer,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+information retrieval,Hybrid,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+knowledge graphs,TF-IDF Baseline,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+knowledge graphs,Sentence Transformer,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0
+knowledge graphs,Hybrid,1.0,1.0,0.5,1.0,1.0,1.0,10.0,10.0

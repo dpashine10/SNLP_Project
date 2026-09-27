@@ -1,0 +1,4 @@
+Model,Precision@5,Precision@10,Recall@5,Recall@10,MRR,NDCG@10,Relevant@10
+Hybrid,1.0,0.96,0.525,1.0,1.0,1.0,9.6
+Sentence Transformer,1.0,0.96,0.525,1.0,1.0,0.9992697604309871,9.6
+TF-IDF Baseline,0.96,0.96,0.5,1.0,0.9,0.9646401275899453,9.6

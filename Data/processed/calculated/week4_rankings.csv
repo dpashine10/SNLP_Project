@@ -1,0 +1,151 @@
+query,Model,rank,author_id,author_name,relevant,score
+natural language processing,TF-IDF Baseline,1,https://openalex.org/A5008116509,David L. Waltz,1,0.5714664073843894
+natural language processing,TF-IDF Baseline,2,https://openalex.org/A5109208983,Roger C. Schank,1,0.5708773189871361
+natural language processing,TF-IDF Baseline,3,https://openalex.org/A5066987539,Bonnie Lynn Nash-Webber,1,0.5708773189871361
+natural language processing,TF-IDF Baseline,4,https://openalex.org/A5013257226,Michael Bryant,1,0.5280609564739581
+natural language processing,TF-IDF Baseline,5,https://openalex.org/A5009605043,Magdalena Luszczynska,1,0.5280609564739581
+natural language processing,TF-IDF Baseline,6,https://openalex.org/A5059849026,Kepa Joseba Rodriquez,1,0.5280609564739581
+natural language processing,TF-IDF Baseline,7,https://openalex.org/A5103085805,Timothy J. Baldwin,1,0.49319366291781674
+natural language processing,TF-IDF Baseline,8,https://openalex.org/A5015602781,Karen Livescu,1,0.49319366291781674
+natural language processing,TF-IDF Baseline,9,https://openalex.org/A5090002679,James F. Allen,1,0.4292360740798455
+natural language processing,TF-IDF Baseline,10,https://openalex.org/A5018230694,Eric Brill,1,0.21240878285159834
+natural language processing,Sentence Transformer,1,https://openalex.org/A5090002679,James F. Allen,1,0.6788411140441895
+natural language processing,Sentence Transformer,2,https://openalex.org/A5018230694,Eric Brill,1,0.6366275548934937
+natural language processing,Sentence Transformer,3,https://openalex.org/A5103085805,Timothy J. Baldwin,1,0.6179280877113342
+natural language processing,Sentence Transformer,4,https://openalex.org/A5015602781,Karen Livescu,1,0.6179280877113342
+natural language processing,Sentence Transformer,5,https://openalex.org/A5013257226,Michael Bryant,1,0.6080224514007568
+natural language processing,Sentence Transformer,6,https://openalex.org/A5009605043,Magdalena Luszczynska,1,0.6080224514007568
+natural language processing,Sentence Transformer,7,https://openalex.org/A5059849026,Kepa Joseba Rodriquez,1,0.6080224514007568
+natural language processing,Sentence Transformer,8,https://openalex.org/A5008116509,David L. Waltz,1,0.5663797855377197
+natural language processing,Sentence Transformer,9,https://openalex.org/A5109208983,Roger C. Schank,1,0.5521721839904785
+natural language processing,Sentence Transformer,10,https://openalex.org/A5066987539,Bonnie Lynn Nash-Webber,1,0.5521721839904785
+natural language processing,Hybrid,1,https://openalex.org/A5090002679,James F. Allen,1,0.8811636431704115
+natural language processing,Hybrid,2,https://openalex.org/A5103085805,Timothy J. Baldwin,1,0.5979829144879967
+natural language processing,Hybrid,3,https://openalex.org/A5015602781,Karen Livescu,1,0.5979829144879967
+natural language processing,Hybrid,4,https://openalex.org/A5013257226,Michael Bryant,1,0.5723745562582092
+natural language processing,Hybrid,5,https://openalex.org/A5009605043,Magdalena Luszczynska,1,0.5723745562582092
+natural language processing,Hybrid,6,https://openalex.org/A5059849026,Kepa Joseba Rodriquez,1,0.5723745562582092
+natural language processing,Hybrid,7,https://openalex.org/A5018230694,Eric Brill,1,0.4667187100028609
+natural language processing,Hybrid,8,https://openalex.org/A5008116509,David L. Waltz,1,0.3785142898013883
+natural language processing,Hybrid,9,https://openalex.org/A5109208983,Roger C. Schank,1,0.2995078045775913
+natural language processing,Hybrid,10,https://openalex.org/A5066987539,Bonnie Lynn Nash-Webber,1,0.2995078045775913
+machine learning,TF-IDF Baseline,1,https://openalex.org/A5084108666,Robert E. Schapire,1,0.2931366021257267
+machine learning,TF-IDF Baseline,2,https://openalex.org/A5007489034,Ninghao Liu,1,0.2920230168616963
+machine learning,TF-IDF Baseline,3,https://openalex.org/A5072191151,Mengnan Du,1,0.2920230168616963
+machine learning,TF-IDF Baseline,4,https://openalex.org/A5018711331,Pedro Domingos,1,0.26775407452083744
+machine learning,TF-IDF Baseline,5,https://openalex.org/A5065694592,Zehui Cao,1,0.17653782412874086
+machine learning,TF-IDF Baseline,6,https://openalex.org/A5013963697,Yalın Baştanlar,1,0.17449982927322108
+machine learning,TF-IDF Baseline,7,https://openalex.org/A5091012089,Mustafa Özuysal,1,0.17449982927322108
+machine learning,TF-IDF Baseline,8,https://openalex.org/A5074537073,Thomas G. Dietterich,1,0.14996623775618984
+machine learning,TF-IDF Baseline,9,https://openalex.org/A5017381278,Anthony Douglas Joseph,1,0.11955141386118805
+machine learning,TF-IDF Baseline,10,https://openalex.org/A5113907559,J. D. Tygar,1,0.11955141386118805
+machine learning,Sentence Transformer,1,https://openalex.org/A5074537073,Thomas G. Dietterich,1,0.5940682888031006
+machine learning,Sentence Transformer,2,https://openalex.org/A5084108666,Robert E. Schapire,1,0.591632604598999
+machine learning,Sentence Transformer,3,https://openalex.org/A5065694592,Zehui Cao,1,0.5445334315299988
+machine learning,Sentence Transformer,4,https://openalex.org/A5013963697,Yalın Baştanlar,1,0.5355200171470642
+machine learning,Sentence Transformer,5,https://openalex.org/A5091012089,Mustafa Özuysal,1,0.5355200171470642
+machine learning,Sentence Transformer,6,https://openalex.org/A5007489034,Ninghao Liu,1,0.5308874249458313
+machine learning,Sentence Transformer,7,https://openalex.org/A5072191151,Mengnan Du,1,0.5308874249458313
+machine learning,Sentence Transformer,8,https://openalex.org/A5018711331,Pedro Domingos,1,0.47427916526794434
+machine learning,Sentence Transformer,9,https://openalex.org/A5017381278,Anthony Douglas Joseph,1,0.3707568645477295
+machine learning,Sentence Transformer,10,https://openalex.org/A5113907559,J. D. Tygar,1,0.3707568645477295
+machine learning,Hybrid,1,https://openalex.org/A5084108666,Robert E. Schapire,1,0.9923650169329388
+machine learning,Hybrid,2,https://openalex.org/A5007489034,Ninghao Liu,1,0.8000264353363213
+machine learning,Hybrid,3,https://openalex.org/A5072191151,Mengnan Du,1,0.8000264353363213
+machine learning,Hybrid,4,https://openalex.org/A5074537073,Thomas G. Dietterich,1,0.7525646644147722
+machine learning,Hybrid,5,https://openalex.org/A5065694592,Zehui Cao,1,0.6432134823416594
+machine learning,Hybrid,6,https://openalex.org/A5013963697,Yalın Baştanlar,1,0.6114375293051436
+machine learning,Hybrid,7,https://openalex.org/A5091012089,Mustafa Özuysal,1,0.6114375293051436
+machine learning,Hybrid,8,https://openalex.org/A5018711331,Pedro Domingos,1,0.5806371590686107
+machine learning,Hybrid,9,https://openalex.org/A5017381278,Anthony Douglas Joseph,1,0.0
+machine learning,Hybrid,10,https://openalex.org/A5113907559,J. D. Tygar,1,0.0
+transformer based text classification,TF-IDF Baseline,1,https://openalex.org/A5008078679,Muna Sulieman Al-Hawawreh,0,0.15263141704946243
+transformer based text classification,TF-IDF Baseline,2,https://openalex.org/A5072898802,Martín Müller,1,0.12177402091961487
+transformer based text classification,TF-IDF Baseline,3,https://openalex.org/A5052454696,Adam Roberts,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,4,https://openalex.org/A5079540764,Sharan Narang,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,5,https://openalex.org/A5081567725,Yanqi Zhou,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,6,https://openalex.org/A5021878400,Noam Shazeer,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,7,https://openalex.org/A5076683869,Peter J. Liu,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,8,https://openalex.org/A5063203090,Michael Matena,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,9,https://openalex.org/A5045547813,Wei Li,1,0.12114104108559128
+transformer based text classification,TF-IDF Baseline,10,https://openalex.org/A5088239541,Matthias Minderer,0,0.07949207679176375
+transformer based text classification,Sentence Transformer,1,https://openalex.org/A5052454696,Adam Roberts,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,2,https://openalex.org/A5079540764,Sharan Narang,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,3,https://openalex.org/A5081567725,Yanqi Zhou,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,4,https://openalex.org/A5021878400,Noam Shazeer,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,5,https://openalex.org/A5076683869,Peter J. Liu,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,6,https://openalex.org/A5063203090,Michael Matena,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,7,https://openalex.org/A5045547813,Wei Li,1,0.49029844999313354
+transformer based text classification,Sentence Transformer,8,https://openalex.org/A5088239541,Matthias Minderer,0,0.452035129070282
+transformer based text classification,Sentence Transformer,9,https://openalex.org/A5072898802,Martín Müller,1,0.44294193387031555
+transformer based text classification,Sentence Transformer,10,https://openalex.org/A5008078679,Muna Sulieman Al-Hawawreh,0,0.2119867205619812
+transformer based text classification,Hybrid,1,https://openalex.org/A5052454696,Adam Roberts,1,0.8708340442246888
+transformer based text classification,Hybrid,2,https://openalex.org/A5079540764,Sharan Narang,1,0.8708340442246888
+transformer based text classification,Hybrid,3,https://openalex.org/A5081567725,Yanqi Zhou,1,0.8708340442246888
+transformer based text classification,Hybrid,4,https://openalex.org/A5021878400,Noam Shazeer,1,0.8708340442246888
+transformer based text classification,Hybrid,5,https://openalex.org/A5076683869,Peter J. Liu,1,0.8708340442246888
+transformer based text classification,Hybrid,6,https://openalex.org/A5063203090,Michael Matena,1,0.8708340442246888
+transformer based text classification,Hybrid,7,https://openalex.org/A5045547813,Wei Li,1,0.8708340442246888
+transformer based text classification,Hybrid,8,https://openalex.org/A5072898802,Martín Müller,1,0.7543209100889391
+transformer based text classification,Hybrid,9,https://openalex.org/A5088239541,Matthias Minderer,0,0.6037614235636378
+transformer based text classification,Hybrid,10,https://openalex.org/A5008078679,Muna Sulieman Al-Hawawreh,0,0.3
+information retrieval,TF-IDF Baseline,1,https://openalex.org/A5148393988,Tieyun Qian,1,0.6089308257550691
+information retrieval,TF-IDF Baseline,2,https://openalex.org/A5148361926,Yiqun Liu,1,0.6089308257550691
+information retrieval,TF-IDF Baseline,3,https://openalex.org/A5148334863,Jianyun Nie,1,0.6089308257550691
+information retrieval,TF-IDF Baseline,4,https://openalex.org/A5125635347,Jirong Wen,1,0.6089308257550691
+information retrieval,TF-IDF Baseline,5,https://openalex.org/A5140985364,Tong Ruan,1,0.6089308257550691
+information retrieval,TF-IDF Baseline,6,https://openalex.org/A5066265052,Reda Alhajj,1,0.5669680530137388
+information retrieval,TF-IDF Baseline,7,https://openalex.org/A5020310155,Jon George Rokne,1,0.5669680530137388
+information retrieval,TF-IDF Baseline,8,https://openalex.org/A5108233876,Miranda Lee Pao,1,0.5502060636818173
+information retrieval,TF-IDF Baseline,9,https://openalex.org/A5109936506,Gerard Salton,1,0.23733693302256229
+information retrieval,TF-IDF Baseline,10,https://openalex.org/A5105659698,W. Bruce Croft,1,0.10633529786974416
+information retrieval,Sentence Transformer,1,https://openalex.org/A5066265052,Reda Alhajj,1,0.7264620065689087
+information retrieval,Sentence Transformer,2,https://openalex.org/A5020310155,Jon George Rokne,1,0.7264620065689087
+information retrieval,Sentence Transformer,3,https://openalex.org/A5148393988,Tieyun Qian,1,0.7109634280204773
+information retrieval,Sentence Transformer,4,https://openalex.org/A5148361926,Yiqun Liu,1,0.7109634280204773
+information retrieval,Sentence Transformer,5,https://openalex.org/A5148334863,Jianyun Nie,1,0.7109634280204773
+information retrieval,Sentence Transformer,6,https://openalex.org/A5125635347,Jirong Wen,1,0.7109634280204773
+information retrieval,Sentence Transformer,7,https://openalex.org/A5140985364,Tong Ruan,1,0.7109634280204773
+information retrieval,Sentence Transformer,8,https://openalex.org/A5108233876,Miranda Lee Pao,1,0.7042958736419678
+information retrieval,Sentence Transformer,9,https://openalex.org/A5109936506,Gerard Salton,1,0.6630105376243591
+information retrieval,Sentence Transformer,10,https://openalex.org/A5105659698,W. Bruce Croft,1,0.6012961864471436
+information retrieval,Hybrid,1,https://openalex.org/A5066265052,Reda Alhajj,1,0.9749523600510996
+information retrieval,Hybrid,2,https://openalex.org/A5020310155,Jon George Rokne,1,0.9749523600510996
+information retrieval,Hybrid,3,https://openalex.org/A5148393988,Tieyun Qian,1,0.9133229425305747
+information retrieval,Hybrid,4,https://openalex.org/A5148361926,Yiqun Liu,1,0.9133229425305747
+information retrieval,Hybrid,5,https://openalex.org/A5148334863,Jianyun Nie,1,0.9133229425305747
+information retrieval,Hybrid,6,https://openalex.org/A5125635347,Jirong Wen,1,0.9133229425305747
+information retrieval,Hybrid,7,https://openalex.org/A5140985364,Tong Ruan,1,0.9133229425305747
+information retrieval,Hybrid,8,https://openalex.org/A5108233876,Miranda Lee Pao,1,0.8409812082215695
+information retrieval,Hybrid,9,https://openalex.org/A5109936506,Gerard Salton,1,0.4233375801451773
+information retrieval,Hybrid,10,https://openalex.org/A5105659698,W. Bruce Croft,1,0.0
+knowledge graphs,TF-IDF Baseline,1,https://openalex.org/A5025207179,Mehdi Naseriparsa,1,0.2647099718863518
+knowledge graphs,TF-IDF Baseline,2,https://openalex.org/A5089615958,Feng Xia,1,0.2647099718863518
+knowledge graphs,TF-IDF Baseline,3,https://openalex.org/A5004286514,Ciyuan Peng,1,0.2647099718863518
+knowledge graphs,TF-IDF Baseline,4,https://openalex.org/A5015859397,Cheng Li,1,0.243114174866351
+knowledge graphs,TF-IDF Baseline,5,https://openalex.org/A5059512471,Tianxing Wu,1,0.23184068442439532
+knowledge graphs,TF-IDF Baseline,6,https://openalex.org/A5074737251,Eva Blomqvist,1,0.21744744859587622
+knowledge graphs,TF-IDF Baseline,7,https://openalex.org/A5041698136,Claudio Gutiérrez,1,0.21457545616238727
+knowledge graphs,TF-IDF Baseline,8,https://openalex.org/A5014287041,Juan Sequeda,1,0.21457545616238727
+knowledge graphs,TF-IDF Baseline,9,https://openalex.org/A5100377137,Meng Wang,1,0.21014534376491448
+knowledge graphs,TF-IDF Baseline,10,https://openalex.org/A5066447873,Francesco Osborne,1,0.1722680567516514
+knowledge graphs,Sentence Transformer,1,https://openalex.org/A5074737251,Eva Blomqvist,1,0.687645673751831
+knowledge graphs,Sentence Transformer,2,https://openalex.org/A5015859397,Cheng Li,1,0.6873104572296143
+knowledge graphs,Sentence Transformer,3,https://openalex.org/A5041698136,Claudio Gutiérrez,1,0.6873074769973755
+knowledge graphs,Sentence Transformer,4,https://openalex.org/A5014287041,Juan Sequeda,1,0.6873074769973755
+knowledge graphs,Sentence Transformer,5,https://openalex.org/A5025207179,Mehdi Naseriparsa,1,0.6728212833404541
+knowledge graphs,Sentence Transformer,6,https://openalex.org/A5089615958,Feng Xia,1,0.6728212833404541
+knowledge graphs,Sentence Transformer,7,https://openalex.org/A5004286514,Ciyuan Peng,1,0.6728212833404541
+knowledge graphs,Sentence Transformer,8,https://openalex.org/A5066447873,Francesco Osborne,1,0.6728211641311646
+knowledge graphs,Sentence Transformer,9,https://openalex.org/A5059512471,Tianxing Wu,1,0.6516846418380737
+knowledge graphs,Sentence Transformer,10,https://openalex.org/A5100377137,Meng Wang,1,0.5982813835144043
+knowledge graphs,Hybrid,1,https://openalex.org/A5015859397,Cheng Li,1,0.9272897813907466
+knowledge graphs,Hybrid,2,https://openalex.org/A5025207179,Mehdi Naseriparsa,1,0.8838789715624258
+knowledge graphs,Hybrid,3,https://openalex.org/A5089615958,Feng Xia,1,0.8838789715624258
+knowledge graphs,Hybrid,4,https://openalex.org/A5004286514,Ciyuan Peng,1,0.8838789715624258
+knowledge graphs,Hybrid,5,https://openalex.org/A5074737251,Eva Blomqvist,1,0.8466198264447214
+knowledge graphs,Hybrid,6,https://openalex.org/A5041698136,Claudio Gutiérrez,1,0.8346502724967612
+knowledge graphs,Hybrid,7,https://openalex.org/A5014287041,Juan Sequeda,1,0.8346502724967612
+knowledge graphs,Hybrid,8,https://openalex.org/A5059512471,Tianxing Wu,1,0.6116433309083732
+knowledge graphs,Hybrid,9,https://openalex.org/A5066447873,Francesco Osborne,1,0.5838780377833686
+knowledge graphs,Hybrid,10,https://openalex.org/A5100377137,Meng Wang,1,0.12292244364930363
