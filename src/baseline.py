@@ -56,8 +56,10 @@ def main():
         print("-" * 80)
 
         for rank, idx in enumerate(top_indices, start=1):
+            inst = df.iloc[idx].get("institution_name", "")
+            inst_str = f" ({inst})" if inst else ""
             print(
-                f"{rank}. {df.iloc[idx]['author_name']}"
+                f"{rank}. {df.iloc[idx]['author_name']}{inst_str}"
                 f" | Score: {scores[idx]:.4f}"
                 f" | Papers: {df.iloc[idx]['n_papers']}"
             )

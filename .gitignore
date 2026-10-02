@@ -10,4 +10,8 @@ wheels/
 .venv
 .env
 .env*
-env
+env
+
+# OS metadata
+.DS_Store
+Thumbs.db
