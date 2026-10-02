@@ -16,15 +16,10 @@ load_dotenv()
 
 API_KEY = os.getenv("OPENALEX_API_KEY")
 
-if not API_KEY:
-    raise RuntimeError(
-        "OPENALEX_API_KEY not found. "
-        "Put it in your .env file."
-    )
-
 BASE_URL = "https://api.openalex.org"
 
-OUTPUT_DIR = Path("Data/raw")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_ROOT / "Data" / "raw"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 OUTPUT_FILE = OUTPUT_DIR / "indian_institutions_works.csv"
@@ -74,6 +69,11 @@ def api_get(endpoint, params):
     """
     Make a GET request to OpenAlex with basic retry handling.
     """
+
+    if not API_KEY:
+        raise RuntimeError(
+            "OPENALEX_API_KEY not found. Put it in the project .env file."
+        )
 
     params = dict(params)
     params["api_key"] = API_KEY

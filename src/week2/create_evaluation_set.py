@@ -15,7 +15,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PROFILE_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
 OUTPUT_CANDIDATES = PROJECT_ROOT / "Data" / "processed" / "evaluation_candidates.csv"
 CALCULATED_DIR = PROJECT_ROOT / "Data" / "processed" / "calculated"

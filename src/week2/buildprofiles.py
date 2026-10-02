@@ -15,7 +15,7 @@ from pathlib import Path
 import time
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 INPUT_PATH = PROJECT_ROOT / "Data" / "indian_institutions_works_processed.csv"
 PROCESSED_DIR = PROJECT_ROOT / "Data" / "processed"
 

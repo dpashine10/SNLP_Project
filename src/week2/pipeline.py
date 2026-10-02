@@ -8,14 +8,14 @@ Supports:
 """
 
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PAPERS_PATH = PROJECT_ROOT / "Data" / "processed" / "papers.csv"
 AUTHORS_PATH = PROJECT_ROOT / "Data" / "processed" / "paper_author.csv"
 PROFILES_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
@@ -74,7 +74,7 @@ class ResearchDiscoveryPipeline:
         # Load dense embeddings
         if not PAPER_EMB_PATH.exists() or not RESEARCHER_EMB_PATH.exists():
             print("Precomputed embeddings not found. Generating now...")
-            from SNLP_Project.src.week3.build_embeddings import build_embeddings
+            from src.week3.build_embeddings import build_embeddings
             build_embeddings()
 
         print("Loading precomputed embeddings from cache...")
@@ -188,7 +188,7 @@ class ResearchDiscoveryPipeline:
         paper_ids: List[str],
         query: str,
         query_emb: Optional[np.ndarray] = None
-    ) -> (Dict[str, Any], List[str]):
+    ) -> Tuple[Dict[str, Any], List[str]]:
         """Finds the researcher's paper closest to the query and extracts salient topics."""
         if not paper_ids:
             return {"title": "N/A", "year": "N/A", "score": 0.0}, []

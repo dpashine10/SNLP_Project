@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PAPERS_PATH = PROJECT_ROOT / "Data" / "processed" / "papers.csv"
 PROFILES_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
 

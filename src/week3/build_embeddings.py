@@ -10,7 +10,7 @@ import torch
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PAPERS_PATH = PROJECT_ROOT / "Data" / "processed" / "papers.csv"
 AUTHORS_PATH = PROJECT_ROOT / "Data" / "processed" / "paper_author.csv"
 PROFILES_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"

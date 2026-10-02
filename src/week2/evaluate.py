@@ -13,7 +13,7 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 LABELED_EVAL_PATH = PROJECT_ROOT / "Data" / "processed" / "calculated" / "evaluation_candidates_labeled.csv"
 BASELINE_METRICS_PATH = PROJECT_ROOT / "Data" / "processed" / "calculated" / "baseline_metrics.csv"
 PROFILES_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
