@@ -1,4 +1,0 @@
-Model,Precision@5,Precision@10,Mean_Reciprocal_Rank (MRR),Relevant@10
-TF-IDF Baseline,0.96,0.96,0.9,9.6
-Sentence Transformers (all-MiniLM-L6-v2),1.0,0.96,1.0,9.6
-Hybrid (Semantic + TF-IDF),1.0,0.96,1.0,9.6
