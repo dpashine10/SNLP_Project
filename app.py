@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.pipeline import ResearchDiscoveryPipeline
+from SNLP_Project.src.week2.pipeline import ResearchDiscoveryPipeline
 
 # Page setup
 st.set_page_config(
@@ -82,7 +82,11 @@ def main():
     st.markdown('<div class="main-title">🎓 Research Discovery & Collaboration Engine</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">AI University NLP Course Project — Version 1.0 Core NLP Pipeline (Sentence Transformers vs TF-IDF)</div>', unsafe_allow_html=True)
 
-    pipeline = get_pipeline()
+    try:
+        pipeline = get_pipeline()
+    except Exception as exc:
+        st.error(f"The NLP pipeline could not be loaded: {exc}")
+        st.stop()
 
     # Sidebar settings
     st.sidebar.header("⚙️ Search Configuration")
@@ -186,6 +190,9 @@ def main():
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
+
+        elif search_btn:
+            st.warning("Enter a research topic or choose a query preset first.")
 
     with tab_compare:
         st.subheader("Side-by-Side Model Comparison")
