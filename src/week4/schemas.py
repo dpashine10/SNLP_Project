@@ -92,3 +92,16 @@ class ResearcherScore:
     score: float
     evidence: tuple[PaperHit, ...] = ()
     matched_papers: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class LabeledQuery:
+    """A query with its ground-truth relevant researchers.
+
+    Attributes:
+        query: Query text sent to every recommender.
+        relevant_author_ids: Canonical IDs of researchers judged relevant.
+    """
+
+    query: str
+    relevant_author_ids: frozenset[str]

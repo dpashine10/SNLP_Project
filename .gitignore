@@ -12,6 +12,16 @@ wheels/
 .env*
 env
 
+.DS_Store
+.env*
+env
+
 # OS metadata
 .DS_Store
-Thumbs.db
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Week 4 generated ChromaDB index
+Data/week4/chroma/

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from src.week4.config import DeviceName
+from src.week4.config import SUPPORTED_DEVICES, DeviceName
 
 if TYPE_CHECKING:
     from sentence_transformers import SentenceTransformer
@@ -47,7 +47,12 @@ class Embedder:
             ValueError: If ``model_name`` is empty, ``device`` is unsupported
                 or ``batch_size`` is less than 1.
         """
-        # TODO(Phase 3): validate arguments.
+        if not model_name.strip():
+            raise ValueError("model_name must not be empty.")
+        if device not in SUPPORTED_DEVICES:
+            raise ValueError(f"Unsupported device {device!r}; expected one of {SUPPORTED_DEVICES}.")
+        if batch_size < 1:
+            raise ValueError(f"batch_size must be at least 1, got {batch_size}.")
         self._model_name = model_name
         self._device = device
         self._batch_size = batch_size
@@ -72,9 +77,11 @@ class Embedder:
             ValueError: If ``texts`` is empty or contains a blank string.
             RuntimeError: If the model cannot be loaded.
         """
-        # TODO(Phase 3): validate texts, then encode with the shared model
-        # using batch_size and normalize_embeddings=True.
-        raise NotImplementedError
+        if not texts:
+            raise ValueError("texts must not be empty.")
+        if any(not text.strip() for text in texts):
+            raise ValueError("texts must not contain blank strings.")
+        return self._encode(list(texts))
 
     def embed_query(self, query: str) -> np.ndarray:
         """Embed a single search query.
@@ -92,8 +99,21 @@ class Embedder:
             ValueError: If ``query`` is blank.
             RuntimeError: If the model cannot be loaded.
         """
-        # TODO(Phase 3): validate query, then encode with the shared model.
-        raise NotImplementedError
+        if not query.strip():
+            raise ValueError("query must not be blank.")
+        vector: np.ndarray = self._encode([query])[0]
+        return vector
+
+    def _encode(self, texts: list[str]) -> np.ndarray:
+        """Encode texts with the shared model into normalized ``float32`` vectors."""
+        vectors = self._get_model().encode(
+            texts,
+            batch_size=self._batch_size,
+            normalize_embeddings=True,
+            convert_to_numpy=True,
+            show_progress_bar=False,
+        )
+        return np.asarray(vectors, dtype=np.float32)
 
     def _get_model(self) -> SentenceTransformer:
         """Return the model, loading it on the resolved device on first call.
@@ -104,10 +124,24 @@ class Embedder:
         Raises:
             RuntimeError: If the model cannot be downloaded or loaded.
         """
-        # TODO(Phase 3): lazy import, load once into self._model, log the
-        # model name, resolved device and embedding dimension, wrap load
-        # failures in RuntimeError.
-        raise NotImplementedError
+        if self._model is None:
+            device = self._resolve_device(self._device)
+            try:
+                from sentence_transformers import SentenceTransformer
+
+                model = SentenceTransformer(self._model_name, device=device)
+            except Exception as error:
+                raise RuntimeError(
+                    f"Could not load embedding model {self._model_name!r}: {error}"
+                ) from error
+            logger.info(
+                "Loaded embedding model %s on %s (dimension %s).",
+                self._model_name,
+                device,
+                model.get_embedding_dimension(),
+            )
+            self._model = model
+        return self._model
 
     @staticmethod
     def _resolve_device(device: DeviceName) -> str:
@@ -121,5 +155,12 @@ class Embedder:
             RuntimeError: If ``"cuda"`` is requested but unavailable. An
                 explicit request is never silently downgraded to CPU.
         """
-        # TODO(Phase 3): detect availability via torch (imported lazily).
-        raise NotImplementedError
+        import torch
+
+        if device == "auto":
+            if torch.cuda.is_available():
+                return "cuda"
+            return "mps" if torch.backends.mps.is_available() else "cpu"
+        if device == "cuda" and not torch.cuda.is_available():
+            raise RuntimeError("device='cuda' was requested but CUDA is not available.")
+        return device

@@ -64,9 +64,13 @@ class Aggregator:
         Raises:
             ValueError: If ``top_k`` is less than 1.
         """
-        # TODO(Phase 3): validate top_k, then _group_by_author -> _score_author
-        # for each group -> _rank.
-        raise NotImplementedError
+        if top_k < 1:
+            raise ValueError(f"top_k must be at least 1, got {top_k}.")
+        scores = [
+            self._score_author(author, author_hits)
+            for author, author_hits in self._group_by_author(hits).values()
+        ]
+        return self._rank(scores, top_k)
 
     @staticmethod
     def _group_by_author(hits: Sequence[PaperHit]) -> dict[str, tuple[Author, list[PaperHit]]]:
@@ -76,8 +80,11 @@ class Aggregator:
             A mapping from ``author_id`` to the first ``Author`` object seen
             for that ID and every hit credited to that author.
         """
-        # TODO(Phase 3)
-        raise NotImplementedError
+        groups: dict[str, tuple[Author, list[PaperHit]]] = {}
+        for hit in hits:
+            for author in hit.paper.authors:
+                groups.setdefault(author.author_id, (author, []))[1].append(hit)
+        return groups
 
     def _score_author(self, author: Author, hits: Sequence[PaperHit]) -> ResearcherScore:
         """Score one researcher with the strategy and package the result.
@@ -86,11 +93,15 @@ class Aggregator:
         then ascending ``paper_id``. ``matched_papers`` is the number of hits
         received, i.e. the papers retrieved for this researcher before scoring.
         """
-        # TODO(Phase 3)
-        raise NotImplementedError
+        evidence = tuple(sorted(hits, key=lambda hit: (-hit.score, hit.paper.paper_id)))
+        return ResearcherScore(
+            author=author,
+            score=self._strategy.score(hits),
+            evidence=evidence,
+            matched_papers=len(hits),
+        )
 
     @staticmethod
     def _rank(scores: Sequence[ResearcherScore], top_k: int) -> list[ResearcherScore]:
         """Order by descending score, then ascending ``author_id``, and keep ``top_k``."""
-        # TODO(Phase 3)
-        raise NotImplementedError
+        return sorted(scores, key=lambda result: (-result.score, result.author.author_id))[:top_k]

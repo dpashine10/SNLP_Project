@@ -55,11 +55,17 @@ class Retriever:
             RuntimeError: If the model cannot be loaded or the index is
                 missing, empty or built with a different embedding model.
         """
-        # TODO(Phase 3): embed the query, query the store, return the hits
-        # unchanged. Log at DEBUG level: query length, embedding dimension,
-        # requested top_k, number of returned hits and (optionally) latency.
         # TODO(future): optional metadata filters (publication year,
         # institution, department, author, venue) would be accepted here as
         # plain Python values; only VectorStore translates them into
         # backend-specific filter syntax.
-        raise NotImplementedError
+        embedding = self._embedder.embed_query(query)
+        hits = self._store.query(embedding, top_k=top_k)
+        logger.debug(
+            "Retrieved %d of %d requested papers for a %d-character query (embedding dimension %d).",
+            len(hits),
+            top_k,
+            len(query),
+            embedding.shape[0],
+        )
+        return hits

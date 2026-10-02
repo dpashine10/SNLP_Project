@@ -18,6 +18,7 @@ SUPPORTED_RANKING_STRATEGIES: tuple[str, ...] = get_args(RankingStrategyName)
 SUPPORTED_DEVICES: tuple[str, ...] = get_args(DeviceName)
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
+WEEK2_PROCESSED_DIR: Path = PROJECT_ROOT / "Data" / "processed"
 WEEK4_DATA_DIR: Path = PROJECT_ROOT / "Data" / "week4"
 
 
@@ -27,10 +28,10 @@ class Week4Config:
 
     Attributes:
         papers_path: Week 2 paper-level output. Read only by ``data_adapter``.
-        authorship_path: Week 2 paper-author relationships, if stored separately
-            from the papers. Read only by ``data_adapter``.
-        evaluation_labels_path: Labelled evaluation queries. Read only by the
-            label loader behind ``evaluation.load_labeled_queries``.
+        authorship_path: Week 2 paper-author relationships. Read only by
+            ``data_adapter``.
+        evaluation_labels_path: Week 2's labelled evaluation queries. Read only
+            by ``data_adapter.load_labeled_queries``.
         chroma_dir: Directory where the persistent ChromaDB index is stored.
         results_dir: Directory where evaluation outputs are written.
         collection_name: ChromaDB collection holding paper embeddings.
@@ -49,14 +50,13 @@ class Week4Config:
     """
 
     # -------------------------
-    # Phase 2 Inputs
+    # Week 2 Inputs
     # -------------------------
-    # TODO(Phase 2): set once the final Week 2 output files are known.
-    papers_path: Path | None = None
-    authorship_path: Path | None = None
-
-    # TODO(Phase 2): set once the evaluation label source is decided.
-    evaluation_labels_path: Path | None = None
+    papers_path: Path | None = WEEK2_PROCESSED_DIR / "papers.csv"
+    authorship_path: Path | None = WEEK2_PROCESSED_DIR / "paper_author.csv"
+    evaluation_labels_path: Path | None = (
+        WEEK2_PROCESSED_DIR / "calculated" / "evaluation_candidates_labeled.csv"
+    )
 
     # -------------------------
     # Storage
@@ -87,7 +87,7 @@ class Week4Config:
     # -------------------------
     ranking_strategy: RankingStrategyName = "best_paper"
     strategy_top_k: int = 3
-    # TODO(Phase 3): add parameters for the "weighted" strategy once its formula is decided.
+    # TODO(future): add parameters for the "weighted" strategy once its formula is decided.
 
     # -------------------------
     # Evaluation

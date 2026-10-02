@@ -22,8 +22,11 @@ import logging
 
 from src.week4.aggregator import Aggregator
 from src.week4.config import Week4Config
+from src.week4.embedder import Embedder
+from src.week4.ranking_strategy import create_strategy
 from src.week4.retriever import Retriever
 from src.week4.schemas import ResearcherScore
+from src.week4.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +53,10 @@ class Week4Pipeline:
         Raises:
             ValueError: If ``paper_top_k`` is less than 1 or ``name`` is empty.
         """
-        # TODO(Phase 3): validate paper_top_k and name.
+        if paper_top_k < 1:
+            raise ValueError(f"paper_top_k must be at least 1, got {paper_top_k}.")
+        if not name.strip():
+            raise ValueError("name must not be empty.")
         self._retriever = retriever
         self._aggregator = aggregator
         self._paper_top_k = paper_top_k
@@ -81,11 +87,18 @@ class Week4Pipeline:
             RuntimeError: If the model cannot be loaded or the index is
                 missing, empty or incompatible.
         """
-        # TODO(Phase 3): retrieve paper_top_k hits, then aggregate to top_k
-        # researchers. Log at DEBUG level: query length, paper_top_k,
-        # researcher top_k, retrieved paper count, returned researcher count
-        # and (optionally) pipeline latency.
-        raise NotImplementedError
+        hits = self._retriever.retrieve(query, top_k=self._paper_top_k)
+        researchers = self._aggregator.aggregate(hits, top_k=top_k)
+        logger.debug(
+            "%s: %d-character query, %d of %d papers retrieved, %d of %d researchers returned.",
+            self._name,
+            len(query),
+            len(hits),
+            self._paper_top_k,
+            len(researchers),
+            top_k,
+        )
+        return researchers
 
 
 def build_week4_pipeline(config: Week4Config) -> Week4Pipeline:
@@ -107,6 +120,20 @@ def build_week4_pipeline(config: Week4Config) -> Week4Pipeline:
     # Construction order:
     #   Embedder -> VectorStore -> Retriever -> RankingStrategy -> Aggregator
     #   -> Week4Pipeline
-    # TODO(Phase 3): construct each component from config values and inject
-    # them into Week4Pipeline.
-    raise NotImplementedError
+    embedder = Embedder(
+        config.embedding_model_name, device=config.device, batch_size=config.batch_size
+    )
+    store = VectorStore(
+        config.chroma_dir,
+        config.collection_name,
+        distance_metric=config.distance_metric,
+        embedding_model_name=embedder.model_name,
+    )
+    retriever = Retriever(embedder, store)
+    aggregator = Aggregator(create_strategy(config))
+    return Week4Pipeline(
+        retriever,
+        aggregator,
+        paper_top_k=config.paper_top_k,
+        name=f"Week 4 ({config.ranking_strategy})",
+    )

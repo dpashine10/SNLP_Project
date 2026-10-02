@@ -15,8 +15,8 @@ with keys coming from Week 2 via ``Paper.metadata``. Keys from
 * Per-paper record keys: ``__title``, ``__abstract``, ``__authors`` (JSON).
   The paper ID is the ChromaDB record ID, so it needs no metadata key.
 * Collection-level keys: ``__embedding_model`` and ``__distance_metric``
-  (required), plus ``__created_at`` and ``__schema_version`` (reserved;
-  optional in Phase 3).
+  (required), plus ``__created_at`` and ``__schema_version`` (reserved; not
+  written yet).
 """
 
 # TODO(future): other vector databases (FAISS, Qdrant, Milvus, etc.) should be
@@ -25,6 +25,7 @@ with keys coming from Week 2 via ``Paper.metadata``. Keys from
 
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -33,7 +34,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from src.week4.config import DistanceMetric
-from src.week4.schemas import MetadataValue, Paper, PaperHit
+from src.week4.schemas import Author, MetadataValue, Paper, PaperHit
 
 if TYPE_CHECKING:
     from chromadb.api.models.Collection import Collection
@@ -41,6 +42,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 RESERVED_KEY_PREFIX = "__"
+_TITLE_KEY = "__title"
+_ABSTRACT_KEY = "__abstract"
+_AUTHORS_KEY = "__authors"
+_MODEL_KEY = "__embedding_model"
+_METRIC_KEY = "__distance_metric"
+
+
+class _CollectionNotFoundError(RuntimeError):
+    """The collection has not been built yet."""
 
 
 class VectorStore:
@@ -80,7 +90,10 @@ class VectorStore:
         Raises:
             ValueError: If ``collection_name`` or ``embedding_model_name`` is empty.
         """
-        # TODO(Phase 3): validate arguments.
+        if not collection_name.strip():
+            raise ValueError("collection_name must not be empty.")
+        if not embedding_model_name.strip():
+            raise ValueError("embedding_model_name must not be empty.")
         self._persist_dir = persist_dir
         self._collection_name = collection_name
         self._distance_metric = distance_metric
@@ -106,9 +119,22 @@ class VectorStore:
             RuntimeError: If ``chromadb`` is not installed or the existing
                 collection was built with a different embedding model.
         """
-        # TODO(Phase 3): validate, open/create the collection,
-        # _check_model_compatibility, convert each paper with _to_record, upsert.
-        raise NotImplementedError
+        if not papers:
+            raise ValueError("papers must not be empty.")
+        if len(papers) != len(embeddings):
+            raise ValueError(f"Got {len(papers)} papers but {len(embeddings)} embedding rows.")
+        records = [self._to_record(paper) for paper in papers]
+        ids = [paper_id for paper_id, _, _ in records]
+        if len(set(ids)) != len(ids):
+            raise ValueError("papers contains duplicate paper_id values.")
+        collection = self._get_collection(create=True)
+        self._check_model_compatibility(collection.metadata)
+        collection.upsert(
+            ids=ids,
+            embeddings=embeddings,
+            documents=[document for _, document, _ in records],
+            metadatas=[metadata for _, _, metadata in records],
+        )
 
     def query(self, embedding: np.ndarray, *, top_k: int) -> list[PaperHit]:
         """Find the papers most similar to a query embedding.
@@ -128,14 +154,43 @@ class VectorStore:
                 not exist or is empty ("Run build_chromadb.py first."), or it
                 was built with a different embedding model.
         """
-        # TODO(Phase 3): open collection, _check_model_compatibility, query,
-        # convert each result with _from_record and _to_similarity.
-        raise NotImplementedError
+        if top_k < 1:
+            raise ValueError(f"top_k must be at least 1, got {top_k}.")
+        collection = self._get_collection(create=False)
+        self._check_model_compatibility(collection.metadata)
+        size = collection.count()
+        if size == 0:
+            raise RuntimeError(
+                f"Collection {self._collection_name!r} is empty. Run build_chromadb.py first."
+            )
+        result = collection.query(
+            query_embeddings=[embedding],
+            n_results=min(top_k, size),
+            include=["documents", "metadatas", "distances"],
+        )
+        documents, metadatas, distances = (
+            result["documents"],
+            result["metadatas"],
+            result["distances"],
+        )
+        if documents is None or metadatas is None or distances is None:
+            raise RuntimeError("ChromaDB returned a query result without the requested fields.")
+        return [
+            PaperHit(
+                paper=self._from_record(paper_id, str(document), metadata),
+                score=self._to_similarity(distance),
+            )
+            for paper_id, document, metadata, distance in zip(
+                result["ids"][0], documents[0], metadatas[0], distances[0], strict=True
+            )
+        ]
 
     def count(self) -> int:
         """Return the number of papers stored, or 0 if the collection does not exist."""
-        # TODO(Phase 3)
-        raise NotImplementedError
+        try:
+            return self._get_collection(create=False).count()
+        except _CollectionNotFoundError:
+            return 0
 
     def metadata(self) -> dict[str, MetadataValue]:
         """Return a copy of the collection-level metadata.
@@ -146,7 +201,7 @@ class VectorStore:
         Raises:
             RuntimeError: If the collection does not exist.
         """
-        # TODO(Phase 3)
+        # TODO(future): not needed by indexing, search or evaluation.
         raise NotImplementedError
 
     def _get_collection(self, *, create: bool) -> Collection:
@@ -154,26 +209,65 @@ class VectorStore:
 
         Imports ``chromadb`` lazily and uses a persistent client rooted at
         ``persist_dir``. On creation, writes the collection-level metadata
-        described in the module docstring.
+        described in the module docstring and sets the distance metric through
+        the collection's HNSW configuration.
 
         Raises:
             RuntimeError: If ``chromadb`` is not installed, or the collection
                 does not exist and ``create`` is false.
         """
-        # TODO(Phase 2): confirm how the installed chromadb version accepts the
-        # distance metric at creation (metadata key vs. configuration argument).
-        # TODO(Phase 3): implement; cache the collection in self._collection.
-        raise NotImplementedError
+        if self._collection is not None:
+            return self._collection
+        not_found = (
+            f"Collection {self._collection_name!r} not found in {self._persist_dir}. "
+            "Run build_chromadb.py first."
+        )
+        if not create and not self._persist_dir.exists():
+            raise _CollectionNotFoundError(not_found)
+        try:
+            import chromadb
+            from chromadb.config import Settings
+            from chromadb.errors import NotFoundError
+        except ImportError as error:
+            raise RuntimeError(
+                "chromadb is not installed; install the project dependencies with `uv sync`."
+            ) from error
+        client = chromadb.PersistentClient(
+            path=str(self._persist_dir), settings=Settings(anonymized_telemetry=False)
+        )
+        if create:
+            collection = client.get_or_create_collection(
+                self._collection_name,
+                configuration={"hnsw": {"space": self._distance_metric}},
+                metadata={
+                    _MODEL_KEY: self._embedding_model_name,
+                    _METRIC_KEY: self._distance_metric,
+                },
+            )
+        else:
+            try:
+                collection = client.get_collection(self._collection_name)
+            except NotFoundError as error:
+                raise _CollectionNotFoundError(not_found) from error
+        self._collection = collection
+        return collection
 
-    def _check_model_compatibility(self, collection_metadata: Mapping[str, Any]) -> None:
-        """Ensure the collection was built with ``embedding_model_name``.
+    def _check_model_compatibility(self, collection_metadata: Mapping[str, Any] | None) -> None:
+        """Ensure the collection was built with this store's model and distance metric.
 
         Raises:
-            RuntimeError: If the stored model differs, naming both models and
-                instructing the user to rebuild the index.
+            RuntimeError: If either differs, naming both values and instructing
+                the user to rebuild the index.
         """
-        # TODO(Phase 3): compare __embedding_model with self._embedding_model_name.
-        raise NotImplementedError
+        stored = collection_metadata or {}
+        built_with = (stored.get(_MODEL_KEY), stored.get(_METRIC_KEY))
+        configured = (self._embedding_model_name, self._distance_metric)
+        if built_with != configured:
+            raise RuntimeError(
+                f"Collection {self._collection_name!r} was built with (model, metric) "
+                f"{built_with}, but {configured} is configured. Delete "
+                f"{self._persist_dir} and run build_chromadb.py to rebuild the index."
+            )
 
     @staticmethod
     def _to_record(paper: Paper) -> tuple[str, str, dict[str, MetadataValue]]:
@@ -187,14 +281,39 @@ class VectorStore:
         Raises:
             ValueError: If a ``Paper.metadata`` key uses the reserved prefix.
         """
-        # TODO(Phase 3): implement with JSON author serialization.
-        raise NotImplementedError
+        reserved = sorted(key for key in paper.metadata if key.startswith(RESERVED_KEY_PREFIX))
+        if reserved:
+            raise ValueError(
+                f"Paper {paper.paper_id} uses reserved metadata keys: {', '.join(reserved)}."
+            )
+        metadata: dict[str, MetadataValue] = dict(paper.metadata)
+        metadata[_TITLE_KEY] = paper.title
+        metadata[_AUTHORS_KEY] = json.dumps(
+            [{"author_id": author.author_id, "name": author.name} for author in paper.authors]
+        )
+        if paper.abstract is not None:
+            metadata[_ABSTRACT_KEY] = paper.abstract
+        return paper.paper_id, paper.text, metadata
 
     @staticmethod
     def _from_record(paper_id: str, document: str, metadata: Mapping[str, Any]) -> Paper:
         """Rebuild a ``Paper`` from a stored ChromaDB record (inverse of ``_to_record``)."""
-        # TODO(Phase 3)
-        raise NotImplementedError
+        abstract = metadata.get(_ABSTRACT_KEY)
+        return Paper(
+            paper_id=paper_id,
+            title=str(metadata.get(_TITLE_KEY, "")),
+            text=document,
+            authors=tuple(
+                Author(author_id=author["author_id"], name=author["name"])
+                for author in json.loads(str(metadata[_AUTHORS_KEY]))
+            ),
+            abstract=None if abstract is None else str(abstract),
+            metadata={
+                key: value
+                for key, value in metadata.items()
+                if not key.startswith(RESERVED_KEY_PREFIX)
+            },
+        )
 
     def _to_similarity(self, distance: float) -> float:
         """Convert a ChromaDB distance into a similarity where higher is better.
@@ -206,5 +325,6 @@ class VectorStore:
         * ``ip``: similarity = 1 - distance
         * ``l2`` (ChromaDB reports squared L2): similarity = 1 - distance / 2
         """
-        # TODO(Phase 3)
-        raise NotImplementedError
+        if self._distance_metric == "l2":
+            return 1.0 - distance / 2.0
+        return 1.0 - distance

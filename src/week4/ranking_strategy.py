@@ -8,12 +8,21 @@ strategies can be swapped for experiments without touching other modules.
 Strategy objects are constructed only through ``create_strategy``.
 """
 
+import heapq
+import statistics
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
 from typing import ClassVar
 
 from src.week4.config import RankingStrategyName, Week4Config
 from src.week4.schemas import PaperHit
+
+
+def _hit_scores(hits: Sequence[PaperHit]) -> list[float]:
+    """Return the hit scores, rejecting an empty sequence as strategies require."""
+    if not hits:
+        raise ValueError("A researcher needs at least one paper hit to be scored.")
+    return [hit.score for hit in hits]
 
 
 class RankingStrategy(ABC):
@@ -57,8 +66,7 @@ class BestPaperStrategy(RankingStrategy):
     name = "best_paper"
 
     def score(self, hits: Sequence[PaperHit]) -> float:
-        # TODO(Phase 3): return the highest hit score.
-        raise NotImplementedError
+        return max(_hit_scores(hits))
 
 
 class AverageStrategy(RankingStrategy):
@@ -70,8 +78,7 @@ class AverageStrategy(RankingStrategy):
     name = "average"
 
     def score(self, hits: Sequence[PaperHit]) -> float:
-        # TODO(Phase 3): return the mean hit score.
-        raise NotImplementedError
+        return statistics.fmean(_hit_scores(hits))
 
 
 class TopKAverageStrategy(RankingStrategy):
@@ -92,15 +99,15 @@ class TopKAverageStrategy(RankingStrategy):
         Raises:
             ValueError: If ``k`` is less than 1.
         """
-        # TODO(Phase 3): validate k.
+        if k < 1:
+            raise ValueError(f"k must be at least 1, got {k}.")
         self._k = k
 
     def score(self, hits: Sequence[PaperHit]) -> float:
-        # TODO(Phase 3): return the mean of the k highest hit scores.
-        raise NotImplementedError
+        return statistics.fmean(heapq.nlargest(self._k, _hit_scores(hits)))
 
 
-# TODO(Phase 3): future weighting may include publication recency, citation
+# TODO(future): weighting may include publication recency, citation
 # count, venue quality and configurable weighting coefficients. Any such
 # signal must reach the strategy through PaperHit/Paper metadata, never by
 # the strategy fetching data itself.
@@ -110,7 +117,7 @@ class WeightedStrategy(RankingStrategy):
     name = "weighted"
 
     def score(self, hits: Sequence[PaperHit]) -> float:
-        # TODO(Phase 3): implement once the weighting formula is decided.
+        # TODO(future): implement once the weighting formula is decided.
         raise NotImplementedError
 
 
@@ -138,7 +145,10 @@ def create_strategy(config: Week4Config) -> RankingStrategy:
     Raises:
         ValueError: If ``config.ranking_strategy`` is not a registered strategy.
     """
-    # TODO(Phase 3): look up config.ranking_strategy in _STRATEGY_REGISTRY,
-    # raise ValueError listing the supported names if missing, otherwise call
-    # the builder with config.
-    raise NotImplementedError
+    builder = _STRATEGY_REGISTRY.get(config.ranking_strategy)
+    if builder is None:
+        supported = ", ".join(_STRATEGY_REGISTRY)
+        raise ValueError(
+            f"Unknown ranking strategy {config.ranking_strategy!r}; supported: {supported}."
+        )
+    return builder(config)

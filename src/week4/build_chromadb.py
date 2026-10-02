@@ -24,15 +24,20 @@ Run from the repository root::
 # TODO(future): resume support that skips paper IDs already in the collection
 # instead of re-embedding them.
 
+import itertools
 import logging
+import time
 from dataclasses import dataclass
 
 from src.week4.config import CONFIG, Week4Config
+from src.week4.data_adapter import Week2PaperSource
 from src.week4.embedder import Embedder
 from src.week4.interfaces import PaperSource
 from src.week4.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
+
+_PROGRESS_EVERY_BATCHES = 20
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,39 +89,90 @@ def build_index(
             embedder or store (e.g. model load failure, incompatible index).
         FileNotFoundError: Propagated from ``source`` if input data is missing.
     """
-    # TODO(Phase 3): validate batch_size; iterate
-    # itertools.batched(source.load_papers(), batch_size); embed
-    # [paper.text for paper in batch]; store.add_papers(batch, embeddings);
-    # count papers and batches; time the run with time.perf_counter; read
-    # store.count() at the end. Log the current batch number and running
-    # paper count at DEBUG level.
-    raise NotImplementedError
+    if batch_size < 1:
+        raise ValueError(f"batch_size must be at least 1, got {batch_size}.")
+    start = time.perf_counter()
+    papers_indexed = 0
+    batch_number = 0
+    for batch_number, batch in enumerate(
+        itertools.batched(source.load_papers(), batch_size), start=1
+    ):
+        try:
+            store.add_papers(batch, embedder.embed_documents([paper.text for paper in batch]))
+        except Exception:
+            logger.error(
+                "Indexing failed at batch %d (first paper_id %s).", batch_number, batch[0].paper_id
+            )
+            raise
+        papers_indexed += len(batch)
+        logger.debug("Batch %d stored; %d papers indexed so far.", batch_number, papers_indexed)
+        if batch_number % _PROGRESS_EVERY_BATCHES == 0:
+            logger.info("%d papers indexed so far.", papers_indexed)
+    if papers_indexed == 0:
+        raise RuntimeError("The paper source yielded no papers, so nothing was indexed.")
+    return IndexingStats(
+        papers_indexed=papers_indexed,
+        batches=batch_number,
+        collection_size=store.count(),
+        duration_seconds=time.perf_counter() - start,
+    )
 
 
 # TODO(future): move shared construction into a small src/week4/factories.py
 # (build_embedder, build_vector_store, build_retriever, build_aggregator) so
 # this module and week4_pipeline.build_week4_pipeline reuse the same wiring
-# instead of duplicating it. Not part of Phase 1.
+# instead of duplicating it.
 def _build_components(config: Week4Config) -> tuple[PaperSource, Embedder, VectorStore]:
     """Create the paper source, embedder and vector store from configuration.
 
     The store receives ``embedder.model_name`` so the index records which
     model built it.
     """
-    # TODO(Phase 3): construct Week2PaperSource(config.papers_path,
-    # config.authorship_path), then Embedder and VectorStore from config.
-    raise NotImplementedError
+    source = Week2PaperSource(config.papers_path, config.authorship_path)
+    embedder = Embedder(
+        config.embedding_model_name, device=config.device, batch_size=config.batch_size
+    )
+    store = VectorStore(
+        config.chroma_dir,
+        config.collection_name,
+        distance_metric=config.distance_metric,
+        embedding_model_name=embedder.model_name,
+    )
+    return source, embedder, store
 
 
 def main(config: Week4Config = CONFIG) -> None:
     """Build or update the ChromaDB index and report indexing statistics."""
-    # TODO(Phase 3): configure logging at config.log_level; log the embedding
-    # model, collection name, Chroma directory and batch size; run
-    # build_index; log papers indexed, batches, indexing duration, indexing
-    # throughput (papers/sec) and final collection size. If collection_size >
-    # papers_indexed, warn that papers from earlier runs remain in the index
-    # and suggest a rebuild.
-    raise NotImplementedError
+    logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    # Third-party libraries stay at WARNING; Week 4 modules, including this one
+    # when it runs as __main__, log at the configured level.
+    for name in ("src.week4", __name__):
+        logging.getLogger(name).setLevel(config.log_level)
+
+    source, embedder, store = _build_components(config)
+    logger.info(
+        "Indexing with %s into collection %r at %s (batch size %d).",
+        embedder.model_name,
+        config.collection_name,
+        config.chroma_dir,
+        config.batch_size,
+    )
+    stats = build_index(source, embedder, store, batch_size=config.batch_size)
+    logger.info(
+        "Indexed %d papers in %d batches in %.1fs (%.0f papers/s); collection size %d.",
+        stats.papers_indexed,
+        stats.batches,
+        stats.duration_seconds,
+        stats.papers_indexed / stats.duration_seconds,
+        stats.collection_size,
+    )
+    if stats.collection_size > stats.papers_indexed:
+        logger.warning(
+            "The collection still holds %d papers from earlier runs that are no longer in "
+            "the source data; delete %s and rebuild to remove them.",
+            stats.collection_size - stats.papers_indexed,
+            config.chroma_dir,
+        )
 
 
 if __name__ == "__main__":
