@@ -18,7 +18,9 @@ which is formatted slightly differently from the text Week 3 embedded.)
 ## Design rules
 
 - **Isolation.** All Week 4 code lives in `src/week4/` and all generated
-  output in `Data/week4/`. No Week 2 or Week 3 file is modified.
+  output in `Data/week4/`. No Week 2 or Week 3 file is modified; the only
+  change outside `src/week4/` is the `chromadb` dependency in
+  `pyproject.toml` and `uv.lock`.
 - **Two integration points.** Only `data_adapter.py` knows Week 2's data and
   only `baseline_adapter.py` knows Week 3's code. Every other module exchanges
   the dataclasses in `schemas.py`.
@@ -37,7 +39,7 @@ which is formatted slightly differently from the text Week 3 embedded.)
 | File | Responsibility |
 |---|---|
 | `config.py` | Frozen `Week4Config` dataclass and the shared `CONFIG` instance. |
-| `schemas.py` | Shared dataclasses: `Author`, `Paper`, `PaperHit`, `ResearcherScore`. |
+| `schemas.py` | Shared dataclasses: `Author`, `Paper`, `PaperHit`, `ResearcherScore`, `LabeledQuery`. |
 | `interfaces.py` | Protocols `PaperSource` and `ResearcherRecommender`. |
 | `data_adapter.py` | **Week 2 integration.** Week 2 output → `Paper` objects (`Week2PaperSource`). |
 | `baseline_adapter.py` | **Week 3 integration.** Week 3 → `ResearcherRecommender` (`Week3Baseline`). |
@@ -160,6 +162,43 @@ Their scores are never compared numerically with Week 4's.
   The evaluation logs this assumption on every run; the scores measure
   agreement with TF-IDF's candidates rather than true relevance.
 
+## Results
+
+From `python -m src.week4.evaluation` on the full dataset: 60,098 indexed
+papers (the 2,539 Week 2 papers without authors are skipped), 8 benchmark
+queries, and the top 10 researchers per system.
+
+| System | P@5 | P@10 | Recall@10 | MRR | nDCG@10 | Hit@10 |
+|---|---|---|---|---|---|---|
+| Week 3 semantic (baseline) | 0.300 | 0.200 | 0.200 | 0.641 | 0.261 | 0.750 |
+| Week 3 TF-IDF | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Week 3 hybrid | 0.525 | 0.375 | 0.375 | 0.875 | 0.471 | 0.875 |
+| Week 4 `best_paper` | 0.250 | 0.200 | 0.200 | 0.348 | 0.196 | 0.750 |
+| Week 4 `average` | 0.275 | 0.188 | 0.188 | 0.348 | 0.189 | 0.750 |
+| Week 4 `top_k_average` | 0.275 | 0.188 | 0.188 | 0.348 | 0.189 | 0.750 |
+
+There is no single accuracy figure, because each system returns a ranked
+list. Precision@10, the share of the top 10 that are labelled relevant, is
+the closest equivalent.
+
+How to read these numbers:
+
+- **TF-IDF's perfect scores are an artefact.** Each query's relevant set is
+  exactly TF-IDF's own top 10, so it scores 1.0 by construction, and every
+  other system is penalised for researchers outside that list.
+- **On this benchmark, Week 4 does not improve on the Week 3 semantic
+  baseline.** It matches it on Precision@10 (0.20) and trails it on MRR
+  (0.35 vs 0.64).
+- **`best_paper` credits every co-author of a paper equally.** Each query's
+  Week 4 top 10 comes from only 3–8 distinct papers, and up to 5 researchers
+  tie at the top score (ties are ordered by ID). TF-IDF, which produced the
+  labels, scores whole researcher profiles instead, so it favours researchers
+  with many matching papers.
+- **These results are not comparable with the Week 3 team's
+  `Data/processed/calculated/model_comparison.csv`.** That file reports 1.0
+  for every Week 3 mode because its evaluation only re-orders the 10 labelled
+  TF-IDF candidates. Here, every system searches all 52,736 researchers.
+
 ## Status and next steps
 
 **Still open:**
@@ -193,13 +232,20 @@ Their scores are never compared numerically with Week 4's.
 
 ## Running
 
-From the repository root, build the index first, then evaluate:
+From the repository root, install the dependencies (Week 4 adds `chromadb`),
+build the index, then evaluate:
 
 ```bash
+uv sync
 uv run python -m src.week4.build_chromadb
 uv run python -m src.week4.evaluation
 ```
 
-Indexing all Week 2 papers takes a few minutes on an Apple Silicon GPU.
-Re-running it updates the index in place. The evaluation prints the summary
+Indexing all 60,098 papers takes about 5 minutes on an Apple Silicon GPU, and
+re-running it updates the index in place. The evaluation takes under a
+minute, most of it spent loading the Week 3 baseline. It prints the summary
 table and writes both CSV files to `Data/week4/results/`.
+
+`Data/week4/chroma/` (about 1.2 GB) is generated, so don't commit or submit
+it; rebuild it with the command above. `Data/week4/results/` holds the small
+result files worth keeping.
