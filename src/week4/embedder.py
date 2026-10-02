@@ -1,0 +1,125 @@
+"""Single entry point for turning text into embedding vectors.
+
+Wraps Sentence Transformers so no other Week 4 module imports it directly.
+The same class serves both indexing (many documents) and search (one query),
+which guarantees papers and queries are embedded with the same model and
+normalization. It knows nothing about ChromaDB; it only returns vectors.
+"""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+import numpy as np
+
+from src.week4.config import DeviceName
+
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
+
+logger = logging.getLogger(__name__)
+
+
+class Embedder:
+    """Lazily loaded Sentence Transformers model producing normalized embeddings.
+
+    The model is loaded on first use and reused for every later call, so
+    creating an ``Embedder`` is cheap and importing this module does not load
+    PyTorch. All returned vectors are L2-normalized, which guarantees that
+    similarity between indexed papers and search queries is computed
+    comparably regardless of the underlying vector store.
+
+    The embedder never invents, repairs or modifies text. Deciding what to do
+    with incomplete records is the responsibility of ``data_adapter``.
+    """
+
+    def __init__(self, model_name: str, *, device: DeviceName, batch_size: int) -> None:
+        """Create an embedder without loading the model.
+
+        Args:
+            model_name: Sentence Transformers model identifier.
+            device: ``"auto"``, ``"cpu"`` or ``"cuda"``. See ``_resolve_device``.
+            batch_size: Number of texts encoded per forward pass.
+
+        Raises:
+            ValueError: If ``model_name`` is empty, ``device`` is unsupported
+                or ``batch_size`` is less than 1.
+        """
+        # TODO(Phase 3): validate arguments.
+        self._model_name = model_name
+        self._device = device
+        self._batch_size = batch_size
+        self._model: SentenceTransformer | None = None
+
+    @property
+    def model_name(self) -> str:
+        """Identifier of the model producing the embeddings."""
+        return self._model_name
+
+    def embed_documents(self, texts: Sequence[str]) -> np.ndarray:
+        """Embed many texts, encoding ``batch_size`` texts at a time.
+
+        Args:
+            texts: Texts to embed. Row ``i`` of the result corresponds to
+                ``texts[i]``.
+
+        Returns:
+            A ``float32`` array of shape ``(len(texts), embedding_dim)``.
+
+        Raises:
+            ValueError: If ``texts`` is empty or contains a blank string.
+            RuntimeError: If the model cannot be loaded.
+        """
+        # TODO(Phase 3): validate texts, then encode with the shared model
+        # using batch_size and normalize_embeddings=True.
+        raise NotImplementedError
+
+    def embed_query(self, query: str) -> np.ndarray:
+        """Embed a single search query.
+
+        Uses the same model and normalization as ``embed_documents`` so query
+        and document vectors are directly comparable.
+
+        Args:
+            query: Free-text search query.
+
+        Returns:
+            A ``float32`` array of shape ``(embedding_dim,)``.
+
+        Raises:
+            ValueError: If ``query`` is blank.
+            RuntimeError: If the model cannot be loaded.
+        """
+        # TODO(Phase 3): validate query, then encode with the shared model.
+        raise NotImplementedError
+
+    def _get_model(self) -> SentenceTransformer:
+        """Return the model, loading it on the resolved device on first call.
+
+        The ``sentence_transformers`` import happens here, not at module
+        level, to keep importing this module lightweight.
+
+        Raises:
+            RuntimeError: If the model cannot be downloaded or loaded.
+        """
+        # TODO(Phase 3): lazy import, load once into self._model, log the
+        # model name, resolved device and embedding dimension, wrap load
+        # failures in RuntimeError.
+        raise NotImplementedError
+
+    @staticmethod
+    def _resolve_device(device: DeviceName) -> str:
+        """Map the configured device to a PyTorch device string.
+
+        ``"auto"`` selects ``"cuda"`` if available, otherwise ``"mps"``
+        (Apple Silicon GPU) if available, otherwise ``"cpu"``.
+        ``"cpu"`` and ``"cuda"`` are used as given.
+
+        Raises:
+            RuntimeError: If ``"cuda"`` is requested but unavailable. An
+                explicit request is never silently downgraded to CPU.
+        """
+        # TODO(Phase 3): detect availability via torch (imported lazily).
+        raise NotImplementedError
