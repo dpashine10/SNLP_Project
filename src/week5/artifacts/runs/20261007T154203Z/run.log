@@ -1,0 +1,14 @@
+2026-10-07 21:12:03,858 INFO src.week5.evaluation.frozen_run: Run 20261007T154203Z started; writing to src/week5/artifacts/runs/20261007T154203Z.
+2026-10-07 21:12:06,010 WARNING src.week4.data_adapter: Week 2 papers loaded with skips (records read: 62,637, papers yielded: 60,098, kept without abstract: 21,751, skipped (no authors): 2,539).
+2026-10-07 21:12:09,098 WARNING huggingface_hub.utils._http: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-07 21:12:28,697 INFO src.week4.baseline_adapter: Loaded the Week 3 baseline from src.week2.pipeline.
+2026-10-07 21:12:29,083 INFO src.week5.evaluation.frozen_run: Week 3 (semantic) evaluated in 23.1s.
+2026-10-07 21:12:29,432 INFO src.week5.evaluation.frozen_run: Week 3 (tfidf) evaluated in 0.3s.
+2026-10-07 21:12:29,844 INFO src.week5.evaluation.frozen_run: Week 3 (hybrid) evaluated in 0.4s.
+2026-10-07 21:12:35,442 INFO src.week4.embedder: Loaded embedding model all-MiniLM-L6-v2 on mps (dimension 384).
+2026-10-07 21:12:35,753 INFO src.week5.evaluation.frozen_run: Week 4 (best_paper) evaluated in 5.9s.
+2026-10-07 21:12:41,128 INFO src.week4.embedder: Loaded embedding model all-MiniLM-L6-v2 on mps (dimension 384).
+2026-10-07 21:12:41,239 INFO src.week5.evaluation.frozen_run: Week 4 (average) evaluated in 5.5s.
+2026-10-07 21:12:46,694 INFO src.week4.embedder: Loaded embedding model all-MiniLM-L6-v2 on mps (dimension 384).
+2026-10-07 21:12:46,806 INFO src.week5.evaluation.frozen_run: Week 4 (top_k_average) evaluated in 5.6s.
+2026-10-07 21:12:46,824 INFO src.week5.evaluation.frozen_run: Run 20261007T154203Z finished.

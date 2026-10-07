@@ -1,0 +1,19 @@
+{
+  "compared_utc": "2026-10-07T15:44:14.573643+00:00",
+  "run_a": "src/week5/artifacts/runs/20261007T154203Z",
+  "run_b": "src/week5/artifacts/runs/20261007T154330Z",
+  "same_index": true,
+  "index_unchanged_within_each_run": true,
+  "aggregate_metrics_identical": true,
+  "rankings_identical": true,
+  "differing_rankings": [],
+  "max_score_difference": 0.0,
+  "files_byte_identical": {
+    "metrics_summary.csv": true,
+    "metrics_summary.json": true,
+    "per_query_metrics.csv": true,
+    "rankings_evidence.json": true,
+    "candidate_pool.csv": true
+  },
+  "deterministic": true
+}

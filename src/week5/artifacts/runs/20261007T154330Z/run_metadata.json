@@ -1,0 +1,136 @@
+{
+  "run_id": "20261007T154330Z",
+  "command": "python -m src.week5.scripts.freeze_evaluation",
+  "started_utc": "2026-10-07T15:43:30.179055+00:00",
+  "finished_utc": "2026-10-07T15:44:13.844096+00:00",
+  "systems": [
+    "Week 3 (semantic)",
+    "Week 3 (tfidf)",
+    "Week 3 (hybrid)",
+    "Week 4 (best_paper)",
+    "Week 4 (average)",
+    "Week 4 (top_k_average)"
+  ],
+  "index_before": {
+    "path": "Data/week4/chroma",
+    "collection": "iitb_research_papers",
+    "papers": 60098,
+    "sqlite_bytes": 1155530752,
+    "vector_segment_bytes": 106529608,
+    "vector_segment_modified_utc": "2026-10-02T19:45:07.802720+00:00"
+  },
+  "index_after": {
+    "path": "Data/week4/chroma",
+    "collection": "iitb_research_papers",
+    "papers": 60098,
+    "sqlite_bytes": 1155530752,
+    "vector_segment_bytes": 106529608,
+    "vector_segment_modified_utc": "2026-10-02T19:45:07.802720+00:00"
+  },
+  "index_unchanged_during_run": true,
+  "matches_week4_results": {
+    "available": true,
+    "path": "Data/week4/results/summary.csv",
+    "identical": true
+  },
+  "environment": {
+    "captured_at_utc": "2026-10-07T15:43:30.184634+00:00",
+    "git": {
+      "commit": "44ff78f8eae9926b47182a586bff1fd89dd91e8e",
+      "uncommitted_changes": 2
+    },
+    "python": "3.12.13",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "packages": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.6",
+      "scikit-learn": "1.9.1",
+      "sentence-transformers": "6.1.0",
+      "transformers": "5.17.0",
+      "torch": "2.14.0",
+      "chromadb": "1.5.9"
+    },
+    "device": {
+      "configured": "auto",
+      "cuda_available": false,
+      "mps_available": true
+    },
+    "dataset": {
+      "papers": 62637,
+      "researchers": 52736,
+      "papers_indexable": 60098,
+      "papers_skipped": 2539
+    },
+    "index": {
+      "path": "Data/week4/chroma",
+      "collection": "iitb_research_papers",
+      "papers": 60098,
+      "sqlite_bytes": 1155530752,
+      "vector_segment_bytes": 106529608,
+      "vector_segment_modified_utc": "2026-10-02T19:45:07.802720+00:00"
+    },
+    "retrieval": {
+      "embedding_model": "all-MiniLM-L6-v2",
+      "distance_metric": "cosine",
+      "papers_retrieved_per_query": 100,
+      "researchers_evaluated_per_query": 10,
+      "top_k_average_k": 3
+    },
+    "systems": {
+      "week3_module": "src.week2.pipeline.ResearchDiscoveryPipeline",
+      "week3_embedding_model": "all-MiniLM-L6-v2",
+      "week3_modes": [
+        "semantic",
+        "tfidf",
+        "hybrid"
+      ],
+      "week3_hybrid_alpha": 0.7,
+      "week3_embeddings": [
+        "Data/processed/paper_embeddings.npz",
+        "Data/processed/researcher_embeddings.npz"
+      ],
+      "week4_strategies": [
+        "best_paper",
+        "average",
+        "top_k_average"
+      ]
+    },
+    "benchmark": {
+      "labels_path": "Data/processed/calculated/evaluation_candidates_labeled.csv",
+      "origin": "src/week2/create_evaluation_set.py (TF-IDF top 10 per query)",
+      "queries": 8,
+      "labelled_rows": 80,
+      "rows_labelled_relevant": 80,
+      "relevant_per_query": {
+        "natural language processing": 10,
+        "machine learning": 10,
+        "transformer based text classification": 10,
+        "information retrieval": 10,
+        "knowledge graphs": 10,
+        "battery materials and energy storage": 10,
+        "quantum computing": 10,
+        "deep learning neural networks": 10
+      }
+    },
+    "metrics": [
+      "precision@5",
+      "precision@10",
+      "recall@10",
+      "mrr",
+      "ndcg@10",
+      "hit@10"
+    ],
+    "seeds": {
+      "week4_config_random_seed": 42,
+      "note": "No retrieval, ranking or evaluation step uses randomness; the seed is recorded for completeness."
+    }
+  },
+  "files": [
+    "metrics_summary.csv",
+    "metrics_summary.json",
+    "per_query_metrics.csv",
+    "rankings_evidence.json",
+    "candidate_pool.csv",
+    "run.log"
+  ]
+}

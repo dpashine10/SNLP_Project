@@ -1,0 +1,62 @@
+[
+  {
+    "system": "Week 3 (semantic)",
+    "queries": 8,
+    "precision@5": 0.3,
+    "precision@10": 0.2,
+    "recall@10": 0.2,
+    "mrr": 0.6406,
+    "ndcg@10": 0.2609,
+    "hit@10": 0.75
+  },
+  {
+    "system": "Week 3 (tfidf)",
+    "queries": 8,
+    "precision@5": 1.0,
+    "precision@10": 1.0,
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "hit@10": 1.0
+  },
+  {
+    "system": "Week 3 (hybrid)",
+    "queries": 8,
+    "precision@5": 0.525,
+    "precision@10": 0.375,
+    "recall@10": 0.375,
+    "mrr": 0.875,
+    "ndcg@10": 0.4712,
+    "hit@10": 0.875
+  },
+  {
+    "system": "Week 4 (best_paper)",
+    "queries": 8,
+    "precision@5": 0.25,
+    "precision@10": 0.2,
+    "recall@10": 0.2,
+    "mrr": 0.3479,
+    "ndcg@10": 0.1958,
+    "hit@10": 0.75
+  },
+  {
+    "system": "Week 4 (average)",
+    "queries": 8,
+    "precision@5": 0.275,
+    "precision@10": 0.1875,
+    "recall@10": 0.1875,
+    "mrr": 0.3479,
+    "ndcg@10": 0.189,
+    "hit@10": 0.75
+  },
+  {
+    "system": "Week 4 (top_k_average)",
+    "queries": 8,
+    "precision@5": 0.275,
+    "precision@10": 0.1875,
+    "recall@10": 0.1875,
+    "mrr": 0.3479,
+    "ndcg@10": 0.189,
+    "hit@10": 0.75
+  }
+]
