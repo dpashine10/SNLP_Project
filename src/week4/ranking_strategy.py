@@ -9,6 +9,7 @@ Strategy objects are constructed only through ``create_strategy``.
 """
 
 import heapq
+import math
 import statistics
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
@@ -88,7 +89,8 @@ class TopKAverageStrategy(RankingStrategy):
     specialists against researchers with several relevant papers.
     """
 
-    name = "top_k_average"
+    # Annotated so the author-discount subclass may use its own name.
+    name: ClassVar[RankingStrategyName] = "top_k_average"
 
     def __init__(self, k: int) -> None:
         """Create the strategy.
@@ -105,6 +107,26 @@ class TopKAverageStrategy(RankingStrategy):
 
     def score(self, hits: Sequence[PaperHit]) -> float:
         return statistics.fmean(heapq.nlargest(self._k, _hit_scores(hits)))
+
+
+class TopKAverageAuthorDiscountStrategy(TopKAverageStrategy):
+    """Top-k average after discounting each hit by its paper's author count.
+
+    A paper with ``n`` authors contributes ``score / sqrt(n)`` to each of its
+    co-authors, so one large-team paper no longer lifts many co-authors to a
+    high score; single-author papers are unchanged. Co-authors of the same
+    paper still receive equal credit for it. Added in Week 5 after the error
+    analysis found co-author tie inflation.
+    """
+
+    name = "top_k_average_author_discount"
+
+    def score(self, hits: Sequence[PaperHit]) -> float:
+        discounted = [
+            score / math.sqrt(max(len(hit.paper.authors), 1))
+            for score, hit in zip(_hit_scores(hits), hits, strict=True)
+        ]
+        return statistics.fmean(heapq.nlargest(self._k, discounted))
 
 
 # TODO(future): weighting may include publication recency, citation
@@ -129,6 +151,9 @@ _STRATEGY_REGISTRY: dict[RankingStrategyName, _StrategyBuilder] = {
     "best_paper": lambda config: BestPaperStrategy(),
     "average": lambda config: AverageStrategy(),
     "top_k_average": lambda config: TopKAverageStrategy(k=config.strategy_top_k),
+    "top_k_average_author_discount": lambda config: TopKAverageAuthorDiscountStrategy(
+        k=config.strategy_top_k
+    ),
     "weighted": lambda config: WeightedStrategy(),
 }
 

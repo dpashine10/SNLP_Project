@@ -14,6 +14,9 @@ which is formatted slightly differently from the text Week 3 embedded.)
 > 2's papers, recommends researchers with three ranking strategies, and
 > compares them against the Week 3 baseline. Only the `weighted` strategy is
 > still a placeholder (its formula is not decided), so it is not evaluated.
+> Week 5 added a fourth strategy, `top_k_average_author_discount`, which it
+> evaluates separately (`src/week5/docs/phase2_status.md`). Week 4's own
+> evaluation still runs the original three.
 
 ## Design rules
 
@@ -46,7 +49,7 @@ which is formatted slightly differently from the text Week 3 embedded.)
 | `embedder.py` | Text → normalized vectors. Wraps Sentence Transformers; device `auto` tries CUDA, then Apple MPS, then CPU. |
 | `vector_store.py` | The only module that knows ChromaDB: persistent storage, upserts, search, model check. |
 | `retriever.py` | Query → `PaperHit`s via the embedder and vector store. Orchestration only. |
-| `ranking_strategy.py` | Scores one researcher from their hits: `best_paper`, `average`, `top_k_average`, `weighted` (placeholder). |
+| `ranking_strategy.py` | Scores one researcher from their hits: `best_paper`, `average`, `top_k_average`, `top_k_average_author_discount` (added in Week 5), `weighted` (placeholder, never evaluated). |
 | `aggregator.py` | Groups hits by author, applies the strategy, sorts and truncates. |
 | `week4_pipeline.py` | `Week4Pipeline` (retriever → aggregator) and `build_week4_pipeline(config)`, the composition root. |
 | `build_chromadb.py` | Entry point: streams papers into the index in batches. |
@@ -193,7 +196,9 @@ How to read these numbers:
   Week 4 top 10 comes from only 3–8 distinct papers, and up to 5 researchers
   tie at the top score (ties are ordered by ID). TF-IDF, which produced the
   labels, scores whole researcher profiles instead, so it favours researchers
-  with many matching papers.
+  with many matching papers. Week 5's `top_k_average_author_discount`
+  divides each hit by the square root of the paper's author count to address
+  this.
 - **These results are not comparable with the Week 3 team's
   `Data/processed/calculated/model_comparison.csv`.** That file reports 1.0
   for every Week 3 mode because its evaluation only re-orders the 10 labelled
@@ -207,7 +212,7 @@ How to read these numbers:
 |---|---|
 | `evaluation.py` | Decide how to handle pooling bias in Week 2's benchmark. |
 | root `.gitignore` | Add `Data/week4/chroma/` so the built index is not committed. |
-| `ranking_strategy.py` | Define the `weighted` formula, or remove the strategy. |
+| `ranking_strategy.py` | Define the `weighted` formula, or remove the strategy. It is excluded from all evaluation until then. |
 
 **Possible future work (not planned).**
 - A shared `factories.py` for component construction.

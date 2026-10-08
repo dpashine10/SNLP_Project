@@ -1,0 +1,1542 @@
+[
+  {
+    "query_id": "q01",
+    "query": "natural language processing",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5009154801",
+      "https://openalex.org/A5014853013",
+      "https://openalex.org/A5093952766",
+      "https://openalex.org/A5113245158",
+      "https://openalex.org/A5114513743",
+      "https://openalex.org/A5119877142",
+      "https://openalex.org/A5125683501",
+      "https://openalex.org/A5130408274",
+      "https://openalex.org/A5144016408",
+      "https://openalex.org/A5150907231"
+    ],
+    "metrics": {
+      "precision@5": 0.2,
+      "precision@10": 0.1,
+      "recall@10": 0.1,
+      "mrr": 0.5,
+      "ndcg@10": 0.13886244387355454,
+      "hit@10": 1.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5133692040",
+        "author_name": "R S Anand",
+        "score": 0.5698487758636475,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7154507612",
+            "title": "Automated Profile Parsing and Skill Matching Using Named Entity Recognition and Natural Language Processing Techniques",
+            "publication_year": 2026,
+            "score": 0.5698487758636475
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5150907231",
+        "author_name": "Srinivas V.",
+        "score": 0.5551126599311829,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7212020534",
+            "title": "NATURAL LANGUAGE PROCESSING: RECENT DEVELOPMENTS, TRENDS, AND DIFFICULTIES",
+            "publication_year": 2026,
+            "score": 0.5551126599311829
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5123774240",
+        "author_name": "S. Suma Christal Mary",
+        "score": 0.48686718940734863,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7125602719",
+            "title": "Neuro-Symbolic AI Framework for Contextual Understanding and Interpretation of Ambiguities in English Texts",
+            "publication_year": 2025,
+            "score": 0.48686718940734863
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5058310456",
+        "author_name": "M. Venkatadri",
+        "score": 0.48234158754348755,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4410253368",
+            "title": "A Novel Automatic Text Document Classification Using Learning based Text Classification(LbTC) Approach",
+            "publication_year": 2025,
+            "score": 0.48234158754348755
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5111353058",
+        "author_name": "Shivani Naik",
+        "score": 0.4740474820137024,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4403122359",
+            "title": "Analysing Public Sentiment Towards Climate Change Using Natural Language Processing",
+            "publication_year": 2024,
+            "score": 0.4740474820137024
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5100775603",
+        "author_name": "Saurav Verma",
+        "score": 0.46419239044189453,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4409082178",
+            "title": "DocSense: A Natural Language-Powered Search and Summarization Framework",
+            "publication_year": 2025,
+            "score": 0.46419239044189453
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5146871318",
+        "author_name": "Arnab Bhattacharya",
+        "score": 0.4638836979866028,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7169052104",
+            "title": "Thesis Proposal: A Normalization-First Framework for Sound, Complete, and Utility-Ready Open Information Extraction",
+            "publication_year": 2026,
+            "score": 0.4638836979866028
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5020991141",
+        "author_name": "Animesh Mukherjee",
+        "score": 0.4569132328033447,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4415651061",
+            "title": "Language Models for Standardising Clinical Notes and Information Extraction in Addiction Psychiatry—An Empirical Study",
+            "publication_year": 2025,
+            "score": 0.4569132328033447
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5046357040",
+        "author_name": "Pooja Rai",
+        "score": 0.4542958736419678,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4412593995",
+            "title": "Mapping of the Nepali Dependency Treebank to Universal Dependencies",
+            "publication_year": 2025,
+            "score": 0.4542958736419678
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5121818825",
+        "author_name": "Amit Kumar Jaiswal",
+        "score": 0.4480854868888855,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7122474340",
+            "title": "Prompt Recovery for Misinformation Detection at FIRE 2025",
+            "publication_year": 2025,
+            "score": 0.4480854868888855
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q02",
+    "query": "machine learning",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5013244399",
+      "https://openalex.org/A5114909813",
+      "https://openalex.org/A5132735707",
+      "https://openalex.org/A5132746823",
+      "https://openalex.org/A5132751919",
+      "https://openalex.org/A5134187143",
+      "https://openalex.org/A5135908722",
+      "https://openalex.org/A5146355848",
+      "https://openalex.org/A5153267977",
+      "https://openalex.org/A5153291250"
+    ],
+    "metrics": {
+      "precision@5": 0.0,
+      "precision@10": 0.0,
+      "recall@10": 0.0,
+      "mrr": 0.0,
+      "ndcg@10": 0.0,
+      "hit@10": 0.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5138529718",
+        "author_name": "Noman Ali",
+        "score": 0.5517444014549255,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7164535562",
+            "title": "Machine learning introduction",
+            "publication_year": 2026,
+            "score": 0.5517444014549255
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5109084871",
+        "author_name": "Y. Sujan",
+        "score": 0.5164814591407776,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7160632694",
+            "title": "Prediction of Crop Analysis Using Machine Learning Algorithms",
+            "publication_year": 2026,
+            "score": 0.5164814591407776
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5122019446",
+        "author_name": "Satish Gajawada",
+        "score": 0.5051588416099548,
+        "labelled_relevant": false,
+        "matched_papers": 2,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7121253966",
+            "title": "Excellent Artificial Intelligence (EAI)",
+            "publication_year": 2026,
+            "score": 0.5051588416099548
+          },
+          {
+            "paper_id": "https://openalex.org/W7121367732",
+            "title": "Excellent Artificial Intelligence (EAI)",
+            "publication_year": 2026,
+            "score": 0.5051588416099548
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5043324286",
+        "author_name": "Bharati Panigrahi",
+        "score": 0.5037698149681091,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4318559729",
+            "title": "A Machine Learning-Based Comparative Approach to Predict the Crop Yield Using Supervised Learning With Regression Models",
+            "publication_year": 2023,
+            "score": 0.5037698149681091
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5026538801",
+        "author_name": "Saumya Pailwan",
+        "score": 0.49628376960754395,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4391769806",
+            "title": "Learning Cost-Adjusted Predictive Models with Margin-Based Framework",
+            "publication_year": 2024,
+            "score": 0.49628376960754395
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5020037048",
+        "author_name": "Gajendra K. Vishwakarma",
+        "score": 0.48965346813201904,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4413040154",
+            "title": "Machine learning models for analysis and prediction of optimal egg production",
+            "publication_year": 2025,
+            "score": 0.48965346813201904
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5137902589",
+        "author_name": "Soumya Shrivastava",
+        "score": 0.48752570152282715,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7163509509",
+            "title": "Optimizing Crop Yield Predictions through Machine Learning Models",
+            "publication_year": 2025,
+            "score": 0.48752570152282715
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5129053446",
+        "author_name": "Jayanta Bhattacharya",
+        "score": 0.48642051219940186,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7128163669",
+            "title": "Gold and Silver Price Trends in 2026, ANN trained on 2021-25 data",
+            "publication_year": 2026,
+            "score": 0.48642051219940186
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5132643256",
+        "author_name": "Himanshu mishra",
+        "score": 0.48370909690856934,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7203679854",
+            "title": "Mathematical Foundations of Machine Learning Algorithms for Signal Processing Applications",
+            "publication_year": 2026,
+            "score": 0.48370909690856934
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5063557387",
+        "author_name": "Mahroosh Banday",
+        "score": 0.4778703451156616,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7160390702",
+            "title": "Bridging Molecular Features and Solubility: A Machine Learning Approach for Prediction",
+            "publication_year": 2026,
+            "score": 0.4778703451156616
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q03",
+    "query": "transformer based text classification",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5002616766",
+      "https://openalex.org/A5004572241",
+      "https://openalex.org/A5058310456",
+      "https://openalex.org/A5068445475",
+      "https://openalex.org/A5102712364",
+      "https://openalex.org/A5106817233",
+      "https://openalex.org/A5116372781",
+      "https://openalex.org/A5135959604",
+      "https://openalex.org/A5138150182",
+      "https://openalex.org/A5139772422"
+    ],
+    "metrics": {
+      "precision@5": 0.2,
+      "precision@10": 0.2,
+      "recall@10": 0.2,
+      "mrr": 1.0,
+      "ndcg@10": 0.28371255449703187,
+      "hit@10": 1.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5058310456",
+        "author_name": "M. Venkatadri",
+        "score": 0.5919281840324402,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4410253368",
+            "title": "A Novel Automatic Text Document Classification Using Learning based Text Classification(LbTC) Approach",
+            "publication_year": 2025,
+            "score": 0.5919281840324402
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5147382719",
+        "author_name": "Chaitanya Patil",
+        "score": 0.5821179747581482,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7203687871",
+            "title": "An Empirical Comparison of Positional Encoding Methods in a Small Character-Level Transformer",
+            "publication_year": 2026,
+            "score": 0.5821179747581482
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5050110349",
+        "author_name": "B. Aarthi",
+        "score": 0.5817509293556213,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7162758677",
+            "title": "Automated email processing via a transformer based framework for open-set email categorization, abstractive summarization and sentiment analysis",
+            "publication_year": 2026,
+            "score": 0.5817509293556213
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5029014570",
+        "author_name": "M. Diviya",
+        "score": 0.5252875089645386,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7169849520",
+            "title": "ALiBERT: Transformer-Based NLP and Hybrid Ensemble Learning Framework for Predicting Material Properties",
+            "publication_year": 2026,
+            "score": 0.5252875089645386
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5128066772",
+        "author_name": "J. H. Jaseema Yasmin",
+        "score": 0.5100216269493103,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7133542028",
+            "title": "Hybrid Transformer-Driven Healthcare: BERT—T5 Model for Precision Diagnosis and Adaptive Care Recommendations",
+            "publication_year": 2026,
+            "score": 0.5100216269493103
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5049891917",
+        "author_name": "Binesh Nair",
+        "score": 0.5047937631607056,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4387571786",
+            "title": "Predicting document novelty: an unsupervised learning approach",
+            "publication_year": 2023,
+            "score": 0.5047937631607056
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5113279769",
+        "author_name": "Sanjaya Kumar Lenka",
+        "score": 0.5036801695823669,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7166842621",
+            "title": "IReLIIT(BHU) at SemEval-2026 Task 9: Detecting Multilingual, Multicultural and Multievent Online Polarization",
+            "publication_year": 2026,
+            "score": 0.5036801695823669
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5039364567",
+        "author_name": "Debanga Raj Neog",
+        "score": 0.48773443698883057,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7124694545",
+            "title": "An explainable framework for bias identification in text using transformer-based generative adversarial networks",
+            "publication_year": 2026,
+            "score": 0.48773443698883057
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5071792143",
+        "author_name": "Koustav Rudra",
+        "score": 0.4805656671524048,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7139969522",
+            "title": "Cross-Modal Rationale Transfer for Explainable Humanitarian Classification on Social Media",
+            "publication_year": 2026,
+            "score": 0.4805656671524048
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5102712364",
+        "author_name": "Sayak Mondal",
+        "score": 0.47651076316833496,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7204627721",
+            "title": "HyperSpectrum geometry: a Riemannian hyperspherical framework for curvature-adaptive text classification",
+            "publication_year": 2026,
+            "score": 0.47651076316833496
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q04",
+    "query": "information retrieval",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5048824155",
+      "https://openalex.org/A5089722525",
+      "https://openalex.org/A5102803327",
+      "https://openalex.org/A5123467650",
+      "https://openalex.org/A5123537960",
+      "https://openalex.org/A5133404468",
+      "https://openalex.org/A5135494821",
+      "https://openalex.org/A5153034353",
+      "https://openalex.org/A5153104897",
+      "https://openalex.org/A5153172603"
+    ],
+    "metrics": {
+      "precision@5": 0.2,
+      "precision@10": 0.1,
+      "recall@10": 0.1,
+      "mrr": 0.25,
+      "ndcg@10": 0.09478836436955078,
+      "hit@10": 1.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5111567741",
+        "author_name": "Rishita Agarwal",
+        "score": 0.6328425407409668,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4415939125",
+            "title": "REaR : Retrieve, Expand and Refine for Effective Multitable Retrieval",
+            "publication_year": 2026,
+            "score": 0.6328425407409668
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5038983474",
+        "author_name": "Akanksha Jaiswal",
+        "score": 0.5677023530006409,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4413160312",
+            "title": "Information Retrieval Using Large Language Model for Various Alloys",
+            "publication_year": 2025,
+            "score": 0.5677023530006409
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5093749557",
+        "author_name": "Kushagra Golash",
+        "score": 0.5397588014602661,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7154485295",
+            "title": "Hierarchical Retrieval-Augmented Generation for Financial Information Systems: A Comparative Study of Soft and Hierarchical Retrieval Approaches",
+            "publication_year": 2026,
+            "score": 0.5397588014602661
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5135494821",
+        "author_name": "Mayank Singh",
+        "score": 0.5171833634376526,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7167804008",
+            "title": "Optimizing Retrieval in RAG Systems with Reinforcement Learning: A Trade-Off Between Quality and Cost",
+            "publication_year": 2026,
+            "score": 0.5171833634376526
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5046581906",
+        "author_name": "Suraj Shetiya",
+        "score": 0.5006845593452454,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4417163358",
+            "title": "Random-Access Ranked Retrieval and Similarity Search",
+            "publication_year": 2026,
+            "score": 0.5006845593452454
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5100775603",
+        "author_name": "Saurav Verma",
+        "score": 0.4925346374511719,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4409082178",
+            "title": "DocSense: A Natural Language-Powered Search and Summarization Framework",
+            "publication_year": 2025,
+            "score": 0.4925346374511719
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5152138841",
+        "author_name": "Santosh Biradar",
+        "score": 0.468360960483551,
+        "labelled_relevant": false,
+        "matched_papers": 2,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7213589560",
+            "title": "Optimising E-Resource Access and Usage in Libraries through Effective Tools and Stategies",
+            "publication_year": 2026,
+            "score": 0.468360960483551
+          },
+          {
+            "paper_id": "https://openalex.org/W7213608203",
+            "title": "Optimising E-Resource Access and Usage in Libraries through Effective Tools and Stategies",
+            "publication_year": 2026,
+            "score": 0.468360960483551
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5078569384",
+        "author_name": "Arup Kumar Pal",
+        "score": 0.4634939432144165,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4400619936",
+            "title": "CBIF-M: A content-based image filtering and retrieval scheme using multi-classifier filtering framework",
+            "publication_year": 2024,
+            "score": 0.4634939432144165
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5056125162",
+        "author_name": "Rocktim Jyoti Das",
+        "score": 0.45181727409362793,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4413921946",
+            "title": "Overview of ImageCLEF 2025: Multimedia Retrieval in Medical, Social Media and Content Recommendation Applications",
+            "publication_year": 2025,
+            "score": 0.45181727409362793
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5049891917",
+        "author_name": "Binesh Nair",
+        "score": 0.44941842555999756,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4387571786",
+            "title": "Predicting document novelty: an unsupervised learning approach",
+            "publication_year": 2023,
+            "score": 0.44941842555999756
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q05",
+    "query": "knowledge graphs",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5024803391",
+      "https://openalex.org/A5042323821",
+      "https://openalex.org/A5055257668",
+      "https://openalex.org/A5113193777",
+      "https://openalex.org/A5125892436",
+      "https://openalex.org/A5125961608",
+      "https://openalex.org/A5130369180",
+      "https://openalex.org/A5130382824",
+      "https://openalex.org/A5140967618",
+      "https://openalex.org/A5140981648"
+    ],
+    "metrics": {
+      "precision@5": 0.0,
+      "precision@10": 0.0,
+      "recall@10": 0.0,
+      "mrr": 0.0,
+      "ndcg@10": 0.0,
+      "hit@10": 0.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5073663123",
+        "author_name": "Radhakrishnan Delhibabu",
+        "score": 0.573861837387085,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7160715439",
+            "title": "Multi-hop reasoning model for knowledge graph completion on the example of the telecommunications domain",
+            "publication_year": 2026,
+            "score": 0.573861837387085
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5114043407",
+        "author_name": "A. Balasubramaniam",
+        "score": 0.4955862760543823,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7137369538",
+            "title": "GONE: Structural Knowledge Unlearning via Neighborhood-Expanded Distribution Shaping",
+            "publication_year": 2026,
+            "score": 0.4955862760543823
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5140723763",
+        "author_name": "Nipun Misra",
+        "score": 0.4540691375732422,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7168275511",
+            "title": "KGCQual: An Interpretable Framework for Evaluating the Knowledge Graph Construction Quality from Text",
+            "publication_year": 2026,
+            "score": 0.4540691375732422
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5017642327",
+        "author_name": "Rohit Kumar",
+        "score": 0.4494072198867798,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4417287728",
+            "title": "Efficient graph algorithms",
+            "publication_year": 2025,
+            "score": 0.4494072198867798
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5086242686",
+        "author_name": "Santanu Chaudhury",
+        "score": 0.43407368659973145,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7172019412",
+            "title": "Knowledge-Based Metaverse for Crafts",
+            "publication_year": 2025,
+            "score": 0.43407368659973145
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5130859959",
+        "author_name": "Ashwin Ganesan",
+        "score": 0.4337189197540283,
+        "labelled_relevant": false,
+        "matched_papers": 4,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7147235233",
+            "title": "A Tight Expressivity Hierarchy for GNN-Based Entity Resolution in Master Data Management",
+            "publication_year": 2026,
+            "score": 0.4343165159225464
+          },
+          {
+            "paper_id": "https://openalex.org/W7148177054",
+            "title": "A Tight Expressivity Hierarchy for GNN-Based Entity Resolution in Master Data Management",
+            "publication_year": 2026,
+            "score": 0.4343165159225464
+          },
+          {
+            "paper_id": "https://openalex.org/W7141845930",
+            "title": "A Tight Expressivity Hierarchy for GNN-Based Entity Resolution in Master Data Management",
+            "publication_year": 2026,
+            "score": 0.4325237274169922
+          },
+          {
+            "paper_id": "https://openalex.org/W7142058061",
+            "title": "A Tight Expressivity Hierarchy for GNN-Based Entity Resolution in Master Data Management",
+            "publication_year": 2026,
+            "score": 0.4325237274169922
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5090002376",
+        "author_name": "Shreyas Gupta",
+        "score": 0.4277055263519287,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7151741838",
+            "title": "On Bisimulation in Modal Logics for Games on Graphs: An Algorithmic Study",
+            "publication_year": 2026,
+            "score": 0.4277055263519287
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5130669130",
+        "author_name": "Parijat Roy",
+        "score": 0.42680519819259644,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7140829471",
+            "title": "Harnessing Graph Databases- A Comparative Analysis of Relationship Centric Models and Practical Applications",
+            "publication_year": 2025,
+            "score": 0.42680519819259644
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5003106857",
+        "author_name": "Vidya Sagar Sharma",
+        "score": 0.42544591426849365,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7134959967",
+            "title": "Learning Bayesian and Markov Networks with an Unreliable Oracle",
+            "publication_year": 2026,
+            "score": 0.42544591426849365
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5120172575",
+        "author_name": "C J Manojshyaam",
+        "score": 0.4189140796661377,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4415657067",
+            "title": "Quo Vadis, Artificial Intelligence? A Neuro-Symbolic Approach to Artificial Intuition",
+            "publication_year": 2025,
+            "score": 0.4189140796661377
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q06",
+    "query": "battery materials and energy storage",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5000445700",
+      "https://openalex.org/A5032955749",
+      "https://openalex.org/A5041578390",
+      "https://openalex.org/A5043388374",
+      "https://openalex.org/A5045688056",
+      "https://openalex.org/A5057774343",
+      "https://openalex.org/A5093558037",
+      "https://openalex.org/A5102718868",
+      "https://openalex.org/A5139124949",
+      "https://openalex.org/A5147076437"
+    ],
+    "metrics": {
+      "precision@5": 0.4,
+      "precision@10": 0.3,
+      "recall@10": 0.3,
+      "mrr": 0.5,
+      "ndcg@10": 0.3222722491219547,
+      "hit@10": 1.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5103406770",
+        "author_name": "Santanu Das",
+        "score": 0.7515971064567566,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4414040393",
+            "title": "Special issue on “Measurements in advanced materials-based energy generation, storage and integrated devices”",
+            "publication_year": 2025,
+            "score": 0.7515971064567566
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5041578390",
+        "author_name": "Srinivasan Ramakrishnan",
+        "score": 0.6823475360870361,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7131822862",
+            "title": "Battery Research at IIT Bombay: From Fundamental Electrochemistry to Scalable Energy Storage",
+            "publication_year": 2026,
+            "score": 0.6823475360870361
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5043388374",
+        "author_name": "Mathew Chethipuzha",
+        "score": 0.6805277466773987,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7118009123",
+            "title": "Nanomaterials and Composite/Hybrids in Energy Storage Systems",
+            "publication_year": 2026,
+            "score": 0.6805277466773987
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5018491545",
+        "author_name": "Vijay Kumar Srivastava",
+        "score": 0.6540509462356567,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7118220449",
+            "title": "Carbon-based nanocomposites for all-solid-state rechargeable energy storage devices",
+            "publication_year": 2026,
+            "score": 0.6540509462356567
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5062119928",
+        "author_name": "Praveen Kumar",
+        "score": 0.642419695854187,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7118164685",
+            "title": "Electric vehicle battery recycling for sustainability: environmental and water benefits",
+            "publication_year": 2026,
+            "score": 0.642419695854187
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5085192979",
+        "author_name": "Sourav Bag",
+        "score": 0.6409754157066345,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4413109830",
+            "title": "Supercapacitors for energy storage: Fundamentals and materials design",
+            "publication_year": 2025,
+            "score": 0.6409754157066345
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5139124949",
+        "author_name": "Himanshu Jain",
+        "score": 0.6351032257080078,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7213434527",
+            "title": "Battery Energy Storage for Renewable Energy Penetration in India",
+            "publication_year": 2026,
+            "score": 0.6351032257080078
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5057457973",
+        "author_name": "Rhythm Singh",
+        "score": 0.6313778460025787,
+        "labelled_relevant": false,
+        "matched_papers": 2,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7164378656",
+            "title": "Modelling energy storage potential of retired-EV batteries in India under policy-driven growth",
+            "publication_year": 2026,
+            "score": 0.6391565799713135
+          },
+          {
+            "paper_id": "https://openalex.org/W7164027052",
+            "title": "Modelling the Energy Storage Potential of Retired EV Batteries in India under Policy-Driven Growth",
+            "publication_year": 2026,
+            "score": 0.623599112033844
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5014504026",
+        "author_name": "Nallin Sharma",
+        "score": 0.6252418756484985,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7169888101",
+            "title": "Applications of MXene quantum dots in energy storage",
+            "publication_year": 2026,
+            "score": 0.6252418756484985
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5041416315",
+        "author_name": "Shail Upadhyay",
+        "score": 0.6195476055145264,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4410321498",
+            "title": "The Rise of Supercapacitors in a Battery-Centric World: An Opinion",
+            "publication_year": 2025,
+            "score": 0.6195476055145264
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q07",
+    "query": "quantum computing",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5000267786",
+      "https://openalex.org/A5001597665",
+      "https://openalex.org/A5032986021",
+      "https://openalex.org/A5092651283",
+      "https://openalex.org/A5104182920",
+      "https://openalex.org/A5119739808",
+      "https://openalex.org/A5126611619",
+      "https://openalex.org/A5130347560",
+      "https://openalex.org/A5137075281",
+      "https://openalex.org/A5140905820"
+    ],
+    "metrics": {
+      "precision@5": 0.2,
+      "precision@10": 0.1,
+      "recall@10": 0.1,
+      "mrr": 0.5,
+      "ndcg@10": 0.13886244387355454,
+      "hit@10": 1.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5016832886",
+        "author_name": "Vidyapati Kumar",
+        "score": 0.7500826120376587,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4416364557",
+            "title": "Quantum Computing in Healthcare: Exploring Mathematical Aspects, Algorithms and Applications",
+            "publication_year": 2025,
+            "score": 0.7500826120376587
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5130347560",
+        "author_name": "Jeya Mala",
+        "score": 0.7438920736312866,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7140218203",
+            "title": "Editorial",
+            "publication_year": 2026,
+            "score": 0.7438920736312866
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5100696254",
+        "author_name": "Sanjay Kumar Singh",
+        "score": 0.7258046865463257,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4413345789",
+            "title": "Design of a novel quantum computing primitive to demonstrate quantum cryptography",
+            "publication_year": 2025,
+            "score": 0.7258046865463257
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5103023953",
+        "author_name": "Indranil Sengupta",
+        "score": 0.716611385345459,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7162555097",
+            "title": "Dynamic Transformation of Quantum Algorithms for Resource-Constrained Architectures",
+            "publication_year": 2026,
+            "score": 0.716611385345459
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5133123297",
+        "author_name": "Nishant Jayesh Bhave",
+        "score": 0.7022361755371094,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7171788777",
+            "title": "Quantum Computing for Autonomous Driving: A Review of Current Developments, Limitations, and Future Avenues",
+            "publication_year": 2026,
+            "score": 0.7022361755371094
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5134921536",
+        "author_name": "T S L Radhika",
+        "score": 0.6952338814735413,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7159103170",
+            "title": "Qutrit-Based Quantum Computing- A Review and Implementation",
+            "publication_year": 2026,
+            "score": 0.6952338814735413
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5113110642",
+        "author_name": "Bitanuka Deb",
+        "score": 0.6874614953994751,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7162662816",
+            "title": "Quantum hidden Markov model for sequential analysis",
+            "publication_year": 2026,
+            "score": 0.6874614953994751
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5101872569",
+        "author_name": "A. A. Kulkarni",
+        "score": 0.6621347665786743,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7151789800",
+            "title": "The Quantum Advantage in Binary Teams and the Coordination Dilemma",
+            "publication_year": 2026,
+            "score": 0.6621347665786743
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5012634821",
+        "author_name": "Akshay Kannan Sairam",
+        "score": 0.6566075682640076,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4415620403",
+            "title": "Efficient Classical Simulation of the DQC1 Circuit with Zero Discord",
+            "publication_year": 2025,
+            "score": 0.6566075682640076
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5123812905",
+        "author_name": "Yogendra Chhetri",
+        "score": 0.6478362083435059,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7147656869",
+            "title": "Optimized Quantum-Enhanced Neural Network Architectures",
+            "publication_year": 2026,
+            "score": 0.6478362083435059
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "query_id": "q08",
+    "query": "deep learning neural networks",
+    "system": "Week 4 (top_k_average_author_discount)",
+    "family": "week4",
+    "relevant_author_ids": [
+      "https://openalex.org/A5034745758",
+      "https://openalex.org/A5054437079",
+      "https://openalex.org/A5087181112",
+      "https://openalex.org/A5109408651",
+      "https://openalex.org/A5119880195",
+      "https://openalex.org/A5119880196",
+      "https://openalex.org/A5129323973",
+      "https://openalex.org/A5135915004",
+      "https://openalex.org/A5139159244",
+      "https://openalex.org/A5148132054"
+    ],
+    "metrics": {
+      "precision@5": 0.2,
+      "precision@10": 0.1,
+      "recall@10": 0.1,
+      "mrr": 0.3333333333333333,
+      "ndcg@10": 0.11004588314904008,
+      "hit@10": 1.0
+    },
+    "ranking": [
+      {
+        "rank": 1,
+        "author_id": "https://openalex.org/A5008132907",
+        "author_name": "Seetha Parameswaran",
+        "score": 0.5285989046096802,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7117250560",
+            "title": "NeuraWheel: A Synergistic Approach with Deep Learning Models and Curated Dataset",
+            "publication_year": 2025,
+            "score": 0.5285989046096802
+          }
+        ]
+      },
+      {
+        "rank": 2,
+        "author_id": "https://openalex.org/A5122840203",
+        "author_name": "Venkat Bokka",
+        "score": 0.5162071585655212,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7122356584",
+            "title": "Comparative Study of Weed Detection Techniques Using Machine and Deep Learning for Sustainable Agriculture",
+            "publication_year": 2026,
+            "score": 0.5162071585655212
+          }
+        ]
+      },
+      {
+        "rank": 3,
+        "author_id": "https://openalex.org/A5034745758",
+        "author_name": "Ramkumar Thirunavukarasu",
+        "score": 0.503467857837677,
+        "labelled_relevant": true,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7172293435",
+            "title": "A Comprehensive Review on Advanced Deep Computational Techniques for Air Pollution Prediction",
+            "publication_year": 2026,
+            "score": 0.503467857837677
+          }
+        ]
+      },
+      {
+        "rank": 4,
+        "author_id": "https://openalex.org/A5037054683",
+        "author_name": "Chinnaraji Annamalai",
+        "score": 0.5010490417480469,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7126050027",
+            "title": "Optimizing Deep Learning Architectures via the Log-Annamalai Probability Mass Function and Generating Functions",
+            "publication_year": 2026,
+            "score": 0.5010490417480469
+          }
+        ]
+      },
+      {
+        "rank": 5,
+        "author_id": "https://openalex.org/A5067604730",
+        "author_name": "Abhijit Majumdar",
+        "score": 0.49088120460510254,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4413927621",
+            "title": "Deep Learning Applications in Textile Industry: A Systematic Review of Current Status and Delineating Future Research Agenda",
+            "publication_year": 2025,
+            "score": 0.49088120460510254
+          }
+        ]
+      },
+      {
+        "rank": 6,
+        "author_id": "https://openalex.org/A5123812905",
+        "author_name": "Yogendra Chhetri",
+        "score": 0.48673123121261597,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7213982689",
+            "title": "Development of a Deep Learning Framework for Tumor Forecasting in Humans",
+            "publication_year": 2026,
+            "score": 0.48673123121261597
+          }
+        ]
+      },
+      {
+        "rank": 7,
+        "author_id": "https://openalex.org/A5081953081",
+        "author_name": "Millie Pant",
+        "score": 0.485679566860199,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7125606332",
+            "title": "Prophesying Credit Card Frauds Using Predictive and Deep Transfer Learning: A Comprehensive Experimental Perspective",
+            "publication_year": 2026,
+            "score": 0.485679566860199
+          }
+        ]
+      },
+      {
+        "rank": 8,
+        "author_id": "https://openalex.org/A5126633881",
+        "author_name": "Uma Rani",
+        "score": 0.48232823610305786,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W7131083933",
+            "title": "Analysing Key Parameters Involved in Detecting Wheat Diseases Through Deep Learning Models",
+            "publication_year": 2025,
+            "score": 0.48232823610305786
+          }
+        ]
+      },
+      {
+        "rank": 9,
+        "author_id": "https://openalex.org/A5018059574",
+        "author_name": "Suraj Prakash Harsha",
+        "score": 0.47928082942962646,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4414748953",
+            "title": "Advanced deep learning approach for the fault severity classification of rolling-element bearings",
+            "publication_year": 2025,
+            "score": 0.47928082942962646
+          }
+        ]
+      },
+      {
+        "rank": 10,
+        "author_id": "https://openalex.org/A5118608422",
+        "author_name": "Raghavendra Upparapalli",
+        "score": 0.4792165756225586,
+        "labelled_relevant": false,
+        "matched_papers": 1,
+        "evidence": [
+          {
+            "paper_id": "https://openalex.org/W4411584038",
+            "title": "Deep Learning for Image Recognition and Classification: A Comparative Study on Optical and ISAR Datasets for Maritime and Automotive Applications",
+            "publication_year": 2025,
+            "score": 0.4792165756225586
+          }
+        ]
+      }
+    ]
+  }
+]

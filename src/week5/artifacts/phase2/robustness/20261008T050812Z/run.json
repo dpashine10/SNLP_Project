@@ -1,0 +1,96 @@
+{
+  "judgments_file": "src/week5/judging/manual_judgments_completed.csv",
+  "frozen_run": "src/week5/artifacts/runs/20261007T154203Z",
+  "systems": [
+    "Week 3 (semantic)",
+    "Week 3 (tfidf)",
+    "Week 3 (hybrid)",
+    "Week 4 (best_paper)",
+    "Week 4 (average)",
+    "Week 4 (top_k_average)",
+    "Week 4 (top_k_average_author_discount)"
+  ],
+  "queries": [
+    {
+      "query_id": "q01",
+      "kind": "original",
+      "query": "natural language processing"
+    },
+    {
+      "query_id": "q06",
+      "kind": "original",
+      "query": "battery materials and energy storage"
+    },
+    {
+      "query_id": "q07",
+      "kind": "original",
+      "query": "quantum computing"
+    },
+    {
+      "query_id": "q01-short",
+      "kind": "short_keyword",
+      "query": "NLP"
+    },
+    {
+      "query_id": "q01-detailed",
+      "kind": "detailed_problem",
+      "query": "We need a system that automatically understands and analyses large volumes of unstructured text, for tasks such as sentiment analysis, named entity recognition and question answering."
+    },
+    {
+      "query_id": "q01-abstract",
+      "kind": "abstract_style",
+      "query": "In this paper, we propose a neural approach to natural language understanding. We train a language model on a large text corpus and evaluate it on parsing, machine translation and text classification benchmarks, where it outperforms strong baselines."
+    },
+    {
+      "query_id": "q06-short",
+      "kind": "short_keyword",
+      "query": "batteries"
+    },
+    {
+      "query_id": "q06-detailed",
+      "kind": "detailed_problem",
+      "query": "Our project needs electrode materials that improve the capacity, charging rate and cycle life of lithium-ion and sodium-ion batteries for grid-scale energy storage."
+    },
+    {
+      "query_id": "q06-abstract",
+      "kind": "abstract_style",
+      "query": "We report the synthesis and electrochemical characterization of a novel cathode material for rechargeable lithium-ion batteries. The material shows high specific capacity and excellent capacity retention over 500 charge-discharge cycles."
+    },
+    {
+      "query_id": "q07-short",
+      "kind": "short_keyword",
+      "query": "quantum"
+    },
+    {
+      "query_id": "q07-detailed",
+      "kind": "detailed_problem",
+      "query": "We want to design quantum algorithms and error-correction schemes that run reliably on noisy intermediate-scale quantum hardware built from superconducting qubits."
+    },
+    {
+      "query_id": "q07-abstract",
+      "kind": "abstract_style",
+      "query": "We present a scheme for fault-tolerant quantum computation using entangled qubits. Numerical simulations of the proposed quantum circuits show reduced gate errors compared with existing quantum error-correcting codes."
+    },
+    {
+      "query_id": "amb-transformer",
+      "kind": "ambiguous",
+      "query": "transformer"
+    },
+    {
+      "query_id": "amb-network",
+      "kind": "ambiguous",
+      "query": "network"
+    },
+    {
+      "query_id": "ind-crop",
+      "kind": "indian_domain",
+      "query": "crop yield prediction for Indian agriculture using monsoon rainfall data"
+    },
+    {
+      "query_id": "ind-speech",
+      "kind": "indian_domain",
+      "query": "speech recognition for Indian languages such as Hindi and Marathi"
+    }
+  ],
+  "base_rankings_reproduce_frozen_run": true
+}

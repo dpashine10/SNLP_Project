@@ -69,9 +69,17 @@ def fair_evaluate(
     records: Sequence[dict[str, Any]],
     judgments: Judgments,
     settings: FairEvaluationSettings = FairEvaluationSettings(),
+    pool_records: Sequence[dict[str, Any]] | None = None,
 ) -> FairEvaluationResult:
-    """Evaluate every system on the queries whose pools are judged enough."""
-    pool = pool_pairs(records)
+    """Evaluate every system on the queries whose pools are judged enough.
+
+    ``pool_records`` (default: ``records``) defines the judged pool and so
+    which queries are eligible. Passing the frozen Phase 1 records lets a
+    later system be scored on the same queries; any researcher it returns that
+    was never judged is removed from its ranking and counted in
+    ``unjudged_removed``, never treated as irrelevant.
+    """
+    pool = pool_pairs(pool_records if pool_records is not None else records)
     coverage = {
         query_id: (sum((query_id, author) in judgments for author in authors), len(authors))
         for query_id, authors in sorted(pool.items())
@@ -110,12 +118,15 @@ def _score(record: dict[str, Any], judgments: Judgments, settings: FairEvaluatio
     relevant = frozenset(author for author, level in pool_levels.items() if level >= settings.relevant_threshold)
     metrics = {name: metric(condensed, relevant) for name, metric in METRICS.items()}
     metrics["ndcg@10_graded"] = _graded_ndcg(condensed, pool_levels)
+    top = condensed[:_DEPTH]
     return {
         "system": record["system"],
         "query_id": query_id,
         "query": record["query"],
         "unjudged_removed": len(ranked) - len(condensed),
         **metrics,
+        "judged_results": len(top),
+        "relevant_results": sum(author in relevant for author in top),
     }
 
 
@@ -132,12 +143,19 @@ def _summarize(per_query: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
     for row in per_query:
         systems.setdefault(row["system"], []).append(row)
     metric_names = [*METRICS, "ndcg@10_graded"]
-    return [
-        {
-            "system": system,
-            "queries": len(rows),
-            **{name: round(statistics.fmean(row[name] for row in rows), 4) for name in metric_names},
-            "unjudged_removed": sum(row["unjudged_removed"] for row in rows),
-        }
-        for system, rows in systems.items()
-    ]
+    summary = []
+    for system, rows in systems.items():
+        judged = sum(row["judged_results"] for row in rows)
+        relevant = sum(row["relevant_results"] for row in rows)
+        summary.append(
+            {
+                "system": system,
+                "queries": len(rows),
+                **{name: round(statistics.fmean(row[name] for row in rows), 4) for name in metric_names},
+                "unjudged_removed": sum(row["unjudged_removed"] for row in rows),
+                "judged_results": judged,
+                # Share of the judged top-10 results that are relevant; unaffected by removed results.
+                "precision_among_judged": round(relevant / judged, 4) if judged else None,
+            }
+        )
+    return summary

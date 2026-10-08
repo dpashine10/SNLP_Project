@@ -9,7 +9,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, get_args
 
-RankingStrategyName = Literal["best_paper", "average", "top_k_average", "weighted"]
+RankingStrategyName = Literal[
+    "best_paper", "average", "top_k_average", "top_k_average_author_discount", "weighted"
+]
 DeviceName = Literal["auto", "cpu", "cuda"]
 DistanceMetric = Literal["cosine", "l2", "ip"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
