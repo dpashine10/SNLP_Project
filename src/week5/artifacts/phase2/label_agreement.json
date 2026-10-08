@@ -1,0 +1,229 @@
+{
+  "label_provenance": {
+    "judge_ids": {
+      "Codex_AIReview": 214
+    },
+    "distinct_judged_at": 1
+  },
+  "overall": {
+    "rows": 214,
+    "match": 86,
+    "differ": 128,
+    "disagreement_rate": 0.5981,
+    "old_relevant": 80,
+    "new_relevant": 192
+  },
+  "explicit_old_labels": {
+    "rows": 80,
+    "match": 72,
+    "differ": 8,
+    "disagreement_rate": 0.1,
+    "old_relevant": 80,
+    "new_relevant": 72
+  },
+  "implied_old_negatives": {
+    "rows": 134,
+    "match": 14,
+    "differ": 120,
+    "disagreement_rate": 0.8955,
+    "old_relevant": 0,
+    "new_relevant": 120
+  },
+  "confusion": {
+    "old_label_1": {
+      "0": 4,
+      "1": 4,
+      "2": 32,
+      "3": 40
+    },
+    "old_label_blank": {
+      "0": 2,
+      "1": 12,
+      "2": 45,
+      "3": 75
+    }
+  },
+  "by_query": {
+    "q01": {
+      "query": "natural language processing",
+      "rows": 30,
+      "match": 17,
+      "differ": 13,
+      "disagreement_rate": 0.4333,
+      "old_relevant": 10,
+      "new_relevant": 23
+    },
+    "q02": {
+      "query": "machine learning",
+      "rows": 33,
+      "match": 14,
+      "differ": 19,
+      "disagreement_rate": 0.5758,
+      "old_relevant": 10,
+      "new_relevant": 29
+    },
+    "q03": {
+      "query": "transformer based text classification",
+      "rows": 25,
+      "match": 9,
+      "differ": 16,
+      "disagreement_rate": 0.64,
+      "old_relevant": 10,
+      "new_relevant": 24
+    },
+    "q04": {
+      "query": "information retrieval",
+      "rows": 26,
+      "match": 8,
+      "differ": 18,
+      "disagreement_rate": 0.6923,
+      "old_relevant": 10,
+      "new_relevant": 24
+    },
+    "q05": {
+      "query": "knowledge graphs",
+      "rows": 20,
+      "match": 9,
+      "differ": 11,
+      "disagreement_rate": 0.55,
+      "old_relevant": 10,
+      "new_relevant": 13
+    },
+    "q06": {
+      "query": "battery materials and energy storage",
+      "rows": 27,
+      "match": 10,
+      "differ": 17,
+      "disagreement_rate": 0.6296,
+      "old_relevant": 10,
+      "new_relevant": 27
+    },
+    "q07": {
+      "query": "quantum computing",
+      "rows": 24,
+      "match": 9,
+      "differ": 15,
+      "disagreement_rate": 0.625,
+      "old_relevant": 10,
+      "new_relevant": 23
+    },
+    "q08": {
+      "query": "deep learning neural networks",
+      "rows": 29,
+      "match": 10,
+      "differ": 19,
+      "disagreement_rate": 0.6552,
+      "old_relevant": 10,
+      "new_relevant": 29
+    }
+  },
+  "by_system": {
+    "Week 3 (hybrid)": {
+      "rows": 80,
+      "match": 33,
+      "differ": 47,
+      "disagreement_rate": 0.5875,
+      "old_relevant": 30,
+      "new_relevant": 73
+    },
+    "Week 3 (semantic)": {
+      "rows": 80,
+      "match": 22,
+      "differ": 58,
+      "disagreement_rate": 0.725,
+      "old_relevant": 16,
+      "new_relevant": 72
+    },
+    "Week 3 (tfidf)": {
+      "rows": 80,
+      "match": 72,
+      "differ": 8,
+      "disagreement_rate": 0.1,
+      "old_relevant": 80,
+      "new_relevant": 72
+    },
+    "Week 4 (average)": {
+      "rows": 80,
+      "match": 21,
+      "differ": 59,
+      "disagreement_rate": 0.7375,
+      "old_relevant": 15,
+      "new_relevant": 72
+    },
+    "Week 4 (best_paper)": {
+      "rows": 80,
+      "match": 23,
+      "differ": 57,
+      "disagreement_rate": 0.7125,
+      "old_relevant": 16,
+      "new_relevant": 71
+    },
+    "Week 4 (top_k_average)": {
+      "rows": 80,
+      "match": 21,
+      "differ": 59,
+      "disagreement_rate": 0.7375,
+      "old_relevant": 15,
+      "new_relevant": 72
+    }
+  },
+  "flagged": {
+    "flagged_rows": 131,
+    "by_query": {
+      "q01": 19,
+      "q02": 24,
+      "q03": 15,
+      "q04": 15,
+      "q05": 10,
+      "q06": 16,
+      "q07": 13,
+      "q08": 19
+    },
+    "reasons": {
+      "no Week 4 evidence; judged from profile titles only": 127,
+      "Week 4 evidence present but weak or non-substantive": 4
+    },
+    "weak_evidence_rows": [
+      {
+        "query_id": "q02",
+        "researcher_name": "Parthiv Sarkar",
+        "manual_relevance": "1",
+        "evidence_paper_titles": "Code for the ML models || Code for the ML models || Code for the ML models",
+        "judgment_notes": "OpenAlex metadata gives no abstract/concepts beyond a code artifact, so the evidence is too weak to establish substantive machine-learning research."
+      },
+      {
+        "query_id": "q02",
+        "researcher_name": "Seema Shah",
+        "manual_relevance": "1",
+        "evidence_paper_titles": "Retraction Note to: A Survey on Applications of Machine Learning Algorithms in Health care",
+        "judgment_notes": "The title refers to a retracted/supplementary healthcare ML survey, so it is weak evidence for current substantive ML expertise."
+      },
+      {
+        "query_id": "q02",
+        "researcher_name": "Samit Nikesh Shah",
+        "manual_relevance": "1",
+        "evidence_paper_titles": "Retraction Note to: A Survey on Applications of Machine Learning Algorithms in Health care || RETRACTED CHAPTER: A Survey on Applications of Machine Learning Algorithms in Health care",
+        "judgment_notes": "The title refers to a retracted/supplementary healthcare ML survey, so it is weak evidence for current substantive ML expertise."
+      },
+      {
+        "query_id": "q07",
+        "researcher_name": "Jeya Mala",
+        "manual_relevance": "1",
+        "evidence_paper_titles": "Editorial",
+        "judgment_notes": "OpenAlex abstract says the editorial introduces a quantum innovations conference, but the title alone is generic and not a substantive quantum-computing research paper. OpenAlex abstract says the editorial introduces a quantum innovations conference, but the title alone is generic and not a substantive quantum-computing research paper."
+      }
+    ],
+    "levels_flagged": {
+      "0": 6,
+      "1": 11,
+      "2": 62,
+      "3": 52
+    },
+    "levels_not_flagged": {
+      "0": 0,
+      "1": 5,
+      "2": 15,
+      "3": 63
+    }
+  }
+}

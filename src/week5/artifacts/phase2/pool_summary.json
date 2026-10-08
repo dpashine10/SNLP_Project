@@ -1,0 +1,93 @@
+{
+  "total_pairs": 214,
+  "judged_pairs": 214,
+  "unjudged_pairs": 0,
+  "flagged_for_review": 131,
+  "pairs_in_existing_labels": 80,
+  "unique_queries": 8,
+  "unique_researchers": 214,
+  "distinct_week4_evidence_papers": 59,
+  "by_system": {
+    "Week 3 (semantic)": {
+      "pairs": 80,
+      "judged": 80
+    },
+    "Week 3 (tfidf)": {
+      "pairs": 80,
+      "judged": 80
+    },
+    "Week 3 (hybrid)": {
+      "pairs": 80,
+      "judged": 80
+    },
+    "Week 4 (best_paper)": {
+      "pairs": 80,
+      "judged": 80
+    },
+    "Week 4 (average)": {
+      "pairs": 80,
+      "judged": 80
+    },
+    "Week 4 (top_k_average)": {
+      "pairs": 80,
+      "judged": 80
+    }
+  },
+  "by_query": {
+    "q01": {
+      "query": "natural language processing",
+      "pairs": 30,
+      "judged": 30,
+      "in_existing_labels": 10
+    },
+    "q02": {
+      "query": "machine learning",
+      "pairs": 33,
+      "judged": 33,
+      "in_existing_labels": 10
+    },
+    "q03": {
+      "query": "transformer based text classification",
+      "pairs": 25,
+      "judged": 25,
+      "in_existing_labels": 10
+    },
+    "q04": {
+      "query": "information retrieval",
+      "pairs": 26,
+      "judged": 26,
+      "in_existing_labels": 10
+    },
+    "q05": {
+      "query": "knowledge graphs",
+      "pairs": 20,
+      "judged": 20,
+      "in_existing_labels": 10
+    },
+    "q06": {
+      "query": "battery materials and energy storage",
+      "pairs": 27,
+      "judged": 27,
+      "in_existing_labels": 10
+    },
+    "q07": {
+      "query": "quantum computing",
+      "pairs": 24,
+      "judged": 24,
+      "in_existing_labels": 10
+    },
+    "q08": {
+      "query": "deep learning neural networks",
+      "pairs": 29,
+      "judged": 29,
+      "in_existing_labels": 10
+    }
+  },
+  "by_relevance_level": {
+    "0 (Not relevant)": 6,
+    "1 (Weakly or indirectly relevant)": 16,
+    "2 (Relevant)": 77,
+    "3 (Highly relevant)": 115,
+    "unjudged": 0
+  }
+}

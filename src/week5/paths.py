@@ -9,6 +9,19 @@ ARTIFACTS_DIR: Path = WEEK5_DIR / "artifacts"
 RUNS_DIR: Path = ARTIFACTS_DIR / "runs"
 REPRODUCIBILITY_DIR: Path = ARTIFACTS_DIR / "reproducibility"
 
+# Phase 2 reads the first frozen Phase 1 run (byte-identical to the second).
+FROZEN_RUN_DIR: Path = RUNS_DIR / "20261007T154203Z"
+PHASE2_DIR: Path = ARTIFACTS_DIR / "phase2"
+JUDGING_DIR: Path = WEEK5_DIR / "judging"
+JUDGING_TEMPLATE: Path = JUDGING_DIR / "templates" / "judging_template.csv"
+JUDGMENTS_FILE: Path = JUDGING_DIR / "manual_judgments.csv"
+COMPLETED_JUDGMENTS_FILE: Path = JUDGING_DIR / "manual_judgments_completed.csv"
+
+
+def active_judgments_file() -> Path:
+    """The judging file the scripts use: the completed file once it exists, else the blank one."""
+    return COMPLETED_JUDGMENTS_FILE if COMPLETED_JUDGMENTS_FILE.is_file() else JUDGMENTS_FILE
+
 
 def relative_to_root(path: Path) -> str:
     """Return ``path`` relative to the repository root, so artifacts hold no absolute paths."""

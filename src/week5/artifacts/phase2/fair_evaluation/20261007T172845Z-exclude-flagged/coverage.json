@@ -1,0 +1,22 @@
+{
+  "judgments_file": "src/week5/judging/manual_judgments_completed.csv",
+  "label_column": "manual_relevance",
+  "exclude_flagged": true,
+  "settings": {
+    "min_judged_fraction": 0.01,
+    "relevant_threshold": 2
+  },
+  "judged_pairs": 83,
+  "total_pairs": 214,
+  "evaluated_queries": [
+    "q01",
+    "q02",
+    "q03",
+    "q04",
+    "q05",
+    "q06",
+    "q07",
+    "q08"
+  ],
+  "excluded_queries": {}
+}
