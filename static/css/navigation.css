@@ -1,34 +1,77 @@
-/* Main navigation tabs in the header. */
+/* Main navigation tabs in the header: compact segmented control. */
+
+.main-nav {
+  position: relative;
+  flex-shrink: 0;
+}
 
 .nav-list {
+  position: relative;
   display: flex;
-  gap: var(--space-1);
+  gap: var(--space-4);
   list-style: none;
   margin: 0;
-  padding: var(--space-1);
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
+  padding: var(--space-4);
+  background: var(--color-segment-bg);
   border-radius: var(--radius-md);
 }
 
 .nav-link {
+  position: relative;
+  z-index: 1;
   display: block;
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-8) var(--space-16);
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  font-weight: 500;
-  font-size: 0.9375rem;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
   text-decoration: none;
   white-space: nowrap;
+  transition: color var(--dur) var(--ease);
 }
 
 .nav-link:hover {
   color: var(--color-heading);
-  background: var(--color-surface);
 }
 
 .nav-link[aria-current="page"] {
-  color: var(--color-primary);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
+  color: var(--color-primary-strong);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-surface-solid);
+  box-shadow: var(--shadow-sm), 0 0 0 var(--border-width-thin) var(--color-border);
+}
+
+.nav-link:focus-visible {
+  outline-offset: 0;
+}
+
+/* With JS, one segment slides under the active (or hovered) tab. */
+.nav-indicator {
+  position: absolute;
+  z-index: 0;
+  top: var(--space-4);
+  left: 0;
+  height: calc(100% - var(--space-8));
+  width: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-solid);
+  box-shadow: var(--shadow-sm), 0 0 0 var(--border-width-thin) var(--color-border);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform var(--dur) var(--ease), width var(--dur) var(--ease), opacity var(--dur-fast) linear, background var(--dur-fast) linear;
+}
+
+.nav-indicator.is-ready {
+  opacity: 1;
+}
+
+.nav-indicator.is-hover {
+  background: var(--color-white-glass);
+  box-shadow: var(--shadow-none);
+}
+
+.js .main-nav.has-indicator .nav-link[aria-current="page"] {
+  background: transparent;
+  box-shadow: var(--shadow-none);
 }

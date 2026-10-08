@@ -3,6 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    /* Set visual state before first paint so the sidebar never flashes. */
+    (function () {
+      var root = document.documentElement;
+      root.classList.add("js");
+      var stored = null;
+      try { stored = localStorage.getItem("sidebar-open"); } catch (e) {}
+      var open = window.matchMedia("(min-width: 901px)").matches && stored !== "0";
+      if (!open) { root.classList.add("sidebar-collapsed"); }
+    })();
+  </script>
   {% block head %}{% endblock %}
   <title>{% block title %}{% endblock %} · Research Discovery &amp; Collaboration Engine</title>
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
@@ -11,17 +22,28 @@
   {% endfor %}
 </head>
 <body>
+  {% macro icon(name) %}
+  <svg class="side-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    {% if name == 'search' %}<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>
+    {% elif name == 'compare' %}<rect x="3.5" y="5" width="7" height="14" rx="1.5"/><rect x="13.5" y="5" width="7" height="14" rx="1.5"/>
+    {% elif name == 'evaluation' %}<path d="M5 20V11M12 20V5M19 20v-6"/>
+    {% elif name == 'stats' %}<ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/>
+    {% else %}<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>
+    {% endif %}
+  </svg>
+  {% endmacro %}
   <a class="skip-link" href="#content">Skip to main content</a>
 
   <header class="site-header">
     <div class="site-header-inner">
-      <a class="brand" href="{{ url_for('search') }}">
-        <img class="brand-logo" src="{{ url_for('static', filename='images/favicon.svg') }}" alt="" width="32" height="32">
+      <button class="brand" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="true"
+              aria-label="Research Discovery and Collaboration Engine. Toggle settings sidebar">
+        <img class="brand-logo" src="{{ url_for('static', filename='images/favicon.svg') }}" alt="" width="36" height="36">
         <span class="brand-text">
           <span class="brand-title">Research Discovery &amp; Collaboration Engine</span>
           <span class="brand-subtitle">AI University NLP Course Project — Version 1.0 Core NLP Pipeline (Sentence Transformers vs TF-IDF)</span>
         </span>
-      </a>
+      </button>
       <nav class="main-nav" aria-label="Main">
         <ul class="nav-list">
           {% for endpoint, label in nav_items %}
@@ -35,7 +57,16 @@
   </header>
 
   <div class="page">
-    <aside class="sidebar" aria-label="Settings and dataset statistics">
+    <div class="sidebar-scrim" data-sidebar-scrim></div>
+    <aside class="sidebar" id="sidebar" aria-label="Settings and dataset statistics">
+      <nav class="side-nav" aria-label="Sections">
+        {% for endpoint, label in nav_items %}
+        <a class="side-link" href="{{ url_for(endpoint) }}" title="{{ label }}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>{{ icon(endpoint) }}<span class="side-label">{{ label }}</span></a>
+        {% endfor %}
+        <a class="side-link" href="#stats-heading" title="Statistics" data-side-expand>{{ icon('stats') }}<span class="side-label">Statistics</span></a>
+        <a class="side-link" href="{{ url_for('search') }}#config-heading" title="Settings" data-side-expand>{{ icon('settings') }}<span class="side-label">Settings</span></a>
+      </nav>
+      <div class="side-body">
       {% block sidebar %}{% endblock %}
       <section class="panel" aria-labelledby="stats-heading">
         <h2 class="panel-title" id="stats-heading">Dataset Statistics</h2>
@@ -54,6 +85,7 @@
         <p class="muted">Unavailable: the NLP pipeline could not be loaded.</p>
         {% endif %}
       </section>
+      </div>
     </aside>
 
     <main class="content" id="content" tabindex="-1">
@@ -66,6 +98,7 @@
   </footer>
 
   <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/ui.js') }}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
