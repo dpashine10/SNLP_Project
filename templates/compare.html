@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block title %}Model Comparison{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Side-by-Side Model Comparison</h1>
+<p class="lead">
+  Compare how <strong>Sentence Transformers (Dense Semantic Similarity)</strong> captures conceptual
+  relevance compared to <strong>TF-IDF (Keyword-based)</strong>.
+</p>
+
+<section class="card" aria-label="Comparison form">
+  <form class="inline-form" method="get" action="{{ url_for('compare') }}">
+    <div class="field inline-form-field">
+      <label class="field-label" for="compare-q">Comparison Query:</label>
+      <input class="input" type="text" id="compare-q" name="q" value="{{ query }}">
+    </div>
+    <button class="button button-primary" type="submit" data-busy-label="Comparing…">Compare Models</button>
+  </form>
+</section>
+
+{% if columns is not none %}
+<section class="compare-grid" aria-label="Top {{ top_k }} researchers per model">
+  {% for column in columns %}
+  <article class="card compare-column" aria-labelledby="column-{{ column.mode }}">
+    <h2 class="section-title" id="column-{{ column.mode }}">{{ column.title }}</h2>
+    {% if column.results %}
+    <ol class="compare-list">
+      {% for researcher in column.results %}
+      <li class="compare-item">
+        <p class="compare-name">
+          <strong>#{{ researcher.rank }} {{ researcher.name }}</strong>
+          <span class="muted">(Score: <code>{{ '%.4f' | format(researcher.similarity_score) }}</code>)</span>
+        </p>
+        <p class="compare-paper">Relevant Paper: <cite>{{ researcher.paper_title }}</cite></p>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">No researchers returned for this query.</p>
+    {% endif %}
+  </article>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

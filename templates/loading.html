@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block head %}<meta http-equiv="refresh" content="3">{% endblock %}
+{% block title %}Loading{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Loading the NLP pipeline</h1>
+<section class="card" role="status" aria-live="polite">
+  <p>Loading Core NLP Pipeline &amp; Embeddings… This takes about half a minute on first start.</p>
+  <p class="muted">This page refreshes automatically. The <a href="{{ url_for('evaluation') }}">benchmark tables</a> are available meanwhile.</p>
+</section>
+{% endblock %}

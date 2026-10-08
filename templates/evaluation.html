@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block title %}Benchmark & Metrics{% endblock %}
+
+{% macro data_table(data) %}
+{% set table_id = 'table-' ~ data.table.key %}
+<div class="table-tools">
+  <label class="table-filter" data-table-filter="{{ table_id }}" hidden>
+    <span class="visually-hidden">Filter {{ data.table.title }}</span>
+    <input class="input input-small" type="search" placeholder="Filter rows…">
+  </label>
+  <span class="table-count muted" id="{{ table_id }}-count" aria-live="polite">{{ data.rows | length }} rows</span>
+  <a class="button button-secondary button-small" href="{{ url_for('download_table', key=data.table.key) }}" download>Download CSV</a>
+</div>
+<div class="table-scroll">
+  <table class="data-table" id="{{ table_id }}" data-sortable>
+    <caption class="visually-hidden">{{ data.table.title }}</caption>
+    <thead>
+      <tr>
+        {% for column in data.columns %}
+        <th scope="col">{{ column }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data.rows %}
+      <tr>
+        {% for cell in row %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{% block content %}
+<h1 class="page-title">Benchmark &amp; Quantitative Evaluation</h1>
+<p class="lead">
+  Evaluation results on the ground-truth labeled benchmark queries comparing <strong>TF-IDF Baseline</strong>
+  against <strong>Sentence Transformers</strong>.
+</p>
+
+{% set summary = tables['model_comparison'] %}
+{% if summary %}
+<section class="card" aria-labelledby="summary-heading">
+  <h2 class="section-title" id="summary-heading">{{ summary.table.title }}</h2>
+  {{ data_table(summary) }}
+</section>
+{% endif %}
+
+{% for key in ('baseline_metrics', 'semantic_metrics') %}
+{% set data = tables[key] %}
+{% if data %}
+<details class="card collapsible" open>
+  <summary class="collapsible-summary"><h2 class="section-title">{{ data.table.title }}</h2></summary>
+  {{ data_table(data) }}
+</details>
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tables.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,58 @@
+<section class="results" aria-labelledby="results-heading">
+  <h2 class="section-title" id="results-heading">Results</h2>
+  <p class="alert alert-success" role="status">
+    Found {{ outcome.results | length }} researchers matching query using
+    <strong>{{ outcome.settings.mode_label }}</strong> in {{ '%.3f' | format(outcome.elapsed_seconds) }}s
+  </p>
+
+  <ol class="result-list">
+    {% for researcher in outcome.results %}
+    <li>
+      <article class="card researcher-card" aria-labelledby="researcher-{{ researcher.rank }}">
+        <header class="researcher-header">
+          <h3 class="researcher-name" id="researcher-{{ researcher.rank }}">
+            <span class="rank">#{{ researcher.rank }}</span> {{ researcher.name }}
+          </h3>
+          <span class="badge badge-score">Similarity: {{ '%.4f' | format(researcher.similarity_score) }}</span>
+        </header>
+
+        <dl class="researcher-meta">
+          <div>
+            <dt>Total Indexed Papers</dt>
+            <dd>{{ researcher.n_papers }}</dd>
+          </div>
+          <div>
+            <dt>Author ID</dt>
+            <dd>
+              {% if researcher.author_url %}
+              <a href="{{ researcher.author_url }}" target="_blank" rel="noopener noreferrer">{{ researcher.author_id }}</a>
+              {% else %}
+              {{ researcher.author_id }}
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
+
+        <div class="evidence">
+          <p class="evidence-label">Most Relevant Paper</p>
+          <p class="evidence-title"><cite>“{{ researcher.paper_title }}”</cite> ({{ researcher.paper_year }})</p>
+          <p class="evidence-score">Paper Match Score: {{ '%.4f' | format(researcher.paper_score) }}</p>
+        </div>
+
+        <div class="topics">
+          <p class="topics-label">Key Research Topics</p>
+          {% if researcher.topics %}
+          <ul class="badge-list">
+            {% for topic in researcher.topics %}
+            <li class="badge">{{ topic }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="muted">None listed</p>
+          {% endif %}
+        </div>
+      </article>
+    </li>
+    {% endfor %}
+  </ol>
+</section>

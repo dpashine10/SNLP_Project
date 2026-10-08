@@ -133,7 +133,11 @@ SNLP_Project/
 │   └── week3/
 │       ├── build_embeddings.py           # Sentence-BERT embedding builder and cacher
 │       └── tasks.py                      # NER, classification, summarization, RAG, and extraction baselines
-├── app.py                               # Interactive Streamlit Web Application
+├── app.py                               # Web application (Flask routes)
+├── services.py                          # Data preparation for the web pages (no HTML)
+├── templates/                           # Jinja2 HTML templates
+├── static/                              # CSS, JavaScript and images
+├── tests/                               # Web application tests
 ├── pyproject.toml                       # Python dependencies
 └── README.md                            # Project documentation
 ```
@@ -154,10 +158,16 @@ Reproduce and verify the metrics comparing TF-IDF against Sentence Transformers:
 uv run python src/week2/evaluate.py
 ```
 
-### 3. Launch the Streamlit Web Application
+### 3. Launch the Web Application
 To experience the full interactive user interface with presets, side-by-side model comparison, and metric dashboards:
 ```bash
-uv run streamlit run app.py
+uv run python app.py
+```
+Then open http://127.0.0.1:8000. The NLP pipeline loads in the background on start-up (about 20–30 seconds);
+until it is ready, the search pages show a loading notice and the benchmark tables are already available.
+Set `PORT` to use another port. Run the web application tests with:
+```bash
+uv run python -m unittest discover -s tests -t .
 ```
 
 ### Rebuild the complete data pipeline

@@ -11,8 +11,9 @@ number. Detailed tables: `phase2_status.md`. Benchmark problems:
 - Old labels (`existing_label`): Week 4 P@10 ≈ 0.19–0.20 and MRR 0.35,
   against Week 3 semantic P@10 0.20 and MRR 0.64.
 - New labels (`manual_relevance`, all 214 pooled pairs judged): every system
-  scores P@10 0.89–0.91. Week 4 has MRR 1.0 and graded nDCG@10 0.874–0.882,
-  against 0.875 and 0.821 for Week 3 semantic.
+  scores P@10 0.89–0.91. Week 4 matches the best MRR of 1.0, which Week 3
+  TF-IDF and hybrid also reach (Week 3 semantic: 0.875). Its clearest
+  advantage is graded nDCG@10: 0.874–0.882, against 0.821–0.858 for Week 3.
 - The jump comes from removing the measurement error. 120 of the 134
   researchers that the old benchmark implicitly scored as wrong are judged
   relevant (`artifacts/phase2/label_agreement.md`).

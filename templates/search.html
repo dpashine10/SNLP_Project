@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block title %}Research Search{% endblock %}
+
+{% block sidebar %}
+<section class="panel" aria-labelledby="config-heading">
+  <h2 class="panel-title" id="config-heading">Search Configuration</h2>
+
+  <div class="field">
+    <label class="field-label" for="mode">Retrieval Architecture</label>
+    <select class="select" id="mode" name="mode" form="search-form" aria-describedby="mode-help" data-mode-select>
+      {% for key, label in mode_labels.items() %}
+      <option value="{{ key }}"{% if key == settings.mode %} selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <p class="field-help" id="mode-help">Select between Dense Semantic Embeddings, Traditional Sparse TF-IDF, or Hybrid Blending.</p>
+  </div>
+
+  {% set k_min, k_max, k_step = top_k_range %}
+  <div class="field">
+    <label class="field-label field-label-split" for="top_k">
+      <span>Number of Top Researchers</span>
+      <output class="range-value" id="top_k-value" for="top_k">{{ settings.top_k }}</output>
+    </label>
+    <input class="range" type="range" id="top_k" name="top_k" form="search-form"
+           min="{{ k_min }}" max="{{ k_max }}" step="{{ k_step }}" value="{{ settings.top_k }}"
+           data-output="top_k-value">
+  </div>
+
+  {% set a_min, a_max, a_step = alpha_range %}
+  <div class="field" data-mode-only="hybrid">
+    <label class="field-label field-label-split" for="alpha">
+      <span>Semantic Weight (Alpha)</span>
+      <output class="range-value" id="alpha-value" for="alpha">{{ '%.2f' | format(settings.alpha) }}</output>
+    </label>
+    <input class="range" type="range" id="alpha" name="alpha" form="search-form"
+           min="{{ a_min }}" max="{{ a_max }}" step="{{ a_step }}" value="{{ settings.alpha }}"
+           aria-describedby="alpha-help" data-output="alpha-value" data-decimals="2">
+    <p class="field-help" id="alpha-help">1.0 = 100% Dense Semantic, 0.0 = 100% Sparse TF-IDF. Used by hybrid mode only.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Research Search</h1>
+
+{% for error in errors %}
+<p class="alert alert-error" role="alert">{{ error }}</p>
+{% endfor %}
+{% if warning %}
+<p class="alert alert-warning" role="alert">{{ warning }}</p>
+{% endif %}
+
+<section class="card" aria-label="Search form">
+  <div class="presets" data-presets hidden>
+    <p class="presets-label" id="presets-label">Quick Query Presets</p>
+    <div class="preset-list" role="group" aria-labelledby="presets-label">
+      {% for label, text in presets %}
+      <button class="button button-secondary" type="button" data-preset="{{ text }}">{{ label }}</button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form class="search-form" id="search-form" method="get" action="{{ url_for('search') }}" role="search">
+    <label class="field-label" for="q">Enter research topic, problem description, or paper abstract:</label>
+    <textarea class="textarea" id="q" name="q" rows="4"
+              placeholder="e.g. Seeking collaborators working on deep learning for biomedical text summarization and named entity recognition...">{{ query }}</textarea>
+    <button class="button button-primary button-block" type="submit" data-busy-label="Searching…">Find Relevant Researchers</button>
+  </form>
+</section>
+
+{% if outcome %}
+{% include "results.html" %}
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+{% endblock %}

@@ -79,7 +79,9 @@ are penalised for researchers TF-IDF did not return. See
 - Any change to models, embeddings, retrieval depth, ranking strategies or
   labels (Phase 2).
 - Building or judging a fair benchmark. Only the candidate pool is exported.
-- Report writing (Phase 3).
+
+Both were done later, in Phase 2. The final report is
+`WEEK5_EVALUATION_REPORT.md`.
 
 # Week 5, Phase 2: Manual Judging and Error Analysis
 

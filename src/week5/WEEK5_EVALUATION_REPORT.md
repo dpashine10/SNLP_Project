@@ -164,12 +164,13 @@ Week 3.
 - **How the labels are used:** metrics use `manual_relevance` only. The old
   `existing_label` is used only for the label comparison.
 
-> **Important caveat:** the labels are **AI-assisted, not independently
-> human-labelled**. They were produced by an AI reviewer
+> **Important caveat:** these are **AI-generated relevance labels with review
+> flags, not human judgments**. Every row was judged by an AI reviewer
 > (`judge_id = Codex_AIReview`, a single `judged_at` timestamp) following the
-> written rubric. No second annotator exists, so inter-annotator agreement
-> cannot be reported. A human check of at least a sample is advisable before
-> treating these labels as ground truth.
+> written rubric; no person judged the rows. No second annotator exists, so
+> inter-annotator agreement cannot be reported. A human check of at least a
+> sample, especially the 131 flagged rows, is advisable before treating these
+> labels as ground truth.
 
 ### 4.3 Old vs new labels (`artifacts/phase2/label_agreement.md`)
 
@@ -204,11 +205,12 @@ judged, so no ranking contains an unjudged researcher.
 **Reading the table:**
 - **The six systems are close.** Week 4 is **on par** with the Week 3
   baselines, not worse as the old labels suggested and not clearly better.
-- **Week 4's gains are modest:**
-  - MRR 1.0 (a relevant researcher at rank 1 for every query), versus 0.875
-    for Week 3 semantic;
-  - the highest graded nDCG@10 (0.874–0.882 versus 0.821–0.858), meaning
-    more *highly* relevant (level 3) researchers near the top.
+- **Week 4's clearest advantage is graded nDCG@10:** 0.874–0.882 versus
+  0.821–0.858 for Week 3, meaning more *highly* relevant (level 3)
+  researchers near the top.
+- **MRR:** Week 4 matches the best score of 1.0 (a relevant researcher at
+  rank 1 for every query). Week 3 TF-IDF and Week 3 hybrid also reach 1.0;
+  only Week 3 semantic is lower (0.875).
 - **Week 3 TF-IDF** is still strong on P@5 and binary nDCG@10. Its earlier
   perfect score, however, was an artefact of the labels.
 - **Recall@10** is low for every system because the judged pool holds about
@@ -216,7 +218,7 @@ judged, so no ranking contains an unjudged researcher.
 - **`average` and `top_k_average`** produce identical rankings on all 8
   queries.
 - **No significance testing** was done: there are only 8 queries, and the
-  labels are AI-assisted.
+  labels are AI-generated.
 
 **Why Week 4 is not "suddenly improving":** the Week 4 rankings are the same
 frozen rankings that scored P@10 0.19 under the old labels. Only the
@@ -384,8 +386,9 @@ Summary of failure types:
 
 ## 9. Limitations
 
-- **AI-assisted labels.** One automated reviewer, no human verification and
-  no agreement measure. 131 of 214 labels are flagged provisional.
+- **AI-generated relevance labels.** One automated reviewer, no human
+  judgments, no human verification and no agreement measure. 131 of 214
+  labels carry review flags and are provisional.
 - **Small test set.** 8 queries, with no significance testing. Differences of
   a few hundredths between systems should not be over-interpreted.
 - **Pool-bound recall.** The judged pool contains only the six original
@@ -403,8 +406,8 @@ Summary of failure types:
 
 1. Judge the 44 pairs in `unjudged_variant_pairs.csv`, then rerun the variant
    evaluation to measure its accuracy fairly.
-2. Have a human check a sample of the AI-assisted labels (especially the 131
-   flagged rows) and report agreement.
+2. Have a human check a sample of the AI-generated relevance labels
+   (especially the 131 flagged rows) and report agreement.
 3. Filter non-research documents (editorials, retraction notices, code
    deposits) before ranking (F2–F4).
 4. Diversify results for ambiguous queries, or ask the user to clarify (F8).
@@ -421,11 +424,12 @@ Summary of failure types:
 - **Under fair labels the systems are close.** All six original systems
   score P@10 0.89–0.91 on the same frozen rankings, judged over the full
   214-pair pool.
-- **Week 4 matches Week 3 and leads slightly where it counts most:** a
-  relevant researcher at rank 1 for every query (MRR 1.0) and the highest
-  graded nDCG@10 (0.874–0.882). On this small test set, Week 4 is a
-  competitive, more explainable alternative (it always returns supporting
-  papers). It is not a clear accuracy improvement.
+- **Week 4 performs on par with Week 3.** It matches the best MRR score of
+  1.0, which Week 3 TF-IDF and Week 3 hybrid also reach. Its clearest
+  advantage is graded nDCG@10 (0.874–0.882, the highest of all systems). On
+  this small test set, Week 4 is a competitive, more explainable alternative
+  (it always returns supporting papers). It is not a clear accuracy
+  improvement.
 - **The improved variant fixes the main Week 4 failure, co-author
   concentration:** 10 distinct papers per top 10 instead of about 5.7. Its
   accuracy benefit is not yet established, because 44 of its results are
