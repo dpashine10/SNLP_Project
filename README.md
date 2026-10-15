@@ -130,9 +130,25 @@ SNLP_Project/
 │   │   ├── create_evaluation_set.py      # Candidate annotation and baseline metrics
 │   │   ├── evaluate.py                   # Baseline, semantic, and hybrid evaluation
 │   │   └── pipeline.py                   # Retrieval pipeline
-│   └── week3/
-│       ├── build_embeddings.py           # Sentence-BERT embedding builder and cacher
-│       └── tasks.py                      # NER, classification, summarization, RAG, and extraction baselines
+│   ├── week3/
+│   │   ├── build_embeddings.py           # Sentence-BERT embedding builder and cacher
+│   │   └── tasks.py                      # NER, classification, summarization, RAG, and extraction baselines
+│   ├── week4/                            # Paper-level vector search & ChromaDB architecture
+│   │   ├── week4_pipeline.py             # Paper retrieval and author aggregation pipeline
+│   │   ├── ranking_strategy.py           # best_paper, average, top_k_average, author_discount
+│   │   └── vector_store.py               # ChromaDB persistent vector index adapter
+│   ├── week5/                            # Fair evaluation, graded judging, and error analysis
+│   │   ├── WEEK5_EVALUATION_REPORT.md    # Comprehensive evaluation and error analysis report
+│   │   ├── judging/                      # 4-level graded relevance rubric & candidate pool
+│   │   └── evaluation/                   # Frozen runs, fair metrics, reproducibility checks
+│   └── week6/                            # Deliverable: Reusable NLP Asset & Microservice
+│       ├── asset.py                      # NLPAsset Python SDK component
+│       ├── schemas.py                    # Strict input/output contracts and validation
+│       ├── confidence.py                 # Calibrated confidence scoring engine
+│       ├── api.py                        # Flask REST API microservice (/api/v1)
+│       ├── cli.py                        # Standalone interactive CLI
+│       ├── README.md & ASSET_GUIDE.md    # Integration documentation & OpenAPI spec
+│       └── tests/                        # 28 unit and integration tests
 ├── app.py                               # Web application (Flask routes)
 ├── services.py                          # Data preparation for the web pages (no HTML)
 ├── templates/                           # Jinja2 HTML templates
@@ -168,6 +184,20 @@ until it is ready, the search pages show a loading notice and the benchmark tabl
 Set `PORT` to use another port. Run the web application tests with:
 ```bash
 uv run python -m unittest discover -s tests -t .
+```
+
+### 4. Week 6 Reusable NLP Asset & REST API
+Start the standalone REST API microservice:
+```bash
+uv run python -m src.week6.api
+```
+Run queries directly from the command line:
+```bash
+uv run python -m src.week6.cli --query "graph neural networks" --top-k 5
+```
+Run the complete Week 6 test suite:
+```bash
+uv run python -m unittest discover -s src/week6/tests -t .
 ```
 
 ### Rebuild the complete data pipeline

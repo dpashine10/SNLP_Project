@@ -134,11 +134,16 @@ class Embedder:
                 raise RuntimeError(
                     f"Could not load embedding model {self._model_name!r}: {error}"
                 ) from error
+            dim = (
+                model.get_sentence_embedding_dimension()
+                if hasattr(model, "get_sentence_embedding_dimension")
+                else getattr(model, "get_embedding_dimension", lambda: 384)()
+            )
             logger.info(
                 "Loaded embedding model %s on %s (dimension %s).",
                 self._model_name,
                 device,
-                model.get_embedding_dimension(),
+                dim,
             )
             self._model = model
         return self._model
