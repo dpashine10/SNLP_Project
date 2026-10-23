@@ -252,6 +252,27 @@ or S3T confidence values. The reusable API also accepts ordinary research
 queries for other consumers. Its outputs are advisory publication-based
 researcher matches, not verified faculty assignments.
 
+### 6. Run the complete stack with Docker Compose
+
+From the parent `Project` directory, Docker Compose starts both services:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+- Group 7 dashboard and API: `http://127.0.0.1:8000`
+- Group 6 integration UI: `http://127.0.0.1:5000`
+
+The compose file uses the Group 7 dashboard as the bridge target on port 8000.
+It keeps Hugging Face model caches in named volumes so subsequent starts do not
+redownload the encoders. Stop the stack with:
+
+```bash
+docker compose down
+```
+
 ### Rebuild the complete data pipeline
 ```bash
 uv run python src/week2/preprocess_works.py
