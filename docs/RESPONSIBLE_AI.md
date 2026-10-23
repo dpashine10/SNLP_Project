@@ -69,7 +69,7 @@ taking action.
 
 The available evaluation data and labels are project artifacts, not evidence of
 real-world student or faculty outcomes. Benchmark scores should be used for
-engineering comparisons and smoke tests. They should not be reported as
+engineering comparisons only. They should not be reported as
 validated institutional performance. Real deployment would require a reviewed
 data-collection plan, independent labels, subgroup analysis, monitoring, and a
 rollback path.

@@ -82,6 +82,7 @@ class TestAPI(unittest.TestCase):
         self.assertIn("model_metadata", data)
         self.assertIn("supported_strategies", data)
         self.assertIn("top_k_average_author_discount", data["supported_strategies"])
+        self.assertIn("ranking_explanation", data["model_metadata"])
         self.assertEqual(data["university_integration"]["consumer"], "group6_for_group7 integration bridge")
         self.assertTrue(data["university_integration"]["advisory_only"])
 

@@ -147,13 +147,15 @@
       var state = health && health.state ? health.state : "unreachable";
       var label = state === "ready" || state === "ok"
         ? "reachable"
+        : state === "starting"
+          ? "starting"
         : state === "incompatible"
           ? "wrong endpoint"
           : state === "unhealthy"
             ? "unhealthy"
             : "unreachable";
       group6Health.classList.remove("is-ready", "is-warning", "is-error");
-      group6Health.classList.add(state === "ready" || state === "ok" ? "is-ready" : state === "incompatible" || state === "unhealthy" ? "is-warning" : "is-error");
+      group6Health.classList.add(state === "ready" || state === "ok" ? "is-ready" : state === "starting" || state === "incompatible" || state === "unhealthy" ? "is-warning" : "is-error");
       group6Health.title = (health && health.detail) || "Group 6 integration status unavailable.";
       if (group6Text) {
         group6Text.textContent = "Group 6: " + label;

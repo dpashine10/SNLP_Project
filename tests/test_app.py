@@ -185,6 +185,16 @@ class AppTests(unittest.TestCase):
         self.assertTrue(health["reachable"])
         self.assertEqual(health["service"], "group6-integration-ui")
 
+    def test_group6_health_probe_rejects_another_ready_json_service(self) -> None:
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.status = 200
+        response.read.return_value = b'{"status":"ready","service":"another-service"}'
+        with patch("services.urllib.request.urlopen", return_value=response):
+            health = services.group6_health("http://127.0.0.1:5000")
+        self.assertEqual(health["state"], "incompatible")
+        self.assertFalse(health["healthy"])
+
     def test_main_dashboard_exposes_week6_health_contract(self) -> None:
         response = self.client.get("/api/v1/health")
         self.assertEqual(response.status_code, 200)

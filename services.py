@@ -230,16 +230,21 @@ def group6_health(base_url: str = DEFAULT_GROUP6_URL) -> dict[str, Any]:
         with urllib.request.urlopen(request, timeout=GROUP6_HEALTH_TIMEOUT) as response:
             payload = json.load(response)
             status = payload.get("status", "unknown")
-            healthy = status in ("ready", "ok")
+            service = payload.get("service", "unknown")
+            identity_ok = service == "group6-integration-ui"
+            healthy = identity_ok and status in ("ready", "ok")
+            state = status if status in ("ready", "ok", "starting") else "unhealthy"
+            if not identity_ok:
+                state = "incompatible"
             return {
-                "state": status if healthy else "unhealthy",
+                "state": state,
                 "status": status,
                 "reachable": True,
                 "healthy": healthy,
                 "http_status": getattr(response, "status", 200),
                 "url": url,
-                "service": payload.get("service", "unknown"),
-                "detail": "Group 6 is reachable." if healthy else "Group 6 returned an unexpected health state.",
+                "service": service,
+                "detail": "Group 6 integration UI is reachable." if healthy else "The configured endpoint is not the expected Group 6 integration UI health service." if not identity_ok else "Group 6 integration UI is not ready.",
             }
     except urllib.error.HTTPError as exc:
         return {
