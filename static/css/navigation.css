@@ -46,6 +46,51 @@
   outline-offset: 0;
 }
 
+.service-health {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-shrink: 0;
+  padding: var(--space-8) var(--space-16);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.service-health-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  background: var(--color-text-subtle);
+}
+
+.service-health.is-ready {
+  color: var(--color-success);
+  border-color: var(--color-success-border);
+  background: var(--color-success-soft);
+}
+
+.service-health.is-ready .service-health-dot { background: var(--color-success); }
+
+.service-health.is-warning {
+  color: var(--color-warning);
+  border-color: var(--color-warning-border);
+  background: var(--color-warning-soft);
+}
+
+.service-health.is-warning .service-health-dot { background: var(--color-warning); }
+
+.service-health.is-error {
+  color: var(--color-error);
+  border-color: var(--color-error-border);
+  background: var(--color-error-soft);
+}
+
+.service-health.is-error .service-health-dot { background: var(--color-error); }
+
 /* With JS, one segment slides under the active (or hovered) tab. */
 .nav-indicator {
   position: absolute;

@@ -12,6 +12,7 @@ import threading
 import unittest
 import zipfile
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 from markupsafe import escape
@@ -65,7 +66,8 @@ class AppTests(unittest.TestCase):
 
     def test_search_page_without_query_does_not_search(self) -> None:
         html = self.get("/")
-        self.assertIn("Search Configuration", html)
+        self.assertIn("Search settings", html)
+        self.assertIn('id="config-panel"', html)
         self.assertIn('id="q"', html)
         self.assertNotIn("Found ", html)
         self.assertEqual(self.pipeline.calls, [])
@@ -136,9 +138,61 @@ class AppTests(unittest.TestCase):
         html = self.get("/compare?q=")
         self.assertEqual(html.count("No researchers returned for this query."), 2)
 
+    def test_university_integration_page_is_available_while_pipeline_is_ready(self) -> None:
+        html = self.get("/integration")
+        self.assertIn("University integration", html)
+        self.assertIn("/api/v1/recommend", html)
+        self.assertIn("Topic only crosses the bridge", html)
+        self.assertIn("Publication relevance, with inspectable evidence", html)
+        self.assertIn("researcher publication matches", html)
+        self.assertIn('href="/integration" aria-current="page"', html)
+
+    def test_search_settings_shortcut_preserves_current_search_context(self) -> None:
+        html = self.get("/?q=quantum+computing&mode=hybrid&top_k=15&alpha=0.45")
+        self.assertIn('href="#config-heading"', html)
+        self.assertIn(">Search settings</span>", html)
+        self.assertIn('data-context-target="config-heading"', html)
+        self.assertIn("These controls apply to the next search submission", html)
+
+    def test_non_search_pages_link_to_search_settings(self) -> None:
+        html = self.get("/evaluation")
+        self.assertIn('href="/#config-heading"', html)
+        self.assertIn(">Search settings</span>", html)
+        self.assertIn(">Dataset stats</span>", html)
+        self.assertIn('data-context-target="stats-heading"', html)
+
+    def test_group6_status_route_reports_configured_health(self) -> None:
+        health = {
+            "state": "ready",
+            "status": "ready",
+            "reachable": True,
+            "healthy": True,
+            "url": "http://127.0.0.1:5000",
+        }
+        with patch("services.group6_health", return_value=health):
+            response = self.client.get("/api/integration-status")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), health)
+
+    def test_group6_health_probe_accepts_integration_ui_health_contract(self) -> None:
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.status = 200
+        response.read.return_value = b'{"status":"ready","service":"group6-integration-ui"}'
+        with patch("services.urllib.request.urlopen", return_value=response):
+            health = services.group6_health("http://127.0.0.1:5000")
+        self.assertTrue(health["healthy"])
+        self.assertTrue(health["reachable"])
+        self.assertEqual(health["service"], "group6-integration-ui")
+
+    def test_main_dashboard_exposes_week6_health_contract(self) -> None:
+        response = self.client.get("/api/v1/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(response.get_json()["status"], ("unloaded", "ready"))
+
     def test_dataset_statistics_in_sidebar(self) -> None:
         html = self.get("/evaluation")
-        for text in ("Faculty &amp; Researchers", "52,736", "Indexed Academic Papers", "62,637", "all-MiniLM-L6-v2"):
+        for text in ("Indexed OpenAlex Researchers", "52,736", "Indexed Academic Papers", "62,637", "all-MiniLM-L6-v2"):
             self.assertIn(text, html)
 
     def test_evaluation_tables_match_csv_files(self) -> None:
@@ -203,7 +257,15 @@ class AppTests(unittest.TestCase):
         self.assertNotIn('href="/" aria-current="page"', html)
 
     def test_static_assets_are_served(self) -> None:
-        for path in ("css/main.css", "css/responsive.css", "js/main.js", "js/search.js", "js/tables.js", "images/favicon.svg"):
+        for path in (
+            "css/main.css",
+            "css/integration.css",
+            "css/responsive.css",
+            "js/main.js",
+            "js/search.js",
+            "js/tables.js",
+            "images/favicon.svg",
+        ):
             response = self.client.get(f"/static/{path}")
             self.assertEqual(response.status_code, 200, path)
             response.close()
@@ -223,6 +285,7 @@ class PipelineStateTests(unittest.TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertEqual(response.headers["Retry-After"], "3")
         self.assertIn('http-equiv="refresh"', response.get_data(as_text=True))
+        self.assertNotIn(">Search settings</span>", response.get_data(as_text=True))
         self.assertEqual(client.get("/evaluation").status_code, 200)
         release.set()
         loader = app.extensions["pipeline_loader"]
@@ -259,7 +322,7 @@ class PipelineStateTests(unittest.TestCase):
 class SettingsTests(unittest.TestCase):
     def test_dataset_counts_are_raw_integers(self) -> None:
         stats = {stat.label: stat.value for stat in services.dataset_stats(FakePipeline())}
-        self.assertEqual(stats["Faculty & Researchers"], 52736)
+        self.assertEqual(stats["Indexed OpenAlex Researchers"], 52736)
         self.assertEqual(stats["Indexed Academic Papers"], 62637)
 
     def test_defaults(self) -> None:

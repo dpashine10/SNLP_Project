@@ -58,7 +58,9 @@ class AssetConfig:
     device: str = "auto"
     batch_size: int = 32
     chroma_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "Data" / "week4" / "chroma")
-    collection_name: str = "week4_papers"
+    # Keep the default aligned with src.week4.config so a built Chroma index
+    # can be reused by the Week 6 service without a hidden collection mismatch.
+    collection_name: str = "iitb_research_papers"
     data_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "Data" / "processed")
     prefer_chroma: bool = True
     eager_load: bool = False
@@ -104,7 +106,7 @@ class _FastPaperVectorStore:
             logger.info("Loading paper metadata from %s...", self.papers_path)
             df = pd.read_csv(
                 self.papers_path,
-                usecols=["work_id", "title", "publication_year", "authors", "author_ids"],
+                usecols=["work_id", "title", "publication_year", "authors", "author_ids", "topics", "keywords"],
                 dtype=str,
                 keep_default_na=False,
             )
@@ -123,12 +125,14 @@ class _FastPaperVectorStore:
                 if not authors_list:
                     continue
                 year = str(row.publication_year) if str(row.publication_year) else "N/A"
+                topics = str(row.topics).strip()
+                keywords = str(row.keywords).strip()
                 self._paper_lookup[work_id] = Paper(
                     paper_id=work_id,
                     title=str(row.title),
                     text=str(row.title),
                     authors=tuple(authors_list),
-                    metadata={"publication_year": year},
+                    metadata={"publication_year": year, "topics": topics, "keywords": keywords},
                 )
             self._loaded = True
             logger.info("Fast paper vector store ready: %d papers indexed.", len(self._paper_lookup))
@@ -206,14 +210,39 @@ class NLPAsset:
                     from src.week4.vector_store import VectorStore
 
                     logger.info("Using ChromaDB persistent store at %s", chroma_path)
-                    store = VectorStore(
-                        chroma_path,
-                        self.config.collection_name,
-                        distance_metric=DistanceMetric.COSINE,
-                        embedding_model_name=self._embedder.model_name,
-                    )
-                    # Verify collection exists
-                    store._get_collection(create=False)
+                    collection_names = [self.config.collection_name]
+                    # Older Week 6 runs used this name before the service was
+                    # aligned with src.week4.config. Keep those local indexes
+                    # readable instead of forcing a destructive rebuild.
+                    if self.config.collection_name != "week4_papers":
+                        collection_names.append("week4_papers")
+
+                    store = None
+                    last_error: RuntimeError | None = None
+                    for collection_name in collection_names:
+                        candidate = VectorStore(
+                            chroma_path,
+                            collection_name,
+                            distance_metric=DistanceMetric.COSINE,
+                            embedding_model_name=self._embedder.model_name,
+                        )
+                        try:
+                            candidate._get_collection(create=False)
+                        except RuntimeError as exc:
+                            last_error = exc
+                            continue
+                        store = candidate
+                        if collection_name != self.config.collection_name:
+                            logger.warning(
+                                "Using legacy ChromaDB collection %s; rebuild the index to use %s.",
+                                collection_name,
+                                self.config.collection_name,
+                            )
+                        break
+
+                    if store is None:
+                        assert last_error is not None
+                        raise last_error
                     self._vector_store = store
                     self._backend_type = "chromadb_paper_level"
                 else:
@@ -314,7 +343,7 @@ class NLPAsset:
                 confidence=conf,
                 matched_papers=res_score.matched_papers,
                 evidence=evidence_papers,
-                topics=[],
+                topics=self._topics_from_evidence(res_score.evidence),
             )
             recommendations.append(rec)
             rank_counter += 1
@@ -328,6 +357,7 @@ class NLPAsset:
             strategy=req.strategy,
             backend=self._backend_type,
             embedding_dim=384,
+            ranking_explanation=self._ranking_explanation(req.strategy),
         )
 
         return RecommendResponse(
@@ -350,7 +380,47 @@ class NLPAsset:
             strategy=self.config.default_strategy,
             backend=self._backend_type,
             embedding_dim=384,
+            ranking_explanation=self._ranking_explanation(self.config.default_strategy),
         )
+
+    @staticmethod
+    def _topics_from_evidence(evidence: Sequence[PaperHit], *, limit: int = 8) -> list[str]:
+        """Return distinct topic labels carried by the supporting papers."""
+        topics: list[str] = []
+        seen: set[str] = set()
+        for hit in evidence:
+            raw = str(hit.paper.metadata.get("topics", ""))
+            for topic in raw.split(","):
+                normalized = topic.strip()
+                if normalized and normalized.lower() not in seen:
+                    seen.add(normalized.lower())
+                    topics.append(normalized)
+                    if len(topics) >= limit:
+                        return topics
+        return topics
+
+    @staticmethod
+    def _ranking_explanation(strategy: str) -> str:
+        explanations = {
+            "top_k_average_author_discount": (
+                "Ranks each researcher by the mean of their three strongest matching papers, "
+                "discounting papers with many co-authors by sqrt(author count). Publication year, "
+                "teaching status, and mentor availability are not ranking signals."
+            ),
+            "top_k_average": (
+                "Ranks each researcher by the mean of their three strongest matching papers. "
+                "Publication year, teaching status, and mentor availability are not ranking signals."
+            ),
+            "best_paper": (
+                "Ranks each researcher by their single strongest matching paper. Publication year, "
+                "teaching status, and mentor availability are not ranking signals."
+            ),
+            "average": (
+                "Ranks each researcher by the average similarity of retrieved papers. Publication year, "
+                "teaching status, and mentor availability are not ranking signals."
+            ),
+        }
+        return explanations.get(strategy, "Ranks publication similarity; teaching status is not verified.")
 
     def health_check(self) -> dict[str, Any]:
         """Report component health, readiness, and storage statistics."""

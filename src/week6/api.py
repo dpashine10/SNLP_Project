@@ -18,6 +18,8 @@ from src.week6.schemas import (
     DEFAULT_PAPER_TOP_K,
     DEFAULT_STRATEGY,
     DEFAULT_TOP_K,
+    MAX_BATCH_SIZE,
+    MAX_PAPER_TOP_K,
     MAX_QUERY_LENGTH,
     MAX_TOP_K,
     MIN_TOP_K,
@@ -59,6 +61,20 @@ def info() -> Any:
             "default_top_k": DEFAULT_TOP_K,
             "default_paper_top_k": DEFAULT_PAPER_TOP_K,
             "max_query_length": MAX_QUERY_LENGTH,
+            "max_paper_top_k": MAX_PAPER_TOP_K,
+            "max_batch_size": MAX_BATCH_SIZE,
+        },
+        "university_integration": {
+            "role": "Group 7 researcher-discovery service",
+            "consumer": "group6_for_group7 integration bridge",
+            "required_endpoints": ["GET /api/v1/health", "POST /api/v1/recommend"],
+            "request_contract": {
+                "query": "course or research topic only",
+                "top_k": DEFAULT_TOP_K,
+                "include_evidence": True,
+            },
+            "data_minimization": "Do not send student email text, identifiers, or triage details.",
+            "advisory_only": True,
         },
     }), 200
 
@@ -118,20 +134,43 @@ def batch_recommend() -> Any:
             "message": "'queries' must be a non-empty list of search queries or request objects.",
         }), 400
 
-    top_k = int(data.get("top_k", DEFAULT_TOP_K))
-    strategy = str(data.get("strategy", DEFAULT_STRATEGY))
+    if len(queries) > MAX_BATCH_SIZE:
+        return jsonify({
+            "error": "Validation Error",
+            "message": f"A batch may contain at most {MAX_BATCH_SIZE} queries.",
+        }), 400
+
+    top_k = data.get("top_k", DEFAULT_TOP_K)
+    if isinstance(top_k, bool) or not isinstance(top_k, int):
+        return jsonify({
+            "error": "Validation Error",
+            "message": "top_k must be an integer.",
+        }), 400
+
+    strategy = data.get("strategy", DEFAULT_STRATEGY)
+    if not isinstance(strategy, str):
+        return jsonify({
+            "error": "Validation Error",
+            "message": "strategy must be a string.",
+        }), 400
 
     requests_list = []
-    for q in queries:
-        if isinstance(q, str):
-            requests_list.append(RecommendRequest(query=q, top_k=top_k, strategy=strategy))
-        elif isinstance(q, dict):
-            requests_list.append(RecommendRequest.from_dict(q))
-        else:
-            return jsonify({
-                "error": "Validation Error",
-                "message": "Each item in 'queries' must be a string or request object.",
-            }), 400
+    try:
+        for q in queries:
+            if isinstance(q, str):
+                requests_list.append(RecommendRequest(query=q, top_k=top_k, strategy=strategy))
+            elif isinstance(q, dict):
+                requests_list.append(RecommendRequest.from_dict(q))
+            else:
+                return jsonify({
+                    "error": "Validation Error",
+                    "message": "Each item in 'queries' must be a string or request object.",
+                }), 400
+    except (TypeError, ValueError) as exc:
+        return jsonify({
+            "error": "Validation Error",
+            "message": str(exc),
+        }), 400
 
     start_time = time.perf_counter()
     responses = active_asset.batch_recommend(requests_list)
@@ -156,7 +195,12 @@ def schema() -> Any:
                 "strategy": {"type": "string", "enum": list(SUPPORTED_STRATEGIES), "default": DEFAULT_STRATEGY},
                 "min_confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0, "default": 0.0},
                 "include_evidence": {"type": "boolean", "default": True},
-                "paper_top_k": {"type": "integer", "default": DEFAULT_PAPER_TOP_K},
+                "paper_top_k": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": MAX_PAPER_TOP_K,
+                    "default": DEFAULT_PAPER_TOP_K,
+                },
             },
             "required": ["query"],
         },
@@ -228,7 +272,14 @@ def create_asset_app(asset: NLPAsset | None = None, *, eager_warmup: bool = Fals
 
     @app.errorhandler(500)
     def handle_internal_error(error: Any) -> tuple[Any, int]:
-        return jsonify({"error": "Internal Server Error", "message": str(error)}), 500
+        # Keep internal exception details, including any accidental query text,
+        # out of the client response. The service is intended to be safe to use
+        # behind the University integration bridge.
+        logger.error("Unhandled NLP asset API error", exc_info=(type(error), error, error.__traceback__))
+        return jsonify({
+            "error": "Internal Server Error",
+            "message": "The recommendation service could not complete the request.",
+        }), 500
 
     app.register_blueprint(api_v1)
     return app

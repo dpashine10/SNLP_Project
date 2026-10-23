@@ -3,7 +3,7 @@
 **Group 7 — J037, J038, J039, J041, J042**  
 **Target Submission:** 16 October  
 **Deliverable:** Working Reusable NLP Asset  
-**Status:** Complete, Verified & Production Ready (28/28 Tests Passing)
+**Status:** Demo-ready reusable asset with Group 6 HTTP integration (31 test cases; verify locally)
 
 ---
 
@@ -19,7 +19,7 @@ Over Weeks 1 through 5, the team designed, built, and evaluated an NLP-driven **
 Convert the research models into an encapsulated, production-grade **Reusable NLP Asset** satisfying:
 1. **API / Module:** Clean Python library + standardized Flask REST API microservice.
 2. **Structured Input / Output:** Strictly validated data contracts with boundary constraints and typed responses.
-3. **Calibrated Confidence Scores:** Interpretable, bounded probability scores with qualitative tiers (`HIGH`, `MEDIUM`, `LOW`) and transparent explanations.
+3. **Confidence Scores:** Interpretable, bounded ranking scores with qualitative tiers (`HIGH`, `MEDIUM`, `LOW`) and transparent explanations; not calibrated probabilities.
 4. **Interactive CLI & Documentation:** Developer guides, OpenAPI schemas, and terminal utilities.
 5. **Quality Assurance:** Full unit and integration test coverage.
 
@@ -47,7 +47,7 @@ graph TD
         Asset --> Validate[Schema Validator: RecommendRequest]
         Validate --> Embed[Embedder: Sentence-BERT all-MiniLM-L6-v2]
         Embed --> VStore{Vector Storage Backend}
-        VStore -->|Persistent| Chroma[ChromaDB Collection week4_papers]
+         VStore -->|Persistent| Chroma[ChromaDB Collection iitb_research_papers]
         VStore -->|High Speed| FastNPZ[In-Memory Store: 62,637 paper_embeddings.npz]
         Chroma --> Hits[PaperHits with Cosine Similarities]
         FastNPZ --> Hits[PaperHits with Cosine Similarities]
@@ -81,7 +81,7 @@ The development of the Week 6 asset was conducted systematically across three de
      - `GET /api/v1/health`: Readiness, backend, and model status (`200 OK`).
      - `GET /api/v1/info`: Metadata regarding available strategies and boundaries (`200 OK`).
      - `POST /api/v1/recommend`: Structured recommendation query (`200 OK` or `400 Bad Request`).
-     - `POST /api/v1/batch`: Concurrent processing of multiple queries (**96.1ms** batch processing time).
+      - `POST /api/v1/batch`: Validated processing of multiple queries in one request.
      - `GET /api/v1/schema`: OpenAPI-style JSON schema discovery (`200 OK`).
      - Universal CORS headers and HTTP error handlers (400, 404, 405, 500).
   2. [`src/week6/cli.py`](cli.py): Interactive command-line tool with ASCII formatted table output, `--json` pipe flag, and diagnostic commands.
@@ -90,11 +90,11 @@ The development of the Week 6 asset was conducted systematically across three de
 ### Phase 3: Comprehensive Test Suite, Documentation & Verification
 - **Dedicated Goal:** Validate all input validation constraints, confidence calibration behavior, REST API contracts, and integration workflows with automated tests, and provide complete documentation.
 - **What Was Built:**
-  1. [`src/week6/tests/`](tests/): 28 automated tests covering schemas, confidence calibration, API routes, and integration.
+   1. [`src/week6/tests/`](tests/): 31 automated tests covering schemas, confidence calibration, API routes, live asset behavior, and the Group 6 HTTP contract.
   2. [`src/week6/README.md`](README.md): Quickstart guide, curl commands, JSON request/response contracts, and CLI instructions.
   3. [`src/week6/ASSET_GUIDE.md`](ASSET_GUIDE.md): Complete developer and evaluator handbook.
   4. [`README.md`](../../README.md): Updated project roadmap covering Weeks 2 through 6.
-- **Phase 3 Verification:** Full test suite executed with **28 of 28 tests passing (100% success rate)** in 37.95 seconds.
+- **Phase 3 Verification:** Run the command in Section 7 in the target Python 3.12 environment. The suite now contains 31 tests, including strict boundary validation and the Group 6 bridge contract.
 
 ---
 
@@ -204,7 +204,7 @@ To trace how the project evolved from raw data ingestion into a production-grade
 - [`src/week6/api.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/api.py): Production Flask REST microservice (`/api/v1`).
 - [`src/week6/cli.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/cli.py): Terminal search tool.
 - [`src/week6/README.md`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/README.md) & [`ASSET_GUIDE.md`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/ASSET_GUIDE.md): Complete documentation.
-- [`src/week6/tests/`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/): 28 unit and integration tests (100% passing).
+- [`src/week6/tests/`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/): 31 unit and integration tests; run the documented command for the local result.
 - [`week 6/`](file:///c:/Users/nitaa/Downloads/SNLP_Project/week%206/) & [`week6/`](file:///c:/Users/nitaa/Downloads/SNLP_Project/week6/): Root-level deliverable packages.
 
 ---
@@ -217,17 +217,15 @@ The automated test suite verifies all layers of the asset:
 uv run python -m unittest discover -s src/week6/tests -t .
 ```
 
-### Execution Output:
-```text
-............................
-----------------------------------------------------------------------
-Ran 28 tests in 37.950s
+### Execution output
 
-OK (28 of 28 tests passing with 100% success rate)
-```
+The repository contains 31 test cases. Because five tests execute the live
+embedding asset, the command must be run in an environment with the project's
+Python 3.12 dependencies and model runtime; this report does not hard-code a
+result from a different environment.
 
 ### Test Breakdown by Module:
-- **`test_schemas.py` (7 tests):**
+- **`test_schemas.py` (10 tests):**
   - `test_valid_recommend_request`: Verifies standard request creation.
   - `test_default_values`: Confirms default top-$k$ ($5$), strategy (`top_k_average_author_discount`), and paper top-$k$ ($100$).
   - `test_empty_query_raises_validation_error`: Ensures blank strings trigger `ValidationError`.
@@ -235,13 +233,13 @@ OK (28 of 28 tests passing with 100% success rate)
   - `test_invalid_strategy_raises_validation_error`: Rejects unsupported strategy names.
   - `test_invalid_min_confidence_raises_validation_error`: Enforces confidence bounds $[0.0, 1.0]$.
   - `test_from_dict_and_to_dict`: Tests full dictionary round-trip serialization.
-- **`test_confidence.py` (6 tests):**
+- **`test_confidence.py` (5 tests):**
   - `test_high_score_produces_high_confidence`: Verifies raw scores $\ge 0.55$ yield `HIGH` confidence ($\ge 0.75$).
   - `test_low_score_produces_low_confidence`: Verifies raw scores $\le 0.20$ yield `LOW` confidence ($< 0.50$).
   - `test_medium_score_produces_medium_confidence`: Verifies intermediate scores yield `MEDIUM` confidence.
   - `test_score_clamping`: Tests extreme values ($-1.0$ and $+1.5$) are clamped to $[0.05, 0.98]$.
   - `test_evidence_bonus`: Verifies multi-paper support confers a quantitative confidence bonus.
-- **`test_api.py` (10 tests):**
+- **`test_api.py` (11 tests):**
   - `test_health_endpoint`: Verifies `GET /api/v1/health` returns HTTP 200.
   - `test_info_endpoint`: Verifies `GET /api/v1/info` returns HTTP 200 with supported strategies.
   - `test_schema_endpoint`: Verifies `GET /api/v1/schema` returns HTTP 200 with JSON schemas.
@@ -249,7 +247,8 @@ OK (28 of 28 tests passing with 100% success rate)
   - `test_recommend_empty_query_validation_error`: Verifies empty query returns HTTP 400 with `ValidationError`.
   - `test_recommend_invalid_strategy_validation_error`: Verifies unsupported strategy returns HTTP 400.
   - `test_recommend_non_json_body`: Verifies non-JSON payload returns HTTP 400 Bad Request.
-  - `test_batch_endpoint`: Verifies `POST /api/v1/batch` processes multiple queries.
+   - `test_batch_endpoint`: Verifies `POST /api/v1/batch` processes multiple queries.
+   - `test_batch_validation_returns_400_instead_of_500`: Verifies malformed batch types are rejected safely.
   - `test_not_found_endpoint`: Verifies unknown URL returns HTTP 404.
   - `test_method_not_allowed`: Verifies `GET` on `/recommend` returns HTTP 405.
 - **`test_asset.py` (5 tests):**
@@ -325,4 +324,4 @@ The **Week 6 (Asset Engineering)** deliverable converts the academic researcher 
 - **Clean modularity:** Fully isolated under `src/week6/` with zero breaking changes to previous weeks.
 - **Explainable recommendations:** Explicit paper-level evidence hits and qualitative confidence rationales.
 - **Enterprise-ready interfaces:** Python SDK component, Flask REST API microservice with OpenAPI schemas, and CLI utility.
-- **Robustness:** 100% automated test pass rate across 28 unit and integration scenarios.
+- **Robustness:** 31 automated unit and integration test cases covering boundaries, API contracts, and live asset behavior; run them in the target environment before deployment.

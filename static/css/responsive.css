@@ -104,6 +104,11 @@
     scrollbar-width: none;
   }
 
+  .service-health {
+    width: 100%;
+    justify-content: center;
+  }
+
   .nav-list {
     width: max-content;
     min-width: 100%;

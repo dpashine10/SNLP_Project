@@ -10,14 +10,15 @@
       root.classList.add("js");
       var stored = null;
       try { stored = localStorage.getItem("sidebar-open"); } catch (e) {}
-      var open = window.matchMedia("(min-width: 901px)").matches && stored !== "0";
+      var contextRequested = window.location.hash === "#stats-heading" || window.location.hash === "#config-heading";
+      var open = contextRequested || (window.matchMedia("(min-width: 901px)").matches && stored !== "0");
       if (!open) { root.classList.add("sidebar-collapsed"); }
     })();
   </script>
   {% block head %}{% endblock %}
   <title>{% block title %}{% endblock %} · Research Discovery &amp; Collaboration Engine</title>
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
-  {% for sheet in ('main', 'layout', 'navigation', 'cards', 'forms', 'buttons', 'tables', 'responsive') %}
+  {% for sheet in ('main', 'layout', 'navigation', 'cards', 'forms', 'buttons', 'tables', 'integration', 'responsive') %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/' ~ sheet ~ '.css') }}">
   {% endfor %}
 </head>
@@ -28,6 +29,7 @@
     {% elif name == 'compare' %}<rect x="3.5" y="5" width="7" height="14" rx="1.5"/><rect x="13.5" y="5" width="7" height="14" rx="1.5"/>
     {% elif name == 'evaluation' %}<path d="M5 20V11M12 20V5M19 20v-6"/>
     {% elif name == 'stats' %}<ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12v6c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-6"/>
+    {% elif name == 'integration' %}<path d="M8 7h8M8 17h8M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/>
     {% else %}<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>
     {% endif %}
   </svg>
@@ -37,11 +39,11 @@
   <header class="site-header">
     <div class="site-header-inner">
       <button class="brand" id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="true"
-              aria-label="Research Discovery and Collaboration Engine. Toggle settings sidebar">
+              aria-label="Research Discovery and Collaboration Engine. Toggle navigation sidebar">
         <img class="brand-logo" src="{{ url_for('static', filename='images/favicon.svg') }}" alt="" width="36" height="36">
         <span class="brand-text">
           <span class="brand-title">Research Discovery &amp; Collaboration Engine</span>
-          <span class="brand-subtitle">AI University NLP Course Project — Version 1.0 Core NLP Pipeline (Sentence Transformers vs TF-IDF)</span>
+          <span class="brand-subtitle">AI University Week 7 prototype — publication-based researcher discovery with Group 6 bridge integration</span>
         </span>
       </button>
       <nav class="main-nav" aria-label="Main">
@@ -53,23 +55,29 @@
           {% endfor %}
         </ul>
       </nav>
+      <div class="service-health" data-group6-health role="status" aria-live="polite" title="Checking the Group 6 integration UI">
+        <span class="service-health-dot" aria-hidden="true"></span>
+        <span>Group 6: checking</span>
+      </div>
     </div>
   </header>
 
   <div class="page">
     <div class="sidebar-scrim" data-sidebar-scrim></div>
-    <aside class="sidebar" id="sidebar" aria-label="Settings and dataset statistics">
+    <aside class="sidebar" id="sidebar" aria-label="Search settings and dataset statistics">
       <nav class="side-nav" aria-label="Sections">
         {% for endpoint, label in nav_items %}
         <a class="side-link" href="{{ url_for(endpoint) }}" title="{{ label }}"{% if request.endpoint == endpoint %} aria-current="page"{% endif %}>{{ icon(endpoint) }}<span class="side-label">{{ label }}</span></a>
         {% endfor %}
-        <a class="side-link" href="#stats-heading" title="Statistics" data-side-expand>{{ icon('stats') }}<span class="side-label">Statistics</span></a>
-        <a class="side-link" href="{{ url_for('search') }}#config-heading" title="Settings" data-side-expand>{{ icon('settings') }}<span class="side-label">Settings</span></a>
+        <a class="side-link" href="#stats-heading" title="Dataset stats" data-side-expand data-context-target="stats-heading" aria-controls="stats-panel">{{ icon('stats') }}<span class="side-label">Dataset stats</span></a>
+        {% if pipeline_status == 'ready' %}
+        <a class="side-link" href="{% if request.endpoint == 'search' %}#config-heading{% else %}{{ url_for('search') }}#config-heading{% endif %}" title="Search settings" data-side-expand data-context-target="config-heading" aria-controls="config-panel">{{ icon('settings') }}<span class="side-label">Search settings</span></a>
+        {% endif %}
       </nav>
       <div class="side-body">
       {% block sidebar %}{% endblock %}
-      <section class="panel" aria-labelledby="stats-heading">
-        <h2 class="panel-title" id="stats-heading">Dataset Statistics</h2>
+      <section class="panel context-panel" id="stats-panel" aria-labelledby="stats-heading">
+        <h2 class="panel-title context-target-heading" id="stats-heading" tabindex="-1">Dataset stats</h2>
         {% if stats %}
         <dl class="stat-list">
           {% for stat in stats %}
@@ -94,7 +102,7 @@
   </div>
 
   <footer class="site-footer">
-    <p>Group 7 · Retrieval by the Week 3 pipeline (<code>src/week2/pipeline.py</code>), embedding model all-MiniLM-L6-v2.</p>
+    <p>Group 7 · Research discovery by paper-level semantic retrieval · Week 6 API supports the Group 6 University handoff.</p>
   </footer>
 
   <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>

@@ -3,7 +3,7 @@
 **Milestone:** Week 6 — Asset Engineering  
 **Target Submission:** 16 October  
 **Deliverable:** Working Reusable NLP Asset  
-**Status:** Production Ready & Verified (28/28 Unit & Integration Tests Passing)
+**Status:** Demo-ready reusable asset; verify the local model environment before deployment (31 test cases)
 
 ---
 
@@ -47,9 +47,9 @@ graph TD
 1. **Encapsulation & Zero Leakage:**
    Callers never deal with raw PyTorch tensors, cosine distance transformations, or database cursor objects. They interact strictly with typed dataclass contracts (`RecommendRequest`, `RecommendResponse`).
 2. **Deterministic & Explainable:**
-   Every recommendation includes explicit paper-level evidence (publication title, year, similarity score, author count) and a calibrated confidence rationale explaining *why* the researcher was matched.
+   Every recommendation includes explicit paper-level evidence (publication title, year, similarity score, author count) and a ranking-confidence rationale explaining *why* the researcher was matched.
 3. **Calibrated Confidence:**
-   Raw cosine similarities (often spanning narrow $0.30 - 0.70$ ranges) are mathematically calibrated into $[0.05, 0.98]$ probability-like scores categorized into `HIGH`, `MEDIUM`, and `LOW` tiers.
+   Raw cosine similarities (often spanning narrow $0.30 - 0.70$ ranges) are transformed into bounded ranking-confidence scores in $[0.05, 0.98]$ categorized into `HIGH`, `MEDIUM`, and `LOW` tiers. These are ranking aids, not calibrated probabilities.
 4. **Dual-Backend Resilience:**
    The asset automatically detects and leverages a persistent ChromaDB collection (`Data/week4/chroma/`) or the high-speed in-memory paper vector store (`paper_embeddings.npz`), delivering **sub-50ms query latency** across 62,637 papers.
 
@@ -300,14 +300,12 @@ The test suite covers schema validation, edge cases, calibration mathematics, HT
 uv run python -m unittest discover -s src/week6/tests -t .
 ```
 
-```text
-Ran 28 tests in 40.632s
-
-OK (28 / 28 tests passing with 100% success rate)
-```
+The current source suite contains 31 test cases. The command above is the
+source of truth because live asset tests depend on the installed embedding
+runtime and local model cache.
 
 ### Test Breakdown:
-- [`test_schemas.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_schemas.py): 7 tests covering request bounds, validation triggers, and dictionary/JSON round-trips.
-- [`test_confidence.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_confidence.py): 6 tests covering temperature scaling, margin calculation, depth bonus, and clamping bounds.
-- [`test_api.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_api.py): 10 tests covering all routes, status codes, CORS headers, and error responses.
+- [`test_schemas.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_schemas.py): 10 tests covering request bounds, strict JSON types, and dictionary/JSON round-trips.
+- [`test_confidence.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_confidence.py): 5 tests covering temperature scaling, margin calculation, depth bonus, and clamping bounds.
+- [`test_api.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_api.py): 11 tests covering all routes, status codes, CORS headers, and error responses.
 - [`test_asset.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/test_asset.py): 5 tests covering live asset initialization, strategy switching, confidence filtering, and batch recommendation.

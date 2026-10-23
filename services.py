@@ -6,8 +6,12 @@ tested without a server. Retrieval itself stays in
 ``src.week2.pipeline.ResearchDiscoveryPipeline`` and is called unchanged.
 """
 
+import json
+import os
 import threading
 import time
+import urllib.error
+import urllib.request
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -17,6 +21,8 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 CALCULATED_DIR = PROJECT_ROOT / "Data" / "processed" / "calculated"
+DEFAULT_GROUP6_URL = os.environ.get("GROUP6_URL", "http://127.0.0.1:5000")
+GROUP6_HEALTH_TIMEOUT = 2.0
 
 # Retrieval modes accepted by ResearchDiscoveryPipeline.search, with display labels.
 MODE_LABELS: dict[str, str] = {
@@ -202,11 +208,72 @@ def dataset_stats(pipeline: Any) -> list[Stat]:
     """Dataset size and model, as shown alongside every page."""
     stats = []
     if pipeline.profiles_df is not None:
-        stats.append(Stat("Faculty & Researchers", len(pipeline.profiles_df)))
+        stats.append(Stat("Indexed OpenAlex Researchers", len(pipeline.profiles_df)))
     if pipeline.papers_df is not None:
         stats.append(Stat("Indexed Academic Papers", len(pipeline.papers_df)))
     stats.append(Stat("Embedding Model", pipeline.model_name))
     return stats
+
+
+def group6_health(base_url: str = DEFAULT_GROUP6_URL) -> dict[str, Any]:
+    """Probe the Group 6 integration UI without making it a Group 7 dependency.
+
+    The Group 6 UI exposes ``GET /health`` as a local liveness endpoint. This
+    helper deliberately distinguishes a refused connection from a reachable
+    but incompatible service, which makes port/process mistakes visible in the
+    Group 7 dashboard.
+    """
+    url = base_url.rstrip("/")
+    endpoint = url + "/health"
+    request = urllib.request.Request(endpoint, headers={"Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(request, timeout=GROUP6_HEALTH_TIMEOUT) as response:
+            payload = json.load(response)
+            status = payload.get("status", "unknown")
+            healthy = status in ("ready", "ok")
+            return {
+                "state": status if healthy else "unhealthy",
+                "status": status,
+                "reachable": True,
+                "healthy": healthy,
+                "http_status": getattr(response, "status", 200),
+                "url": url,
+                "service": payload.get("service", "unknown"),
+                "detail": "Group 6 is reachable." if healthy else "Group 6 returned an unexpected health state.",
+            }
+    except urllib.error.HTTPError as exc:
+        return {
+            "state": "incompatible" if exc.code < 500 else "unhealthy",
+            "status": "http_error",
+            "reachable": True,
+            "healthy": False,
+            "http_status": exc.code,
+            "url": url,
+            "service": "unknown",
+            "detail": "A service answered, but it does not expose the Group 6 /health contract." if exc.code == 404 else "Group 6 returned an unhealthy HTTP status.",
+        }
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        return {
+            "state": "unreachable",
+            "status": "unreachable",
+            "reachable": False,
+            "healthy": False,
+            "http_status": None,
+            "url": url,
+            "service": "unknown",
+            "detail": f"Could not connect to Group 6 ({type(exc).__name__}).",
+        }
+    except (ValueError, json.JSONDecodeError):
+        return {
+            "state": "incompatible",
+            "status": "invalid_response",
+            "reachable": True,
+            "healthy": False,
+            "http_status": None,
+            "url": url,
+            "service": "unknown",
+            "detail": "A service answered, but its Group 6 health response was not valid JSON.",
+        }
 
 
 def evaluation_table(key: str) -> EvaluationTable | None:

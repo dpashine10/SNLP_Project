@@ -13,7 +13,7 @@ Week 6 packages the research discovery engine into a self-contained, enterprise-
 The asset converts the NLP pipeline into:
 1. **Python SDK Module (`NLPAsset`):** Clean, object-oriented API that can be imported into any application.
 2. **Structured Contracts:** Typed input (`RecommendRequest`) and output (`RecommendResponse`) schemas with strict boundary validation.
-3. **Calibrated Confidence Engine:** Probabilistic confidence scores ($[0.05, 0.98]$) categorized into `HIGH`, `MEDIUM`, and `LOW` tiers with transparent rationales.
+3. **Confidence Engine:** Bounded ranking-confidence scores ($[0.05, 0.98]$) categorized into `HIGH`, `MEDIUM`, and `LOW` tiers with transparent rationales. They are review-prioritization aids, not calibrated probabilities.
 4. **Flask REST API Microservice:** Standardized HTTP API with endpoints for single recommendation, batch queries, health monitoring, and schema discovery.
 5. **Interactive CLI:** Command-line tool supporting human-readable ASCII tables and piping JSON.
 
@@ -199,10 +199,9 @@ The asset includes a comprehensive unit and integration test suite covering inpu
 uv run python -m unittest discover -s src/week6/tests -t .
 ```
 
-```text
-Ran 28 tests in 40.632s
-OK (All 28 tests passing)
-```
+The current source suite contains 31 test cases covering schemas, confidence,
+API routes, live asset behavior, and the Group 6 HTTP contract. Run the command
+above in the project's Python 3.12 environment to verify the local result.
 
 ---
 
@@ -216,4 +215,4 @@ OK (All 28 tests passing)
 | [`src/week6/confidence.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/confidence.py) | Mathematical confidence calibration and qualitative tier assignments. |
 | [`src/week6/api.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/api.py) | Flask REST API microservice with `/health`, `/info`, `/recommend`, `/batch`, and `/schema`. |
 | [`src/week6/cli.py`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/cli.py) | Standalone CLI utility for scripting and terminal interaction. |
-| [`src/week6/tests/`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/) | 28 automated tests covering schemas, confidence calibration, API routes, and integration. |
+| [`src/week6/tests/`](file:///c:/Users/nitaa/Downloads/SNLP_Project/src/week6/tests/) | 31 automated tests covering schemas, confidence calibration, API routes, and live asset integration. |

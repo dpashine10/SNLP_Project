@@ -1,0 +1,196 @@
+/* Cross-project University integration page. */
+
+.eyebrow {
+  margin-bottom: var(--space-8);
+  color: var(--color-accent-strong);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.integration-hero {
+  padding: var(--space-16) 0 var(--space-24);
+  border-bottom: var(--border-width-thin) solid var(--color-hairline);
+  margin-bottom: var(--space-24);
+}
+
+.integration-status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-8);
+  margin-top: var(--space-16);
+}
+
+.integration-status-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  min-height: 56px;
+  padding: var(--space-8) var(--space-16);
+  background: var(--color-surface-glass-strong);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.integration-status-item span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.integration-status-item strong {
+  color: var(--color-heading);
+  font-size: var(--font-size-sm);
+}
+
+.integration-status-item small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.status-dot {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: var(--radius-circle);
+}
+
+.status-dot-ready { background: var(--color-success); }
+.status-dot-safe { background: var(--color-teal); }
+.status-dot-review { background: var(--color-accent); }
+
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-16);
+  align-items: start;
+  margin-bottom: var(--space-16);
+}
+
+.integration-card {
+  margin-bottom: 0;
+}
+
+.integration-card-wide {
+  grid-column: 1 / -1;
+}
+
+.integration-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-8);
+  align-items: stretch;
+}
+
+.integration-step {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  min-height: 142px;
+  padding: var(--space-16);
+  background: var(--color-surface-muted);
+  border-left: var(--border-width-medium) solid var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.integration-step strong {
+  color: var(--color-heading);
+  font-size: var(--font-size-base);
+}
+
+.integration-step span:last-child {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.step-index {
+  color: var(--color-accent-strong);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.integration-arrow {
+  display: none;
+}
+
+.code-block {
+  margin: 0 0 var(--space-8);
+  padding: var(--space-16);
+  overflow-x: auto;
+  background: var(--color-code-bg);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-heading);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-relaxed);
+  white-space: pre;
+}
+
+.integration-note {
+  margin: 0;
+  font-size: var(--font-size-xs);
+}
+
+.contract-list,
+.risk-list,
+.demo-list {
+  margin: 0;
+  padding-left: var(--space-24);
+}
+
+.contract-list li,
+.risk-list li,
+.demo-list li {
+  margin-bottom: var(--space-8);
+}
+
+.contract-list li:last-child,
+.risk-list li:last-child,
+.demo-list li:last-child {
+  margin-bottom: 0;
+}
+
+.runbook-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-16);
+  margin-bottom: var(--space-16);
+}
+
+.runbook-grid h3 {
+  margin-bottom: var(--space-8);
+  font-size: var(--font-size-base);
+}
+
+.demo-list {
+  color: var(--color-text);
+}
+
+.integration-card-warning {
+  border-top: var(--border-width-medium) solid var(--color-accent);
+}
+
+.callout {
+  margin: var(--space-16) 0 var(--space-24);
+  padding: var(--space-16);
+  background: var(--color-warning-soft);
+  border: var(--border-width-thin) solid var(--color-warning-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-warning);
+}
+
+@media (max-width: 1000px) {
+  .integration-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .integration-flow,
+  .runbook-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,5 +1,5 @@
 # 🎓 Research Discovery & Collaboration Engine
-### AI University — Natural Language Processing Course Project
+### AI University — Week 7 integrated prototype
 **Group 7 — J037, J038, J039, J041, J042**
 
 ---
@@ -10,13 +10,13 @@ Universities house faculty and researchers working across diverse and rapidly ev
 
 Traditional keyword search systems (e.g., standard Boolean or TF-IDF search) fail when researchers describe related work using different terminology (e.g., *"neural language representation"* vs. *"transformer embeddings"*). 
 
-The **Research Discovery & Collaboration Engine** uses modern Natural Language Processing (NLP) techniques to bridge lexical gaps and map research descriptions, abstracts, and synopses to faculty expertise.
+The **Research Discovery & Collaboration Engine** uses modern Natural Language Processing (NLP) techniques to bridge lexical gaps and map research descriptions, abstracts, and synopses to publication-based researcher matches. The current prototype does not verify teaching assignments, faculty status, or mentor availability.
 
 ---
 
-## 🚀 2. Deliverable: Week 3 — Core NLP Model (Version 1 Pipeline)
+## 🚀 2. Current deliverable: Week 7 integrated University prototype
 
-In accordance with the **Week 3 Milestones (Target: 25 September)**, this deliverable implements **Version 1 of the NLP Pipeline** featuring:
+The current deliverable combines the earlier retrieval pipeline with the Week 6 reusable API and the Group 6 student-support bridge. It includes:
 
 1. **Primary NLP Component — Dense Semantic Embeddings:**
    - Powered by [Sentence-BERT (SBERT)](https://arxiv.org/abs/1908.10084) using the `all-MiniLM-L6-v2` architecture.
@@ -36,7 +36,7 @@ In accordance with the **Week 3 Milestones (Target: 25 September)**, this delive
    - Rather than returning only researcher names, the pipeline extracts:
      - **Similarity Score:** Overall affinity index.
      - **Most Relevant Paper:** Title, year, and paper-level similarity score identifying *why* the researcher was matched.
-     - **Related Topics & Keywords:** Salient thematic tags extracted from their publications.
+      - **Related publication topics:** Topic labels extracted from supporting publications where available.
 
 5. **High-Performance Vector Caching:**
    - Precomputes and caches paper and author embeddings (`paper_embeddings.npz` and `researcher_embeddings.npz`).
@@ -86,6 +86,9 @@ The pipeline was evaluated on the curated benchmark dataset (`Data/processed/cal
 - `transformer based text classification`
 - `information retrieval`
 - `knowledge graphs`
+- `battery materials and energy storage`
+- `quantum computing`
+- `deep learning neural networks`
 
 ### Evaluation Metrics
 
@@ -110,9 +113,9 @@ On broad queries (e.g., *"natural language processing"*), both TF-IDF and SBERT 
 SNLP_Project/
 ├── Data/
 │   └── processed/
-│       ├── papers.csv                   # 2,884 indexed research publications
-│       ├── paper_author.csv             # 12,316 authorship relations
-│       ├── researcher_profiles.csv      # 9,942 aggregated researcher profiles
+│       ├── papers.csv                   # 62,637 indexed research publications
+│       ├── paper_author.csv             # 129,459 authorship relations
+│       ├── researcher_profiles.csv      # 52,736 indexed OpenAlex researchers
 │       ├── paper_embeddings.npz         # Precomputed paper embeddings
 │       ├── researcher_embeddings.npz    # Precomputed author embeddings
 │       └── calculated/
@@ -144,11 +147,11 @@ SNLP_Project/
 │   └── week6/                            # Deliverable: Reusable NLP Asset & Microservice
 │       ├── asset.py                      # NLPAsset Python SDK component
 │       ├── schemas.py                    # Strict input/output contracts and validation
-│       ├── confidence.py                 # Calibrated confidence scoring engine
+│       ├── confidence.py                 # Ranking-confidence bands and explanations
 │       ├── api.py                        # Flask REST API microservice (/api/v1)
 │       ├── cli.py                        # Standalone interactive CLI
 │       ├── README.md & ASSET_GUIDE.md    # Integration documentation & OpenAPI spec
-│       └── tests/                        # 28 unit and integration tests
+│       └── tests/                        # 31 unit and integration tests
 ├── app.py                               # Web application (Flask routes)
 ├── services.py                          # Data preparation for the web pages (no HTML)
 ├── templates/                           # Jinja2 HTML templates
@@ -199,6 +202,55 @@ Run the complete Week 6 test suite:
 ```bash
 uv run python -m unittest discover -s src/week6/tests -t .
 ```
+
+### 5. AI University cross-project demonstration
+Group 7 exposes the reusable Week 6 API consumed by the adjacent Group 6
+S3T integration. The repositories intentionally run as separate services:
+
+```text
+Group 6 S3T + bridge  --HTTP topic-only handoff-->  Group 7 /api/v1/recommend
+```
+
+Start Group 7 first. You can use the main dashboard on port `8000` or the
+standalone Week 6 API on port `8080`:
+
+```bash
+# Terminal 1, all-in-one Group 7 dashboard (bridge target: 8000)
+uv run python app.py
+
+# OR Terminal 1, standalone Week 6 API (bridge target: 8080)
+uv run python -m src.week6.api
+
+# Terminal 2, from group6_for_group7/S3T_Week6_Asset
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e "[all]"
+cd ../integration
+PYTHONPATH=. python ui_server.py --group7 http://127.0.0.1:8000 --timeout 180
+```
+
+If using the standalone API instead, change the bridge target to
+`http://127.0.0.1:8080`. The Group 7 dashboard also displays a live Group 6
+integration-health indicator. Set `GROUP6_URL` before starting the dashboard if
+the Group 6 UI is not on `http://127.0.0.1:5000`.
+
+Open `http://127.0.0.1:5000`. Use the at-risk `CS 521` example to demonstrate
+triage, early-warning signals, course-to-topic resolution, researcher matches,
+and supporting papers. Then show the routine-query `no_risk` guardrail and the
+unknown-course `needs_topic` guardrail.
+
+The in-project presenter page is available at `http://127.0.0.1:8000/integration`
+when the main web application is running. Full contracts and limitations are
+documented in:
+
+- [`docs/AI_UNIVERSITY_INTEGRATION.md`](docs/AI_UNIVERSITY_INTEGRATION.md)
+- [`docs/RESPONSIBLE_AI.md`](docs/RESPONSIBLE_AI.md)
+
+The Group 6 bridge sends Group 7 only a topic-level recommendation request. The
+bridge does not send student email text, student identifiers, crisis details,
+or S3T confidence values. The reusable API also accepts ordinary research
+queries for other consumers. Its outputs are advisory publication-based
+researcher matches, not verified faculty assignments.
 
 ### Rebuild the complete data pipeline
 ```bash

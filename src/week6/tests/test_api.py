@@ -82,6 +82,8 @@ class TestAPI(unittest.TestCase):
         self.assertIn("model_metadata", data)
         self.assertIn("supported_strategies", data)
         self.assertIn("top_k_average_author_discount", data["supported_strategies"])
+        self.assertEqual(data["university_integration"]["consumer"], "group6_for_group7 integration bridge")
+        self.assertTrue(data["university_integration"]["advisory_only"])
 
     def test_schema_endpoint(self) -> None:
         res = self.client.get("/api/v1/schema")
@@ -132,6 +134,16 @@ class TestAPI(unittest.TestCase):
         data = res.get_json()
         self.assertEqual(data["batch_size"], 1)
         self.assertIn("results", data)
+
+    def test_batch_validation_returns_400_instead_of_500(self) -> None:
+        for payload in (
+            {"queries": ["nlp"], "top_k": "not-an-int"},
+            {"queries": ["nlp"], "strategy": False},
+            {"queries": [{"query": "nlp", "include_evidence": "false"}]},
+        ):
+            res = self.client.post("/api/v1/batch", json=payload)
+            self.assertEqual(res.status_code, 400, payload)
+            self.assertEqual(res.get_json()["error"], "Validation Error")
 
     def test_not_found_endpoint(self) -> None:
         res = self.client.get("/api/v1/nonexistent")

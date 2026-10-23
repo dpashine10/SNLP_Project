@@ -2,8 +2,9 @@
 {% block title %}Research Search{% endblock %}
 
 {% block sidebar %}
-<section class="panel" aria-labelledby="config-heading">
-  <h2 class="panel-title" id="config-heading">Search Configuration</h2>
+<section class="panel context-panel" id="config-panel" aria-labelledby="config-heading">
+  <h2 class="panel-title context-target-heading" id="config-heading" tabindex="-1">Search settings</h2>
+  <p class="field-help settings-note">These controls apply to the next search submission; they are not saved preferences.</p>
 
   <div class="field">
     <label class="field-label" for="mode">Retrieval Architecture</label>

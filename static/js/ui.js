@@ -54,6 +54,44 @@
     sync();
   }
 
+  function clearContextTargets() {
+    if (!sidebar) {
+      return;
+    }
+    sidebar.querySelectorAll(".context-panel.is-targeted").forEach(function (panel) {
+      panel.classList.remove("is-targeted");
+    });
+    sidebar.querySelectorAll("[data-context-target][aria-current='true']").forEach(function (link) {
+      link.removeAttribute("aria-current");
+    });
+  }
+
+  function revealContextTarget(targetId, focusTarget) {
+    if (!sidebar || !targetId) {
+      return;
+    }
+    var target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+    var panel = target.closest(".context-panel") || target;
+    clearContextTargets();
+    setOpen(true, true);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        panel.classList.add("is-targeted");
+        var link = sidebar.querySelector('[data-context-target="' + targetId + '"]');
+        if (link) {
+          link.setAttribute("aria-current", "true");
+        }
+        target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (focusTarget && typeof target.focus === "function") {
+          target.focus({ preventScroll: true });
+        }
+      });
+    });
+  }
+
   if (toggle && sidebar) {
     toggle.addEventListener("click", function () {
       setOpen(!isOpen(), true);
@@ -70,10 +108,14 @@
         toggle.focus();
       }
     });
-    // Statistics / Settings shortcuts open the sidebar first so their target is visible.
+    // Dataset / search shortcuts open the sidebar first so their target is visible.
     sidebar.querySelectorAll("[data-side-expand]").forEach(function (link) {
-      link.addEventListener("click", function () {
-        if (!isOpen()) {
+      link.addEventListener("click", function (event) {
+        var targetId = link.getAttribute("data-context-target");
+        if (targetId && link.getAttribute("href").charAt(0) === "#") {
+          event.preventDefault();
+          revealContextTarget(targetId, true);
+        } else if (!isOpen()) {
           setOpen(true, true);
         }
       });
@@ -89,6 +131,47 @@
       narrow.addEventListener("change", onBreakpoint);
     }
     sync();
+
+    if (window.location.hash === "#stats-heading" || window.location.hash === "#config-heading") {
+      revealContextTarget(window.location.hash.slice(1), true);
+    }
+  }
+
+  // ---- University integration health ----------------------------------------
+  var group6Health = document.querySelector("[data-group6-health]");
+  if (group6Health) {
+    var group6Dot = group6Health.querySelector(".service-health-dot");
+    var group6Text = group6Health.querySelector("span:last-child");
+
+    var renderGroup6Health = function (health) {
+      var state = health && health.state ? health.state : "unreachable";
+      var label = state === "ready" || state === "ok"
+        ? "reachable"
+        : state === "incompatible"
+          ? "wrong endpoint"
+          : state === "unhealthy"
+            ? "unhealthy"
+            : "unreachable";
+      group6Health.classList.remove("is-ready", "is-warning", "is-error");
+      group6Health.classList.add(state === "ready" || state === "ok" ? "is-ready" : state === "incompatible" || state === "unhealthy" ? "is-warning" : "is-error");
+      group6Health.title = (health && health.detail) || "Group 6 integration status unavailable.";
+      if (group6Text) {
+        group6Text.textContent = "Group 6: " + label;
+      }
+      if (group6Dot) {
+        group6Dot.setAttribute("aria-label", label);
+      }
+    };
+
+    var refreshGroup6Health = function () {
+      fetch("/api/integration-status", { cache: "no-store" })
+        .then(function (response) { return response.json(); })
+        .then(renderGroup6Health)
+        .catch(function () { renderGroup6Health({ state: "unreachable", detail: "Could not query the Group 6 health endpoint." }); });
+    };
+
+    refreshGroup6Health();
+    window.setInterval(refreshGroup6Health, 15000);
   }
 
   // ---- Header tabs: one segment slides between tabs -------------------------

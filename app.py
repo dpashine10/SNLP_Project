@@ -1,6 +1,6 @@
 """
 Web application: Research Discovery & Collaboration Engine.
-AI University NLP Course Project (Deliverable Week 3: Version 1 Core NLP Pipeline).
+AI University Week 7 integrated prototype.
 
 Run from the repository root:
 
@@ -15,16 +15,19 @@ import os
 from collections.abc import Callable
 from typing import Any
 
-from flask import Flask, abort, render_template, request, send_file
+from flask import Flask, abort, jsonify, render_template, request, send_file
 from werkzeug.exceptions import HTTPException
 from werkzeug.wrappers import Response
 
 import services
+from src.week6.api import api_v1
+from src.week6.asset import AssetConfig, NLPAsset
 
 NAV_ITEMS = (
     ("search", "Research Search"),
     ("compare", "Model Comparison"),
     ("evaluation", "Benchmark & Metrics"),
+    ("integration", "University Integration"),
 )
 EMPTY_QUERY_WARNING = "Enter a research topic or choose a query preset first."
 # Error-page messages that replace Werkzeug's default descriptions.
@@ -47,6 +50,11 @@ def create_app(
     app = Flask(__name__)
     loader = services.PipelineLoader(pipeline_factory)
     app.extensions["pipeline_loader"] = loader
+    # The main Group 7 website also exposes the Week 6 API contract. This
+    # keeps the documented 8000 dashboard usable as a bridge target while the
+    # standalone API on port 8080 remains supported.
+    app.extensions["nlp_asset"] = NLPAsset(AssetConfig())
+    app.register_blueprint(api_v1)
     loader.start(background=background)
 
     @app.context_processor
@@ -113,6 +121,19 @@ def create_app(
     def evaluation() -> str:
         tables = {table.key: services.load_table(table) for table in services.EVALUATION_TABLES}
         return render_template("evaluation.html", tables=tables)
+
+    @app.get("/integration")
+    def integration() -> str:
+        """Explain and rehearse the Group 6 → Group 7 University workflow."""
+        # This page intentionally remains available while the heavier search
+        # pipeline is loading: it is the API/integration handoff surface, not a
+        # model inference screen.
+        return render_template("integration.html")
+
+    @app.get("/api/integration-status")
+    def integration_status() -> Any:
+        """Report whether the configured Group 6 integration UI is reachable."""
+        return jsonify(services.group6_health()), 200
 
     @app.get("/evaluation/<key>.csv")
     def download_table(key: str) -> Any:

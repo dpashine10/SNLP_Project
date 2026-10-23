@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% block title %}University integration{% endblock %}
+
+{% block content %}
+<section class="integration-hero" aria-labelledby="integration-title">
+  <p class="eyebrow">AI University · Group 7 / Week 6</p>
+  <h1 class="page-title" id="integration-title">University integration</h1>
+  <p class="lead">
+    This is the handoff surface for the class demonstration: when Group 6 identifies an academic-risk message
+    and resolves a course topic, the bridge sends Group 7 only that topic so this service can return
+    evidence-backed researcher publication matches. Routine messages and unresolved-course cases do not trigger
+    a Group 7 search.
+  </p>
+  <div class="integration-status" aria-label="Integration guarantees">
+    <div class="integration-status-item"><span class="status-dot status-dot-ready" aria-hidden="true"></span><span><strong>Contract implemented</strong><small><code>/api/v1/health</code> and <code>/api/v1/recommend</code></small></span></div>
+    <div class="integration-status-item"><span class="status-dot status-dot-safe" aria-hidden="true"></span><span><strong>Data minimized</strong><small>Topic only crosses the bridge</small></span></div>
+    <div class="integration-status-item"><span class="status-dot status-dot-review" aria-hidden="true"></span><span><strong>Staff review required</strong><small>No automatic action is taken</small></span></div>
+  </div>
+</section>
+
+<section class="integration-grid" aria-label="Integration overview">
+  <article class="integration-card integration-card-wide">
+    <p class="eyebrow">System path</p>
+    <h2 class="section-title">From student support to research discovery</h2>
+    <div class="integration-flow" role="list">
+      <div class="integration-step" role="listitem"><span class="step-index">01</span><strong>Group 6 / S3T</strong><span>Classifies category and urgency, extracts course codes, and flags review needs.</span></div>
+      <div class="integration-arrow" aria-hidden="true">→</div>
+      <div class="integration-step" role="listitem"><span class="step-index">02</span><strong>Bridge decision</strong><span>Applies transparent early-warning signals and maps the first known course to a topic.</span></div>
+      <div class="integration-arrow" aria-hidden="true">→</div>
+      <div class="integration-step" role="listitem"><span class="step-index">03</span><strong>Group 7 / NLP asset</strong><span>Ranks publication-based researchers and returns paper evidence through the Week 6 API.</span></div>
+      <div class="integration-arrow" aria-hidden="true">→</div>
+      <div class="integration-step" role="listitem"><span class="step-index">04</span><strong>Staff review</strong><span>A person decides whether any follow-up is appropriate; nothing is auto-routed.</span></div>
+    </div>
+  </article>
+
+  <article class="integration-card">
+    <p class="eyebrow">Required request</p>
+    <h2 class="section-title">Group 6 → Group 7</h2>
+    <pre class="code-block"><code>POST /api/v1/recommend
+Content-Type: application/json
+
+{
+  "query": "natural language processing",
+  "top_k": 5,
+  "include_evidence": true
+}</code></pre>
+    <p class="muted integration-note">The bridge must not send the email text, student ID, crisis details, or S3T confidence values.</p>
+  </article>
+
+  <article class="integration-card">
+    <p class="eyebrow">Response contract</p>
+    <h2 class="section-title">Evidence-bearing results</h2>
+    <ul class="contract-list">
+      <li><code>rank</code>, <code>name</code>, <code>author_id</code></li>
+      <li><code>score</code> and <code>confidence.level</code></li>
+      <li>Top supporting papers with <code>title</code>, <code>year</code>, and <code>similarity</code></li>
+    </ul>
+    <p class="muted integration-note">The service returns OpenAlex publication matches, not a verified university teaching roster or mentor-availability list.</p>
+  </article>
+
+  <article class="integration-card integration-card-wide">
+    <p class="eyebrow">How Group 7 ranks</p>
+    <h2 class="section-title">Publication relevance, with inspectable evidence</h2>
+    <p class="integration-note">
+      The default strategy averages each researcher's three strongest matching papers and discounts papers with
+      many co-authors. The result is not ranked by most recent publication, most published author, unique expertise,
+      teaching assignment, or mentor availability. Reviewers can inspect the matched-paper count, publication years,
+      similarity scores, related indexed topics, and the ranking-confidence explanation before deciding what to do.
+    </p>
+  </article>
+</section>
+
+<section class="card integration-card" aria-labelledby="demo-heading">
+  <p class="eyebrow">October 31, 2026 demo runbook</p>
+  <h2 class="section-title" id="demo-heading">Run the cross-project demonstration</h2>
+  <div class="runbook-grid">
+    <div>
+      <h3>Terminal 1 · Group 7 API</h3>
+      <pre class="code-block"><code>cd SNLP_Project
+uv run python -m src.week6.api
+curl http://127.0.0.1:8080/api/v1/health</code></pre>
+    </div>
+    <div>
+      <h3>Terminal 2 · Group 6 UI</h3>
+      <pre class="code-block"><code>cd group6_for_group7/S3T_Week6_Asset
+source .venv/bin/activate
+cd ../integration
+PYTHONPATH=. python ui_server.py \
+  --group7 http://127.0.0.1:8080</code></pre>
+    </div>
+  </div>
+  <ol class="demo-list">
+    <li>Open <code>http://127.0.0.1:5000</code> and confirm both status indicators.</li>
+    <li>Analyze the provided at-risk <code>CS 521</code> example and show the triage, early-warning, and researcher-match cards.</li>
+    <li>Run the routine query to show the <code>no_risk</code> guardrail.</li>
+    <li>Run the unknown-course example to show the <code>needs_topic</code> guardrail.</li>
+    <li>Expand Raw JSON and explain that a staff member reviews every result.</li>
+  </ol>
+</section>
+
+<section class="integration-grid" aria-label="Responsible AI safeguards">
+  <article class="integration-card integration-card-warning">
+    <p class="eyebrow">Responsible AI</p>
+    <h2 class="section-title">What the system can and cannot decide</h2>
+    <ul class="risk-list">
+      <li><strong>Advisory only:</strong> it must not grade, discipline, determine eligibility, or automatically contact a student.</li>
+      <li><strong>Human oversight:</strong> reviewers confirm the triage, risk signals, course mapping, and researcher evidence.</li>
+      <li><strong>Confidence caution:</strong> Group 7 confidence bands help prioritize review; they are not calibrated probabilities.</li>
+      <li><strong>Terminology caution:</strong> call the output “researchers whose papers match the topic,” not confirmed faculty or mentors.</li>
+    </ul>
+  </article>
+
+  <article class="integration-card">
+    <p class="eyebrow">Known limitations</p>
+    <h2 class="section-title">Say these limitations aloud</h2>
+    <ul class="risk-list">
+      <li>Group 6 uses generated messages; real-student performance is unknown.</li>
+      <li>Keyword signals can miss crisis language and can mishandle negation.</li>
+      <li>Only the first catalogued course or topic is searched; course-code mappings still require registrar validation.</li>
+      <li>Group 7 is based on publication similarity and has no teaching-roster verification.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="callout" aria-label="Integration reminder">
+  <strong>Integration reminder:</strong> Group 7 stays a separate HTTP service. Keep the Group 6 and Group 7 environments
+  separate because they have different Python and dependency requirements.
+</section>
+{% endblock %}

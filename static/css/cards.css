@@ -22,6 +22,22 @@
   padding-top: var(--space-16);
 }
 
+.context-panel {
+  scroll-margin-block: var(--space-16);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease), outline-color var(--dur) var(--ease);
+}
+
+.context-panel.is-targeted {
+  background: var(--color-primary-soft);
+  box-shadow: 0 0 0 var(--border-width-thin) var(--color-border-strong);
+}
+
+.context-target-heading {
+  scroll-margin-block: var(--space-16);
+  outline: none;
+}
+
 .panel-title {
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-semibold);

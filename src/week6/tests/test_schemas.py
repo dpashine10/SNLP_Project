@@ -88,6 +88,17 @@ class TestSchemas(unittest.TestCase):
         self.assertEqual(data["query"], "transformer attention")
         self.assertEqual(data["top_k"], 3)
 
+    def test_from_dict_rejects_ambiguous_json_types(self) -> None:
+        with self.assertRaises(ValidationError):
+            RecommendRequest.from_dict({"query": "nlp", "include_evidence": "false"})
+        with self.assertRaises(ValidationError):
+            RecommendRequest.from_dict({"query": "nlp", "top_k": "5"})
+
+    def test_paper_top_k_has_documented_upper_bound(self) -> None:
+        with self.assertRaises(ValidationError) as ctx:
+            RecommendRequest(query="nlp", paper_top_k=201)
+        self.assertEqual(ctx.exception.field_name, "paper_top_k")
+
     def test_recommend_response_serialization(self) -> None:
         conf = ConfidenceScore(
             score=0.85,
