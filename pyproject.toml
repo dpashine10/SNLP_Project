@@ -13,5 +13,16 @@ dependencies = [
     "requests>=2.34.2",
     "scikit-learn>=1.9.1",
     "sentence-transformers>=6.1.0",
+    "torch>=2.1",
     "tqdm>=4.70.1",
 ]
+
+[tool.uv.sources]
+# Docker runs the Linux image as amd64 so it can use PyTorch's official
+# CPU-only index instead of pulling the multi-gigabyte CUDA runtime.
+torch = { index = "pytorch-cpu", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

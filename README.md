@@ -267,7 +267,10 @@ Open:
 
 The compose file uses the Group 7 dashboard as the bridge target on port 8000.
 It keeps Hugging Face model caches in named volumes so subsequent starts do not
-redownload the encoders. Stop the stack with:
+redownload the encoders. The services build as `linux/amd64` and install the
+CPU-only PyTorch wheel so Docker Desktop does not download the Linux CUDA
+runtime; on Apple Silicon this uses Docker's amd64 emulation and may take
+longer on the first build. Stop the stack with:
 
 ```bash
 docker compose down
