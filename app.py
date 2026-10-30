@@ -44,7 +44,10 @@ def _default_pipeline_factory() -> Any:
 
 
 def create_app(
-    pipeline_factory: Callable[[], Any] = _default_pipeline_factory, *, background: bool = True
+    pipeline_factory: Callable[[], Any] = _default_pipeline_factory,
+    *,
+    background: bool = True,
+    nlp_asset: NLPAsset | None = None,
 ) -> Flask:
     """Build the app and start loading the pipeline (in a background thread by default)."""
     app = Flask(__name__)
@@ -53,8 +56,11 @@ def create_app(
     # The main Group 7 website also exposes the Week 6 API contract. This
     # keeps the documented 8000 dashboard usable as a bridge target while the
     # standalone API on port 8080 remains supported.
-    app.extensions["nlp_asset"] = NLPAsset(AssetConfig())
+    asset = nlp_asset if nlp_asset is not None else NLPAsset(AssetConfig(), search_lock=loader.search_lock)
+    app.extensions["nlp_asset"] = asset
     app.register_blueprint(api_v1)
+    if nlp_asset is None and background and pipeline_factory is _default_pipeline_factory:
+        loader.on_ready = lambda pipeline: asset.start_warmup(shared_model=getattr(pipeline, "model", None))
     loader.start(background=background)
 
     @app.context_processor
@@ -102,6 +108,9 @@ def create_app(
             presets=services.QUERY_PRESETS,
             top_k_range=(services.TOP_K_MIN, services.TOP_K_MAX, services.TOP_K_STEP),
             alpha_range=(services.ALPHA_MIN, services.ALPHA_MAX, services.ALPHA_STEP),
+            min_papers_options=services.MIN_PAPERS_OPTIONS,
+            since_year_options=services.SINCE_YEAR_OPTIONS,
+            institution_suggestions=services.institution_suggestions(loader.pipeline),
         )
         return page, 400 if errors else 200
 
@@ -109,12 +118,9 @@ def create_app(
     def compare() -> Any:
         if (response := unavailable()) is not None:
             return response
-        submitted = "q" in request.args
-        query = request.args.get("q", services.COMPARISON_DEFAULT_QUERY)
-        columns = None
-        if submitted:
-            with loader.search_lock:
-                columns = services.run_comparison(loader.pipeline, query)
+        query = request.args.get("q", services.COMPARISON_DEFAULT_QUERY).strip()
+        with loader.search_lock:
+            columns = services.run_comparison(loader.pipeline, query)
         return render_template("compare.html", query=query, columns=columns, top_k=services.COMPARISON_TOP_K)
 
     @app.get("/evaluation")

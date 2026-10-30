@@ -4,8 +4,8 @@
 {% block content %}
 <h1 class="page-title">Side-by-Side Model Comparison</h1>
 <p class="lead">
-  Compare how <strong>Sentence Transformers (Dense Semantic Similarity)</strong> captures conceptual
-  relevance compared to <strong>TF-IDF (Keyword-based)</strong>.
+  Compare how <strong>Paper-Level + Author Discount (Week 5/6)</strong> eliminates co-author tie crowding
+  against <strong>Sentence Transformers (Dense Semantic)</strong> and <strong>TF-IDF (Keyword Baseline)</strong>.
 </p>
 
 <section class="card" aria-label="Comparison form">
@@ -22,15 +22,36 @@
 <section class="compare-grid" aria-label="Top {{ top_k }} researchers per model">
   {% for column in columns %}
   <article class="card compare-column" aria-labelledby="column-{{ column.mode }}">
-    <h2 class="section-title" id="column-{{ column.mode }}">{{ column.title }}</h2>
+    <header class="compare-column-header">
+      <h2 class="section-title" id="column-{{ column.mode }}">{{ column.title }}</h2>
+      {% if column.results %}
+      <span class="badge badge-diversity" title="Unique primary evidence papers surfaced across top {{ column.results | length }} ranks">
+        {{ column.distinct_papers }}/{{ column.results | length }} distinct papers
+      </span>
+      {% endif %}
+    </header>
     {% if column.results %}
     <ol class="compare-list">
       {% for researcher in column.results %}
       <li class="compare-item">
-        <p class="compare-name">
-          <strong>#{{ researcher.rank }} {{ researcher.name }}</strong>
-          <span class="muted">(Score: <code>{{ '%.4f' | format(researcher.similarity_score) }}</code>)</span>
-        </p>
+        <div class="compare-item-top">
+          <p class="compare-name">
+            <strong>#{{ researcher.rank }} {{ researcher.name }}</strong>
+            <span class="muted">(Score: <code>{{ '%.4f' | format(researcher.similarity_score) }}</code>)</span>
+          </p>
+          <div class="compare-meta">
+            <span class="badge badge-confidence badge-confidence-{{ researcher.confidence_level | lower }}"
+                  title="{{ researcher.confidence_explanation }}">
+              {{ researcher.confidence_level }} · {{ '%.0f' | format(researcher.confidence_score * 100) }}%
+            </span>
+            {% if researcher.rank_delta %}
+            <span class="badge badge-delta">{{ researcher.rank_delta }}</span>
+            {% endif %}
+            {% if researcher.top_papers and researcher.top_papers[0].paper_type_label %}
+            <span class="badge badge-laya-subtle" title="Laya System-1 paper methodology">{{ researcher.top_papers[0].paper_type_label }}</span>
+            {% endif %}
+          </div>
+        </div>
         <p class="compare-paper">Relevant Paper: <cite>{{ researcher.paper_title }}</cite></p>
       </li>
       {% endfor %}

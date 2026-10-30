@@ -143,3 +143,18 @@
   flex: 1;
   margin-bottom: 0;
 }
+
+.filter-group {
+  margin-top: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: var(--border-width-thin) solid var(--color-hairline);
+}
+
+.panel-subtitle {
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-8);
+}

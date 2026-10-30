@@ -15,6 +15,14 @@
       if (!open) { root.classList.add("sidebar-collapsed"); }
     })();
   </script>
+  <meta name="description" content="{% block meta_description %}Semantic and hybrid academic researcher discovery across 52,736 OpenAlex scholars and 62,637 Indian institution publications, with paper-level evidence and University bridge integration.{% endblock %}">
+  <meta property="og:title" content="{{ self.title() }} · Research Discovery &amp; Collaboration Engine">
+  <meta property="og:description" content="{{ self.meta_description() }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Research Discovery &amp; Collaboration Engine">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ self.title() }} · Research Discovery &amp; Collaboration Engine">
+  <meta name="twitter:description" content="{{ self.meta_description() }}">
   {% block head %}{% endblock %}
   <title>{% block title %}{% endblock %} · Research Discovery &amp; Collaboration Engine</title>
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
@@ -55,9 +63,13 @@
           {% endfor %}
         </ul>
       </nav>
-      <div class="service-health" data-group6-health role="status" aria-live="polite" title="Checking the Group 6 integration UI">
+      {% set on_integration = request.endpoint == 'integration' %}
+      <div class="service-health is-standby" data-group6-health
+           data-integration-page="{{ 'true' if on_integration else 'false' }}"
+           role="status" aria-live="polite"
+           title="{{ 'Checking the Group 6 integration UI' if on_integration else 'Running standalone · Group 6 bridge connects during the University integration demo.' }}">
         <span class="service-health-dot" aria-hidden="true"></span>
-        <span>Group 6: checking</span>
+        <span>{{ 'Group 6: checking' if on_integration else 'Bridge: standalone' }}</span>
       </div>
     </div>
   </header>

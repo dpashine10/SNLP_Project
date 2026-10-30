@@ -18,6 +18,78 @@
   </div>
 </section>
 
+<section class="card integration-card bridge-simulator" id="bridge-simulator" data-bridge-simulator hidden aria-labelledby="simulator-heading">
+  <p class="eyebrow">Interactive Bridge Rehearsal · Live /api/v1/recommend</p>
+  <h2 class="section-title" id="simulator-heading">Interactive Group 6 → Group 7 Bridge Simulator</h2>
+  <p class="integration-note sim-lead">
+    Rehearse the three University handoff scenarios directly in your browser. Eligible academic-risk topics invoke this
+    server's live <code>POST /api/v1/recommend</code> endpoint with strict data minimization; routine and unmapped-course
+    guardrails block outbound HTTP calls.
+  </p>
+
+  <div class="sim-preset-bar" role="group" aria-label="University bridge scenarios">
+    <button class="button button-primary sim-preset-btn" type="button" data-scenario="at_risk" aria-pressed="false">
+      1 · At-Risk CS 521 (natural language processing)
+    </button>
+    <button class="button button-secondary sim-preset-btn" type="button" data-scenario="no_risk" aria-pressed="false">
+      2 · Routine Message (no_risk guardrail)
+    </button>
+    <button class="button button-secondary sim-preset-btn" type="button" data-scenario="needs_topic" aria-pressed="false">
+      3 · Unmapped Course HIST 499 (needs_topic guardrail)
+    </button>
+  </div>
+
+  <div class="sim-stage-grid">
+    <div class="sim-pane sim-pane-local">
+      <div class="sim-pane-header">
+        <span class="eyebrow">Stage 1 · Group 6 Local Triage</span>
+        <span class="badge badge-delta">Redacted · Never leaves Group 6</span>
+      </div>
+      <p class="sim-sublabel">Simulated student-support message (local only)</p>
+      <blockquote class="sim-message-box" data-sim-message></blockquote>
+      <dl class="sim-triage-meta">
+        <div><dt>S3T Category</dt><dd data-sim-category></dd></div>
+        <div><dt>Urgency</dt><dd data-sim-urgency></dd></div>
+        <div><dt>Course Mapping</dt><dd data-sim-course></dd></div>
+        <div><dt>Bridge Decision</dt><dd><code data-sim-decision></code></dd></div>
+      </dl>
+    </div>
+
+    <div class="sim-pane sim-pane-bridge">
+      <div class="sim-pane-header">
+        <span class="eyebrow">Stage 2 · Sanitized Bridge Payload</span>
+        <span class="badge badge-diversity" data-sim-bridge-badge>Select a scenario above</span>
+      </div>
+      <p class="sim-sublabel">Outbound HTTP payload to Group 7 (zero student PII or chat text)</p>
+      <pre class="code-block sim-code-block"><code data-sim-request-json></code></pre>
+
+      <div class="sim-override-box" data-sim-override-box hidden>
+        <form class="sim-override-form" data-sim-override-form>
+          <label class="field-label" for="sim-topic-input">Advisor Topic Override (manual catalog fallback)</label>
+          <div class="inline-form">
+            <input class="input input-inline" type="text" id="sim-topic-input" data-sim-topic-input
+                   value="information retrieval and archival text analysis"
+                   placeholder="Enter sanitized research topic…">
+            <button class="button button-primary" type="submit" data-sim-override-submit>Send Sanitized Topic</button>
+          </div>
+          <p class="field-help">Only this advisor-entered research topic is sent to <code>/api/v1/recommend</code>.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <p class="alert sim-status-banner" data-sim-status role="status" aria-live="polite" hidden></p>
+
+  <div class="sim-results-wrap" data-sim-results hidden aria-label="Advisor-review researcher publication matches"></div>
+
+  <details class="evidence-drawer sim-raw-drawer" data-sim-raw-drawer hidden>
+    <summary class="evidence-drawer-toggle">Inspect Raw /api/v1/recommend JSON Response</summary>
+    <div class="evidence-drawer-body">
+      <pre class="code-block sim-code-block"><code data-sim-response-json></code></pre>
+    </div>
+  </details>
+</section>
+
 <section class="integration-grid" aria-label="Integration overview">
   <article class="integration-card integration-card-wide">
     <p class="eyebrow">System path</p>
@@ -70,32 +142,40 @@ Content-Type: application/json
   </article>
 </section>
 
-<section class="card integration-card" aria-labelledby="demo-heading">
-  <p class="eyebrow">October 31, 2026 demo runbook</p>
-  <h2 class="section-title" id="demo-heading">Run the cross-project demonstration</h2>
-  <div class="runbook-grid">
-    <div>
-      <h3>Terminal 1 · Group 7 API</h3>
-      <pre class="code-block"><code>cd SNLP_Project
+<section class="card integration-card runbook-card" aria-labelledby="demo-heading">
+  <details class="collapsible runbook-collapsible">
+    <summary class="collapsible-summary runbook-summary">
+      <div>
+        <p class="eyebrow">October 31, 2026 demo runbook</p>
+        <h2 class="section-title" id="demo-heading">Presenter CLI Runbook — Run the Cross-Project Demonstration</h2>
+      </div>
+    </summary>
+    <div class="runbook-body">
+      <div class="runbook-grid">
+        <div>
+          <h3>Terminal 1 · Group 7 API</h3>
+          <pre class="code-block"><code>cd SNLP_Project
 uv run python -m src.week6.api
 curl http://127.0.0.1:8080/api/v1/health</code></pre>
-    </div>
-    <div>
-      <h3>Terminal 2 · Group 6 UI</h3>
-      <pre class="code-block"><code>cd group6_for_group7/S3T_Week6_Asset
+        </div>
+        <div>
+          <h3>Terminal 2 · Group 6 UI</h3>
+          <pre class="code-block"><code>cd group6_for_group7/S3T_Week6_Asset
 source .venv/bin/activate
 cd ../integration
 PYTHONPATH=. python ui_server.py \
   --group7 http://127.0.0.1:8080</code></pre>
+        </div>
+      </div>
+      <ol class="demo-list">
+        <li>Open <code>http://127.0.0.1:5000</code> and confirm both status indicators.</li>
+        <li>Analyze the provided at-risk <code>CS 521</code> example and show the triage, early-warning, and researcher-match cards.</li>
+        <li>Run the routine query to show the <code>no_risk</code> guardrail.</li>
+        <li>Run the unknown-course example to show the <code>needs_topic</code> guardrail.</li>
+        <li>Expand Raw JSON and explain that a staff member reviews every result.</li>
+      </ol>
     </div>
-  </div>
-  <ol class="demo-list">
-    <li>Open <code>http://127.0.0.1:5000</code> and confirm both status indicators.</li>
-    <li>Analyze the provided at-risk <code>CS 521</code> example and show the triage, early-warning, and researcher-match cards.</li>
-    <li>Run the routine query to show the <code>no_risk</code> guardrail.</li>
-    <li>Run the unknown-course example to show the <code>needs_topic</code> guardrail.</li>
-    <li>Expand Raw JSON and explain that a staff member reviews every result.</li>
-  </ol>
+  </details>
 </section>
 
 <section class="integration-grid" aria-label="Responsible AI safeguards">
@@ -126,4 +206,8 @@ PYTHONPATH=. python ui_server.py \
   <strong>Integration reminder:</strong> Group 7 stays a separate HTTP service. Keep the Group 6 and Group 7 environments
   separate because they have different Python and dependency requirements.
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/integration.js') }}" defer></script>
 {% endblock %}

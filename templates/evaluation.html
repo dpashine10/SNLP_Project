@@ -37,27 +37,212 @@
 {% block content %}
 <h1 class="page-title">Benchmark &amp; Quantitative Evaluation</h1>
 <p class="lead">
-  Evaluation results on the ground-truth labeled benchmark queries comparing <strong>TF-IDF Baseline</strong>
-  against <strong>Sentence Transformers</strong>.
+  Pooled multi-system evaluation across 8 held-out benchmark queries (<strong>214 judged query–researcher pairs</strong>
+  on a 0–3 graded relevance rubric) plus co-author concentration analysis comparing
+  <strong>Week 3 profile models</strong> against <strong>Week 4/5 paper-level architectures</strong>.
 </p>
 
-{% set summary = tables['model_comparison'] %}
-{% if summary %}
-<section class="card" aria-labelledby="summary-heading">
-  <h2 class="section-title" id="summary-heading">{{ summary.table.title }}</h2>
-  {{ data_table(summary) }}
+<section class="eval-kpi-grid" aria-label="Headline evaluation findings">
+  <article class="card eval-kpi-card">
+    <p class="eval-kpi-value">214</p>
+    <p class="eval-kpi-label">Pooled Judged Pairs</p>
+    <p class="eval-kpi-detail">Top-10 union across 6 systems (20–33 judged candidates per query)</p>
+  </article>
+  <article class="card eval-kpi-card">
+    <p class="eval-kpi-value">0.882</p>
+    <p class="eval-kpi-label">Best Graded nDCG@10</p>
+    <p class="eval-kpi-detail">Week 4 paper-level <code>top_k_average</code> vs. <code>0.821</code> for Week 3 TF-IDF/Semantic</p>
+  </article>
+  <article class="card eval-kpi-card">
+    <p class="eval-kpi-value">5.5 → 10.0</p>
+    <p class="eval-kpi-label">Distinct Papers / Top-10</p>
+    <p class="eval-kpi-detail">Co-author <code>1/√n</code> discounting eliminates multi-author tie crowding (0/8 flags)</p>
+  </article>
+  <article class="card eval-kpi-card">
+    <p class="eval-kpi-value">0.917</p>
+    <p class="eval-kpi-label">Variant Judged Precision</p>
+    <p class="eval-kpi-detail">33/36 judged hits relevant; 44 newly surfaced specialists left unjudged (never scored as 0)</p>
+  </article>
+</section>
+
+<section class="card eval-note" aria-label="Evaluation methodology and rubric">
+  <p class="eval-note-title">Methodology &amp; Rubric Transparency</p>
+  <p class="eval-note-body">
+    Candidates were pooled across all six frozen Week 3 and Week 4 runs and scored on a 4-level rubric
+    (<code>3</code> = highly relevant, <code>2</code> = relevant, <code>1</code> = peripheral, <code>0</code> = not relevant;
+    binary metrics threshold at <code>≥ 2</code>). Per the Week 5 evaluation audit, pooled labels were produced via
+    rubric-guided AI review with explicit provisional flags rather than dual human annotation, and unjudged candidates
+    surfaced by <code>top_k_average_author_discount</code> are reported on condensed lists rather than penalized as false negatives.
+  </p>
+</section>
+
+{% set fair_summary = tables.get('fair_summary') %}
+{% if fair_summary %}
+<section class="card eval-section" aria-labelledby="fair-summary-heading">
+  <h2 class="section-title" id="fair-summary-heading">{{ fair_summary.table.title }}</h2>
+  {{ data_table(fair_summary) }}
 </section>
 {% endif %}
 
-{% for key in ('baseline_metrics', 'semantic_metrics') %}
-{% set data = tables[key] %}
-{% if data %}
-<details class="card collapsible" open>
-  <summary class="collapsible-summary"><h2 class="section-title">{{ data.table.title }}</h2></summary>
-  {{ data_table(data) }}
+{% set diversity = tables.get('coauthor_diversity') %}
+{% if diversity %}
+<section class="card eval-section" aria-labelledby="diversity-heading">
+  <h2 class="section-title" id="diversity-heading">{{ diversity.table.title }}</h2>
+  {{ data_table(diversity) }}
+</section>
+{% endif %}
+
+{% set fair_per_query = tables.get('fair_per_query') %}
+{% if fair_per_query %}
+<details class="card collapsible">
+  <summary class="collapsible-summary"><h2 class="section-title">{{ fair_per_query.table.title }}</h2></summary>
+  {{ data_table(fair_per_query) }}
 </details>
 {% endif %}
-{% endfor %}
+
+<details class="card collapsible audit-case-study">
+  <summary class="collapsible-summary">
+    <h2 class="section-title">Benchmark Audit Case Study (Why Single-System Pooling Failed)</h2>
+  </summary>
+  <div class="audit-case-body">
+    <p class="audit-explanation">
+      <strong>Why did the original Week 3 tables show <code>1.0</code> across every metric?</strong>
+      Our Week 5 audit discovered that the initial 80-pair Week 2 ground truth (<code>existing_label</code>)
+      was constructed solely from Week 3 TF-IDF’s own Top-10 outputs, silently scoring 134 unjudged candidates
+      from dense and paper-level models as wrong—even though <strong>120 of those 134 (89.5%) were relevant</strong>
+      when judged under the pooled rubric. These historical artifacts are preserved below for full auditability.
+    </p>
+
+    {% for key in ('old_label_audit', 'model_comparison', 'baseline_metrics', 'semantic_metrics') %}
+    {% set data = tables.get(key) %}
+    {% if data %}
+    <div class="audit-subtable">
+      <h3 class="subsection-title">{{ data.table.title }}</h3>
+      {{ data_table(data) }}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</details>
+
+<section class="card eval-section eval-architecture-section" aria-labelledby="nlp-concepts-heading">
+  <h2 class="section-title" id="nlp-concepts-heading">NLP Concepts &amp; Architecture Showcase</h2>
+  <p class="muted">
+    How our three-stage NLP pipeline combines dense vector search, non-autoregressive decision classification,
+    and grounded generative reasoning across the standalone asset and university bridge.
+  </p>
+
+  <div class="architecture-grid">
+    <article class="architecture-card">
+      <span class="eyebrow">Stage 1 · Retrieval</span>
+      <h3 class="architecture-card-title">Dense Bi-Encoder (MiniLM)</h3>
+      <p class="architecture-card-body">
+        Maps queries and publications into an asymmetric \(\mathbb{R}^{384}\) dense embedding space.
+        Retrieval scales as \(O(N)\) dot products rather than expensive \(O(N \cdot L)\) cross-encoders.
+        Researcher ranking aggregates candidate papers using our calibrated
+        <strong>\(1/\sqrt{N_{\text{authors}}}\) co-author dilution penalty</strong> to prevent tie-crowding.
+      </p>
+    </article>
+
+    <article class="architecture-card">
+      <span class="eyebrow">Stage 2 · Structured Decision</span>
+      <h3 class="architecture-card-title">System-1 RLCD (Laya Model)</h3>
+      <p class="architecture-card-body">
+        Uses <code>convaiinnovations/laya</code> with Reinforcement Learning from Calibrated Decisions (RLCD).
+        Executes calibrated classification across three native primitives:
+        <strong><code>choice</code></strong> (5-way methodology archetype &amp; query domain),
+        <strong><code>score</code></strong> (0–3 graded relevance rubric with abstention gate), and
+        <strong><code>noul</code></strong> (\(P(\text{substantive publication})\) artifact filter).
+      </p>
+    </article>
+
+    <article class="architecture-card">
+      <span class="eyebrow">Stage 3 · Grounded Reasoning</span>
+      <h3 class="architecture-card-title">System-2 Grounded RAG (Groq / Gemini)</h3>
+      <p class="architecture-card-body">
+        Synthesizes structured research answers strictly grounded in the retrieved OpenAlex dataset.
+        Employs strict temperature control (\(T = 0.2\)) and requires explicit inline
+        <code>[Paper #k · DOI]</code> citation tags. Features dual-provider failover
+        (Groq Llama-3.3-70B ↔ Gemini 2.5 Flash) with deterministic extractive fallback.
+      </p>
+    </article>
+  </div>
+</section>
+
+<section class="card eval-section eval-improvements-section" aria-labelledby="improvements-heading">
+  <h2 class="section-title" id="improvements-heading">Engineering Roadmap: 5 Identified Areas for Improvement</h2>
+  <p class="muted">
+    Concrete architectural and algorithmic enhancements to advance this implementation beyond baseline retrieval
+    (excluding generic statements regarding real-world data access).
+  </p>
+
+  <div class="improvements-list">
+    <div class="improvement-item">
+      <div class="improvement-num">01</div>
+      <div class="improvement-content">
+        <h3 class="improvement-title">Domain-Adapted Citation-Graph Bi-Encoders (SPECTER2)</h3>
+        <p class="improvement-body">
+          Replace general-domain web sentence encoders (<code>all-MiniLM-L6-v2</code>) with
+          citation-proximity co-trained transformers such as <code>allenai/specter2</code>.
+          By training on academic co-citation graphs, the embedding topology aligns with scholarly relatedness
+          rather than superficial keyword and lexical co-occurrence.
+        </p>
+      </div>
+    </div>
+
+    <div class="improvement-item">
+      <div class="improvement-num">02</div>
+      <div class="improvement-content">
+        <h3 class="improvement-title">Exponential Temporal Expertise Decay</h3>
+        <p class="improvement-body">
+          Incorporate an exponential publication recency decay factor
+          \(\lambda(t) = \exp(-\gamma \cdot [Y_{\text{current}} - Y_{\text{pub}}])\) into candidate scoring.
+          Currently, a researcher's seminal paper from 2011 is weighted identically to their 2025 breakthrough;
+          temporal weighting ensures active, contemporary topic specialists surface for advisor triage.
+        </p>
+      </div>
+    </div>
+
+    <div class="improvement-item">
+      <div class="improvement-num">03</div>
+      <div class="improvement-content">
+        <h3 class="improvement-title">Authorship-Position Credit Assignment Priors</h3>
+        <p class="improvement-body">
+          Transition from uniform \(1/\sqrt{N_{\text{authors}}}\) discounting to role-aware authorship priors:
+          allocating fractional credit to first authors (\(w_1 \approx 0.50\)), corresponding authors (\(w_c \approx 0.35\)),
+          and distributed middle authors (\(w_m \approx 0.15 / [N-2]\)). This reflects true laboratory contribution norms
+          in biomedical, engineering, and collaborative computer science literature.
+        </p>
+      </div>
+    </div>
+
+    <div class="improvement-item">
+      <div class="improvement-num">04</div>
+      <div class="improvement-content">
+        <h3 class="improvement-title">Distribution-Free Split-Conformal Prediction Sets</h3>
+        <p class="improvement-body">
+          Upgrade heuristic confidence score cutoffs to finite-sample split-conformal calibration.
+          Given a user-specified significance level \(\alpha \in (0, 1)\), the asset outputs a dynamic prediction set
+          \(\mathcal{C}_{1-\alpha}(q)\) with mathematically guaranteed coverage
+          \(P(\text{Relevant Candidate} \in \mathcal{C}_{1-\alpha}(q)) \ge 1 - \alpha\).
+        </p>
+      </div>
+    </div>
+
+    <div class="improvement-item">
+      <div class="improvement-num">05</div>
+      <div class="improvement-content">
+        <h3 class="improvement-title">Automated Cross-Encoder NLI Faithfulness Verification</h3>
+        <p class="improvement-body">
+          Introduce a lightweight Natural Language Inference (NLI) model (e.g., <code>deberta-v3-small-nli</code>)
+          as an automated guardrail over System-2 RAG answers. Each synthesized claim is treated as a hypothesis
+          verified against the cited abstract premise; assertions lacking strict entailment (\(P(\text{entailment}) &lt; 0.85\))
+          are excised prior to advisor presentation to mathematically preclude hallucination.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block scripts %}

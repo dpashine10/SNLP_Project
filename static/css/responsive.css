@@ -5,7 +5,9 @@
     max-width: var(--measure-subtitle-narrow);
   }
 
-  .compare-grid {
+  .compare-grid,
+  .eval-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-8);
   }
 }
@@ -116,9 +118,15 @@
 
   .researcher-header,
   .inline-form,
-  .table-tools {
+  .table-tools,
+  .shortlist-toolbar,
+  .shortlist-item {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .researcher-badges {
+    justify-content: flex-start;
   }
 
   .table-filter {
@@ -131,5 +139,9 @@
 
   .button-block {
     width: 100%;
+  }
+
+  .eval-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

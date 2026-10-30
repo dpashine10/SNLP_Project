@@ -71,6 +71,71 @@ class TestNLPAsset(unittest.TestCase):
         self.assertEqual(responses[0].query, queries[0])
         self.assertEqual(responses[1].query, queries[1])
 
+    def test_recommendations_exclude_non_research_artifacts(self) -> None:
+        from src.week6.filters import is_non_research_artifact
+
+        res = self.asset.recommend(
+            RecommendRequest(query="retraction note editorial code for ml models", top_k=5)
+        )
+        for rec in res.results:
+            for ev in rec.evidence:
+                self.assertFalse(is_non_research_artifact(ev.title), ev.title)
+
+    def test_classify_endpoint_contract_and_convenience_helper(self) -> None:
+        cls_res = self.asset.classify(
+            {
+                "query": "How do transformer models improve machine translation?",
+                "papers": [
+                    {
+                        "paper_id": "W_SURVEY_1",
+                        "title": "A Comprehensive Survey of Neural Machine Translation",
+                        "abstract": "This review summarizes advances in transformer translation models.",
+                        "similarity": 0.72,
+                    },
+                    {
+                        "paper_id": "W_EMP_2",
+                        "title": "Empirical Evaluation of Multilingual Transformer Adaptation",
+                        "abstract": "Experiments across 12 language pairs demonstrate +3.4 BLEU improvement.",
+                        "similarity": 0.68,
+                    },
+                ],
+            }
+        )
+        self.assertEqual(len(cls_res.papers), 2)
+        self.assertEqual(cls_res.papers[0].paper_type, "survey")
+        self.assertIsNotNone(cls_res.query_classification)
+        assert cls_res.query_classification is not None
+        self.assertTrue(cls_res.query_classification.is_analytical_question)
+        self.assertEqual(cls_res.query_classification.primary_domain, "nlp")
+        self.assertEqual(cls_res.query_classification.primary_domain_label, "NLP & Language Models")
+
+        direct_papers = self.asset.classify_papers(
+            ["Benchmarking Vision-Language Retrieval Datasets"],
+            query="multimodal retrieval benchmarks",
+        )
+        self.assertEqual(len(direct_papers), 1)
+        self.assertEqual(direct_papers[0].paper_type, "resource")
+
+    def test_opt_in_classify_papers_on_recommend(self) -> None:
+        res_default = self.asset.recommend(
+            RecommendRequest(query="natural language processing", top_k=2)
+        )
+        self.assertIsNone(res_default.query_classification)
+        self.assertNotIn("query_classification", res_default.to_dict())
+        if res_default.results and res_default.results[0].evidence:
+            self.assertIsNone(res_default.results[0].evidence[0].classification)
+            self.assertNotIn("classification", res_default.results[0].evidence[0].to_dict())
+
+        res_classified = self.asset.recommend(
+            RecommendRequest(query="natural language processing", top_k=2, classify_papers=True)
+        )
+        self.assertIsNotNone(res_classified.query_classification)
+        self.assertIn("query_classification", res_classified.to_dict())
+        for rec in res_classified.results:
+            for ev in rec.evidence:
+                self.assertIsNotNone(ev.classification)
+                self.assertIn("classification", ev.to_dict())
+
 
 if __name__ == "__main__":
     unittest.main()

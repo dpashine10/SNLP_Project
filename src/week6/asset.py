@@ -30,12 +30,22 @@ from src.week4.embedder import Embedder
 from src.week4.ranking_strategy import create_strategy
 from src.week4.schemas import Author, Paper, PaperHit, ResearcherScore
 from src.week6.confidence import ConfidenceCalibrator
+from src.week6.filters import is_non_research_artifact
+from src.week6.laya_classifier import LayaPaperClassifier, get_shared_laya_classifier
+from src.week6.reasoning import GroundedReasoningEngine, get_shared_reasoning_engine
 from src.week6.schemas import (
     DEFAULT_PAPER_TOP_K,
     DEFAULT_STRATEGY,
     DEFAULT_TOP_K,
+    CitationSource,
+    ClassifyPaperInput,
+    ClassifyRequest,
+    ClassifyResponse,
     ModelInfo,
+    PaperClassification,
     PaperEvidence,
+    ReasoningRequest,
+    ReasoningResponse,
     RecommendRequest,
     RecommendResponse,
     ResearcherRecommendation,
@@ -104,14 +114,32 @@ class _FastPaperVectorStore:
             self._embeddings = emb / norms
 
             logger.info("Loading paper metadata from %s...", self.papers_path)
+            wanted_cols = {
+                "work_id",
+                "title",
+                "publication_year",
+                "authors",
+                "author_ids",
+                "topics",
+                "keywords",
+                "abstract",
+                "doi",
+                "institutions",
+            }
             df = pd.read_csv(
                 self.papers_path,
-                usecols=["work_id", "title", "publication_year", "authors", "author_ids", "topics", "keywords"],
+                usecols=lambda c: c in wanted_cols,
                 dtype=str,
                 keep_default_na=False,
             )
+            has_abstract = "abstract" in df.columns
+            has_doi = "doi" in df.columns
+            has_inst = "institutions" in df.columns
             for row in df.itertuples(index=False):
                 work_id = str(row.work_id)
+                title_str = str(row.title)
+                if is_non_research_artifact(title_str):
+                    continue
                 raw_authors = str(row.authors)
                 raw_ids = str(row.author_ids)
                 if not raw_authors or not raw_ids:
@@ -127,12 +155,22 @@ class _FastPaperVectorStore:
                 year = str(row.publication_year) if str(row.publication_year) else "N/A"
                 topics = str(row.topics).strip()
                 keywords = str(row.keywords).strip()
+                abstract = str(getattr(row, "abstract", "")).strip() if has_abstract else ""
+                doi = str(getattr(row, "doi", "")).strip() if has_doi else ""
+                institutions = str(getattr(row, "institutions", "")).strip() if has_inst else ""
                 self._paper_lookup[work_id] = Paper(
                     paper_id=work_id,
-                    title=str(row.title),
-                    text=str(row.title),
+                    title=title_str,
+                    text=abstract if abstract else title_str,
                     authors=tuple(authors_list),
-                    metadata={"publication_year": year, "topics": topics, "keywords": keywords},
+                    metadata={
+                        "publication_year": year,
+                        "topics": topics,
+                        "keywords": keywords,
+                        "abstract": abstract,
+                        "doi": doi,
+                        "institutions": institutions,
+                    },
                 )
             self._loaded = True
             logger.info("Fast paper vector store ready: %d papers indexed.", len(self._paper_lookup))
@@ -169,14 +207,23 @@ class _FastPaperVectorStore:
 class NLPAsset:
     """Reusable NLP Asset providing researcher recommendation services."""
 
-    def __init__(self, config: AssetConfig | None = None) -> None:
+    def __init__(
+        self,
+        config: AssetConfig | None = None,
+        *,
+        search_lock: threading.Lock | None = None,
+        classifier: LayaPaperClassifier | None = None,
+    ) -> None:
         self.config = config or AssetConfig()
         self._embedder: Embedder | None = None
         self._vector_store: Any = None
         self._backend_type = "unknown"
         self._lock = threading.Lock()
+        self._search_lock = search_lock or threading.Lock()
         self._ready_event = threading.Event()
         self._load_error: str | None = None
+        self._classifier = classifier or get_shared_laya_classifier()
+        self._reasoner = get_shared_reasoning_engine()
 
         if self.config.eager_load:
             self.warmup()
@@ -185,7 +232,21 @@ class NLPAsset:
     def is_ready(self) -> bool:
         return self._ready_event.is_set() and self._load_error is None
 
-    def warmup(self) -> None:
+    def start_warmup(self, *, shared_model: Any = None) -> threading.Thread:
+        """Warm up the asset asynchronously in a daemon thread."""
+
+        def _run() -> None:
+            try:
+                self.warmup(shared_model=shared_model)
+            except Exception:  # noqa: BLE001
+                # warmup() already logs and records _load_error for /api/v1/health.
+                pass
+
+        thread = threading.Thread(target=_run, name="nlp-asset-warmup", daemon=True)
+        thread.start()
+        return thread
+
+    def warmup(self, *, shared_model: Any = None) -> None:
         """Load models and index into memory."""
         with self._lock:
             if self._ready_event.is_set():
@@ -197,6 +258,10 @@ class NLPAsset:
                     device=self.config.device,
                     batch_size=self.config.batch_size,
                 )
+                if shared_model is not None:
+                    self._embedder._model = shared_model
+                else:
+                    self._embedder._get_model()
 
                 # Determine backend: ChromaDB or Fast NPZ
                 chroma_path = Path(self.config.chroma_dir)
@@ -295,11 +360,15 @@ class NLPAsset:
 
         start_time = time.perf_counter()
 
-        # 1. Embed query
-        query_vector = self._embedder.embed_query(req.query)
+        # 1. Embed query (serialized when sharing the web pipeline's model)
+        with self._search_lock:
+            query_vector = self._embedder.embed_query(req.query)
 
-        # 2. Retrieve paper hits
-        hits: list[PaperHit] = self._vector_store.query(query_vector, top_k=req.paper_top_k)
+        # 2. Retrieve paper hits (and exclude non-research notices/stubs across all backends)
+        raw_hits: list[PaperHit] = self._vector_store.query(query_vector, top_k=req.paper_top_k)
+        hits: list[PaperHit] = [
+            hit for hit in raw_hits if not is_non_research_artifact(hit.paper.title)
+        ]
 
         # 3. Build ranking strategy & aggregate hits by author
         week4_cfg = Week4Config(
@@ -316,6 +385,7 @@ class NLPAsset:
 
         # 5. Build structured recommendations and filter by min_confidence
         recommendations: list[ResearcherRecommendation] = []
+        evidence_inputs_for_laya: list[tuple[int, int, ClassifyPaperInput]] = []
         rank_counter = 1
         for res_score, conf in zip(ranked_scores, calibrated_confs, strict=True):
             if conf.score < req.min_confidence:
@@ -323,7 +393,7 @@ class NLPAsset:
 
             evidence_papers: list[PaperEvidence] = []
             if req.include_evidence:
-                for hit in res_score.evidence[:3]:
+                for ev_idx, hit in enumerate(res_score.evidence[:3]):
                     year = hit.paper.metadata.get("publication_year", "N/A")
                     evidence_papers.append(
                         PaperEvidence(
@@ -334,6 +404,20 @@ class NLPAsset:
                             authors_count=len(hit.paper.authors),
                         )
                     )
+                    if req.classify_papers:
+                        evidence_inputs_for_laya.append(
+                            (
+                                len(recommendations),
+                                ev_idx,
+                                ClassifyPaperInput(
+                                    title=hit.paper.title,
+                                    abstract=str(hit.paper.metadata.get("abstract", hit.paper.text or "")),
+                                    topics=str(hit.paper.metadata.get("topics", "")),
+                                    paper_id=hit.paper.paper_id,
+                                    similarity=hit.score,
+                                ),
+                            )
+                        )
 
             rec = ResearcherRecommendation(
                 rank=rank_counter,
@@ -349,6 +433,51 @@ class NLPAsset:
             rank_counter += 1
             if len(recommendations) >= req.top_k:
                 break
+
+        query_cls = None
+        if req.classify_papers:
+            query_cls = self._classifier.classify_query(req.query)
+            if evidence_inputs_for_laya:
+                batch_cls = self._classifier.classify_papers(
+                    [entry[2] for entry in evidence_inputs_for_laya],
+                    query=req.query,
+                )
+                for (rec_idx, ev_idx, _), cls_res in zip(evidence_inputs_for_laya, batch_cls, strict=True):
+                    old_ev = recommendations[rec_idx].evidence[ev_idx]
+                    recommendations[rec_idx].evidence[ev_idx] = PaperEvidence(
+                        paper_id=old_ev.paper_id,
+                        title=old_ev.title,
+                        year=old_ev.year,
+                        similarity=old_ev.similarity,
+                        authors_count=old_ev.authors_count,
+                        classification=cls_res,
+                    )
+
+        reasoning_resp = None
+        if req.include_reasoning and recommendations:
+            citation_list: list[CitationSource] = []
+            seen_paper_ids: set[str] = set()
+            for rec in recommendations:
+                for ev in rec.evidence:
+                    if ev.paper_id not in seen_paper_ids and len(citation_list) < 8:
+                        seen_paper_ids.add(ev.paper_id)
+                        citation_list.append(
+                            CitationSource(
+                                paper_index=len(citation_list) + 1,
+                                title=ev.title,
+                                paper_id=ev.paper_id,
+                                year=str(ev.year),
+                                similarity=ev.similarity,
+                                authors=(rec.name,),
+                            )
+                        )
+            reasoning_resp = self._reasoner.reason(
+                ReasoningRequest(
+                    query=req.query,
+                    papers=tuple(citation_list),
+                    provider=req.reasoning_provider,
+                )
+            )
 
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
@@ -366,7 +495,62 @@ class NLPAsset:
             total_results=len(recommendations),
             model_info=model_info,
             results=recommendations,
+            query_classification=query_cls,
+            reasoning=reasoning_resp,
         )
+
+    def classify(self, request: ClassifyRequest | Mapping[str, Any]) -> ClassifyResponse:
+        """Classify papers and/or query intent using the Laya System-1 decision model."""
+        if isinstance(request, ClassifyRequest):
+            req = request
+        elif isinstance(request, Mapping):
+            req = ClassifyRequest.from_dict(request)
+        else:
+            raise ValidationError("Classification request must be a ClassifyRequest or dict.")
+
+        start_time = time.perf_counter()
+        paper_results = (
+            self._classifier.classify_papers(req.papers, query=req.query, min_confidence=req.min_confidence)
+            if req.papers
+            else []
+        )
+        query_result = self._classifier.classify_query(req.query) if req.query else None
+        elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+        return ClassifyResponse(
+            execution_time_ms=elapsed_ms,
+            backend=self._classifier.backend_name,
+            papers=paper_results,
+            query_classification=query_result,
+        )
+
+    def classify_papers(
+        self,
+        papers: Sequence[ClassifyPaperInput | Mapping[str, Any] | str],
+        *,
+        query: str | None = None,
+        min_confidence: float | None = None,
+    ) -> list[PaperClassification]:
+        """Convenience wrapper returning per-paper Laya classifications directly."""
+        req = ClassifyRequest.from_dict(
+            {
+                "papers": list(papers),
+                "query": query,
+                "min_confidence": min_confidence,
+            }
+        )
+        return self._classifier.classify_papers(req.papers, query=req.query, min_confidence=req.min_confidence)
+
+    def classifier_status(self) -> dict[str, Any]:
+        """Return Laya System-1 classifier health and metadata."""
+        return self._classifier.status()
+
+    def reason(self, request: ReasoningRequest | Mapping[str, Any] | str) -> ReasoningResponse:
+        """Synthesize a citation-backed scholarly answer from retrieved evidence."""
+        return self._reasoner.reason(request)
+
+    def reasoner_status(self) -> dict[str, Any]:
+        """Return status of the grounded reasoning engine (Groq/Gemini)."""
+        return self._reasoner.status()
 
     def batch_recommend(
         self, requests: Sequence[RecommendRequest | Mapping[str, Any] | str]
@@ -390,8 +574,8 @@ class NLPAsset:
         seen: set[str] = set()
         for hit in evidence:
             raw = str(hit.paper.metadata.get("topics", ""))
-            for topic in raw.split(","):
-                normalized = topic.strip()
+            for topic in raw.replace("|", ",").split(","):
+                normalized = " ".join(topic.strip().split())
                 if normalized and normalized.lower() not in seen:
                     seen.add(normalized.lower())
                     topics.append(normalized)
@@ -430,5 +614,7 @@ class NLPAsset:
             "backend": self._backend_type,
             "model_name": self.config.model_name,
             "default_strategy": self.config.default_strategy,
+            "laya_classifier": self._classifier.status(),
+            "reasoner": self._reasoner.status(),
             "error": self._load_error,
         }

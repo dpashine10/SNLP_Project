@@ -75,6 +75,14 @@
 
 .service-health.is-ready .service-health-dot { background: var(--color-success); }
 
+.service-health.is-standby {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background: var(--color-surface-glass);
+}
+
+.service-health.is-standby .service-health-dot { background: var(--color-teal); }
+
 .service-health.is-warning {
   color: var(--color-warning);
   border-color: var(--color-warning-border);

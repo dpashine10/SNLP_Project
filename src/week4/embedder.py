@@ -127,6 +127,14 @@ class Embedder:
         if self._model is None:
             device = self._resolve_device(self._device)
             try:
+                import sys
+
+                for _ext in ("torchvision", "torchaudio"):
+                    if _ext not in sys.modules:
+                        try:
+                            __import__(_ext)
+                        except (OSError, RuntimeError, ImportError):
+                            sys.modules[_ext] = None  # type: ignore[assignment]
                 from sentence_transformers import SentenceTransformer
 
                 model = SentenceTransformer(self._model_name, device=device)

@@ -169,6 +169,153 @@
   color: var(--color-text);
 }
 
+/* Interactive Group 6 -> Group 7 Bridge Simulator & Collapsible Runbook */
+.bridge-simulator,
+.runbook-card {
+  margin-bottom: var(--space-16);
+}
+
+.bridge-simulator {
+  border-top: var(--border-width-medium) solid var(--color-primary);
+}
+
+.sim-lead {
+  margin-bottom: var(--space-16);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.sim-preset-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  margin-bottom: var(--space-16);
+}
+
+.sim-preset-btn.is-active {
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.sim-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-16);
+  margin-bottom: var(--space-16);
+}
+
+.sim-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-16);
+  background: var(--color-surface-muted);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.sim-pane-local {
+  border-left: var(--border-width-medium) solid var(--color-accent);
+}
+
+.sim-pane-bridge {
+  border-left: var(--border-width-medium) solid var(--color-teal);
+}
+
+.sim-pane-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.sim-pane-header .eyebrow {
+  margin-bottom: 0;
+}
+
+.sim-sublabel {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.sim-message-box {
+  margin: 0;
+  padding: var(--space-8) var(--space-16);
+  background: var(--color-surface);
+  border-left: var(--border-width-thin) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  color: var(--color-heading);
+}
+
+.sim-triage-meta {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8);
+  font-size: var(--font-size-xs);
+}
+
+.sim-triage-meta div {
+  min-width: 0;
+}
+
+.sim-triage-meta dt {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  font-size: var(--font-size-2xs);
+}
+
+.sim-triage-meta dd {
+  margin: 2px 0 0;
+  color: var(--color-heading);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.sim-code-block {
+  margin-bottom: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.sim-override-box {
+  padding-top: var(--space-8);
+  border-top: var(--border-width-thin) solid var(--color-hairline);
+}
+
+.sim-status-banner {
+  margin-bottom: var(--space-16);
+}
+
+.sim-results-wrap {
+  margin-top: var(--space-8);
+}
+
+.sim-card-submeta {
+  margin: var(--space-4) 0 0;
+  font-size: var(--font-size-xs);
+}
+
+.sim-raw-drawer {
+  margin-top: var(--space-16);
+}
+
+.runbook-summary .eyebrow {
+  margin-bottom: 2px;
+}
+
+.runbook-body {
+  padding-top: var(--space-8);
+  border-top: var(--border-width-thin) solid var(--color-hairline);
+}
+
 .integration-card-warning {
   border-top: var(--border-width-medium) solid var(--color-accent);
 }
@@ -186,11 +333,21 @@
   .integration-flow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .sim-stage-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 680px) {
   .integration-flow,
-  .runbook-grid {
+  .runbook-grid,
+  .sim-triage-meta {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-preset-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

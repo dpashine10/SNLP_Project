@@ -5,16 +5,138 @@
     <strong>{{ outcome.settings.mode_label }}</strong> in {{ '%.3f' | format(outcome.elapsed_seconds) }}s
   </p>
 
+  {% if outcome.query_classification %}
+  <div class="laya-query-bar" aria-label="Laya System-1 query classification">
+    <span class="badge badge-laya" title="Classified by Laya System-1 decision model (choice primitive)">
+      Laya Domain: {{ outcome.query_classification.primary_domain_label }} · {{ '%.0f' | format(outcome.query_classification.domain_confidence * 100) }}%
+    </span>
+    <span class="badge badge-laya-subtle" title="Classified by Laya System-1 decision model (noul primitive)">
+      {{ 'Analytical Question' if outcome.query_classification.is_analytical_question else 'Topic / Synopsis Lookup' }}
+    </span>
+  </div>
+  {% endif %}
+
+  <section class="card reasoning-card" id="reasoning-panel" aria-labelledby="reasoning-title" data-reasoning-panel>
+    <header class="reasoning-header">
+      <div class="reasoning-heading">
+        <h3 class="reasoning-title" id="reasoning-title">
+          <span class="reasoning-icon">✦</span> Dataset AI Reasoning (Gemini &amp; Groq)
+        </h3>
+        <p class="reasoning-subtitle">Citation-grounded synthesis constructed solely from retrieved OpenAlex publications</p>
+      </div>
+      <div class="reasoning-controls">
+        <label for="live-reason-provider" class="visually-hidden">LLM Provider</label>
+        <select class="select select-small" id="live-reason-provider" data-live-provider>
+          <option value="auto"{% if outcome.settings.reason_provider == 'auto' %} selected{% endif %}>Auto (Groq ↔ Gemini)</option>
+          <option value="groq"{% if outcome.settings.reason_provider == 'groq' %} selected{% endif %}>Groq (Llama-3.3-70B)</option>
+          <option value="gemini"{% if outcome.settings.reason_provider == 'gemini' %} selected{% endif %}>Google Gemini 2.5 Flash</option>
+        </select>
+        <button class="button button-small button-secondary" type="button" data-run-reasoning id="btn-run-reasoning">
+          {% if outcome.reasoning %}Regenerate Answer{% else %}Generate Grounded Answer{% endif %}
+        </button>
+      </div>
+    </header>
+
+    <div class="reasoning-meta" id="reasoning-meta"{% if not outcome.reasoning %} hidden{% endif %}>
+      {% if outcome.reasoning %}
+      <span class="badge badge-reasoning-provider">
+        Provider: <strong>{{ outcome.reasoning.provider_used }}</strong> ({{ outcome.reasoning.model_name }})
+      </span>
+      <span class="badge badge-reasoning-latency">
+        Latency: {{ '%.0f' | format(outcome.reasoning.execution_time_ms) }}ms
+      </span>
+      {% if outcome.reasoning.is_fallback %}
+      <span class="badge badge-warning" title="{{ outcome.reasoning.error }}">Extractive Fallback</span>
+      {% endif %}
+      <span class="badge badge-reasoning-citations">{{ outcome.reasoning.citations | length }} Grounded Citations</span>
+      {% endif %}
+    </div>
+
+    <div class="reasoning-body" id="reasoning-body"{% if not outcome.reasoning %} hidden{% endif %}>
+      {% if outcome.reasoning %}
+      {{ outcome.reasoning.answer | replace('\n\n', '<br><br>') | replace('\n', '<br>') | safe }}
+      {% endif %}
+    </div>
+  </section>
+
+  {% set base_alpha = outcome.settings.alpha if outcome.settings.mode == 'hybrid' else none %}
+  {% set base_inst = outcome.settings.institution or none %}
+  {% set base_min_papers = outcome.settings.min_papers if outcome.settings.min_papers > 1 else none %}
+  {% set base_since = outcome.settings.since_year %}
+  {% set reset_url = url_for('search', q=query, mode=outcome.settings.mode, top_k=outcome.settings.top_k, alpha=base_alpha) %}
+
+  {% if outcome.settings.has_active_filters %}
+  <div class="active-filters" aria-label="Active collaboration filters">
+    <span class="active-filters-label">Active filters:</span>
+    {% if outcome.settings.institution %}
+    <span class="filter-pill">Institution: <strong>{{ outcome.settings.institution }}</strong></span>
+    {% endif %}
+    {% if outcome.settings.min_papers > 1 %}
+    <span class="filter-pill">Indexed papers ≥ <strong>{{ outcome.settings.min_papers }}</strong></span>
+    {% endif %}
+    {% if outcome.settings.since_year %}
+    <span class="filter-pill">Published <strong>{{ outcome.settings.since_year }}+</strong></span>
+    {% endif %}
+    {% if outcome.settings.topic %}
+    <span class="filter-pill">Sub-field: <strong>{{ outcome.settings.topic }}</strong></span>
+    {% endif %}
+    <a class="filter-reset" href="{{ reset_url }}">Reset filters</a>
+  </div>
+  {% endif %}
+
+  {% if outcome.topic_clusters | length > 1 or outcome.settings.topic %}
+  <nav class="topic-clusters" aria-label="Filter results by research sub-field">
+    <p class="clusters-label">Disambiguate by Sub-field / Topic</p>
+    <div class="cluster-chip-list">
+      <a class="cluster-chip{% if not outcome.settings.topic %} is-active{% endif %}"
+         href="{{ url_for('search', q=query, mode=outcome.settings.mode, top_k=outcome.settings.top_k, alpha=base_alpha, institution=base_inst, min_papers=base_min_papers, since_year=base_since) }}"
+         {% if not outcome.settings.topic %}aria-current="true"{% endif %}>
+        <span>All sub-fields</span>
+      </a>
+      {% for cluster in outcome.topic_clusters %}
+      <a class="cluster-chip{% if cluster.active %} is-active{% endif %}"
+         href="{{ url_for('search', q=query, mode=outcome.settings.mode, top_k=outcome.settings.top_k, alpha=base_alpha, institution=base_inst, min_papers=base_min_papers, since_year=base_since, topic=cluster.label) }}"
+         {% if cluster.active %}aria-current="true"{% endif %}>
+        <span>{{ cluster.label }}</span>
+        <span class="cluster-count">{{ cluster.count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </nav>
+  {% endif %}
+
+  {% if not outcome.results %}
+  <p class="alert alert-warning" role="status">
+    No researchers matched your current filter combination.
+    {% if outcome.settings.has_active_filters %}
+    <a href="{{ reset_url }}">Clear collaboration filters</a> to inspect all retrieved candidates.
+    {% endif %}
+  </p>
+  {% else %}
   <ol class="result-list">
     {% for researcher in outcome.results %}
     <li>
       <article class="card researcher-card" aria-labelledby="researcher-{{ researcher.rank }}">
         <header class="researcher-header">
-          <h3 class="researcher-name" id="researcher-{{ researcher.rank }}">
-            <span class="rank">#{{ researcher.rank }}</span> {{ researcher.name }}
-          </h3>
-          <span class="badge badge-score">Similarity: {{ '%.4f' | format(researcher.similarity_score) }}</span>
+          <div class="researcher-heading">
+            <h3 class="researcher-name" id="researcher-{{ researcher.rank }}">
+              <span class="rank">#{{ researcher.rank }}</span> {{ researcher.name }}
+            </h3>
+            {% if researcher.institution %}
+            <p class="researcher-affiliation">{{ researcher.institution }}</p>
+            {% endif %}
+          </div>
+          <div class="researcher-badges">
+            <span class="badge badge-confidence badge-confidence-{{ researcher.confidence_level | lower }}"
+                  title="{{ researcher.confidence_explanation }}">
+              {{ researcher.confidence_level }} · {{ '%.0f' | format(researcher.confidence_score * 100) }}%
+            </span>
+            <span class="badge badge-score">Similarity: {{ '%.4f' | format(researcher.similarity_score) }}</span>
+          </div>
         </header>
+        {% if researcher.confidence_explanation %}
+        <p class="confidence-note">{{ researcher.confidence_explanation }}</p>
+        {% endif %}
 
         <dl class="researcher-meta">
           <div>
@@ -22,10 +144,14 @@
             <dd>{{ researcher.n_papers }}</dd>
           </div>
           <div>
-            <dt>Author ID</dt>
+            <dt>Matched Papers</dt>
+            <dd>{{ researcher.matched_papers }}</dd>
+          </div>
+          <div>
+            <dt>Profile</dt>
             <dd>
               {% if researcher.author_url %}
-              <a href="{{ researcher.author_url }}" target="_blank" rel="noopener noreferrer">{{ researcher.author_id }}</a>
+              <a class="external-link" href="{{ researcher.author_url }}" target="_blank" rel="noopener noreferrer">OpenAlex Profile ↗</a>
               {% else %}
               {{ researcher.author_id }}
               {% endif %}
@@ -33,10 +159,70 @@
           </div>
         </dl>
 
+        {% set primary_paper = researcher.top_papers[0] if researcher.top_papers else none %}
         <div class="evidence">
           <p class="evidence-label">Most Relevant Paper</p>
           <p class="evidence-title"><cite>“{{ researcher.paper_title }}”</cite> ({{ researcher.paper_year }})</p>
-          <p class="evidence-score">Paper Match Score: {{ '%.4f' | format(researcher.paper_score) }}</p>
+          <div class="evidence-meta-row">
+            <div class="evidence-score-group">
+              <p class="evidence-score">Paper Match Score: {{ '%.4f' | format(researcher.paper_score) }}</p>
+              {% if primary_paper and primary_paper.paper_type_label %}
+              <span class="badge badge-laya" title="Laya System-1 paper methodology classification (choice primitive)">Laya · {{ primary_paper.paper_type_label }}</span>
+              {% endif %}
+              {% if primary_paper and primary_paper.relevance_label %}
+              <span class="badge badge-laya-grade" title="Laya System-1 0–3 graded relevance rubric (score primitive)">{{ primary_paper.relevance_label }}</span>
+              {% endif %}
+            </div>
+            {% if primary_paper and (primary_paper.doi_url or primary_paper.work_url) %}
+            <div class="evidence-links">
+              {% if primary_paper.doi_url %}
+              <a class="evidence-link" href="{{ primary_paper.doi_url }}" target="_blank" rel="noopener noreferrer">DOI: {{ primary_paper.doi_label }} ↗</a>
+              {% endif %}
+              {% if primary_paper.work_url %}
+              <a class="evidence-link" href="{{ primary_paper.work_url }}" target="_blank" rel="noopener noreferrer">OpenAlex Work ↗</a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+
+          {% if researcher.top_papers | length > 1 %}
+          <div class="supporting-papers">
+            <p class="evidence-sublabel">Additional Matching Papers</p>
+            <ul class="supporting-paper-list">
+              {% for extra in researcher.top_papers[1:] %}
+              <li class="supporting-paper-item">
+                <span class="supporting-paper-title">
+                  <cite>“{{ extra.title }}”</cite> ({{ extra.year }}) · <code>{{ '%.4f' | format(extra.score) }}</code>
+                  {% if extra.paper_type_label %}
+                  <span class="badge badge-laya-subtle" title="Laya System-1 methodology">{{ extra.paper_type_label }}</span>
+                  {% endif %}
+                </span>
+                {% if extra.doi_url %}
+                <a class="evidence-link" href="{{ extra.doi_url }}" target="_blank" rel="noopener noreferrer">DOI ↗</a>
+                {% elif extra.work_url %}
+                <a class="evidence-link" href="{{ extra.work_url }}" target="_blank" rel="noopener noreferrer">OpenAlex ↗</a>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+
+          {% if researcher.paper_title != 'N/A' or researcher.match_rationale %}
+          <details class="evidence-drawer">
+            <summary class="evidence-drawer-toggle">Abstract &amp; Match Rationale</summary>
+            <div class="evidence-drawer-body">
+              {% if researcher.match_rationale %}
+              <p class="rationale-text"><strong>Match Rationale:</strong> {{ researcher.match_rationale }}</p>
+              {% endif %}
+              {% if primary_paper and primary_paper.abstract %}
+              <p class="abstract-text"><strong>Abstract:</strong> {{ primary_paper.abstract }}</p>
+              {% else %}
+              <p class="abstract-text muted">No abstract text available in OpenAlex metadata for this publication.</p>
+              {% endif %}
+            </div>
+          </details>
+          {% endif %}
         </div>
 
         <div class="topics">
@@ -51,8 +237,31 @@
           <p class="muted">None listed</p>
           {% endif %}
         </div>
+
+        <div class="researcher-actions" data-card-actions hidden
+             data-author-id="{{ researcher.author_id }}"
+             data-author-name="{{ researcher.name }}"
+             data-institution="{{ researcher.institution }}"
+             data-author-url="{{ researcher.author_url or '' }}"
+             data-confidence="{{ researcher.confidence_level }} ({{ '%.0f' | format(researcher.confidence_score * 100) }}%)"
+             data-similarity="{{ '%.4f' | format(researcher.similarity_score) }}"
+             data-n-papers="{{ researcher.n_papers }}"
+             data-paper-title="{{ researcher.paper_title }}"
+             data-paper-year="{{ researcher.paper_year }}"
+             data-doi-url="{{ primary_paper.doi_url if primary_paper and primary_paper.doi_url else '' }}"
+             data-topics="{{ researcher.topics | join(', ') }}"
+             data-query="{{ query }}">
+          <button class="button button-secondary button-small" type="button" data-shortlist-toggle aria-pressed="false">
+            + Shortlist
+          </button>
+          <button class="button button-secondary button-small" type="button" data-copy-outreach>
+            Copy Outreach Draft
+          </button>
+          <span class="action-feedback" data-action-feedback role="status" aria-live="polite"></span>
+        </div>
       </article>
     </li>
     {% endfor %}
   </ol>
+  {% endif %}
 </section>

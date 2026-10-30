@@ -13,7 +13,7 @@
       <option value="{{ key }}"{% if key == settings.mode %} selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
-    <p class="field-help" id="mode-help">Select between Dense Semantic Embeddings, Traditional Sparse TF-IDF, or Hybrid Blending.</p>
+    <p class="field-help" id="mode-help">Choose Paper-Level + Co-Author Discount (default Week 5/6 engine), Dense Profile Semantic, Sparse TF-IDF, or Hybrid Blending.</p>
   </div>
 
   {% set k_min, k_max, k_step = top_k_range %}
@@ -37,6 +37,63 @@
            min="{{ a_min }}" max="{{ a_max }}" step="{{ a_step }}" value="{{ settings.alpha }}"
            aria-describedby="alpha-help" data-output="alpha-value" data-decimals="2">
     <p class="field-help" id="alpha-help">1.0 = 100% Dense Semantic, 0.0 = 100% Sparse TF-IDF. Used by hybrid mode only.</p>
+  </div>
+
+  <div class="filter-group">
+    <h3 class="panel-subtitle">Collaboration Filters</h3>
+
+    <div class="field">
+      <label class="field-label" for="institution">Institution / University</label>
+      <input class="input input-small" type="search" id="institution" name="institution" form="search-form"
+             value="{{ settings.institution }}" placeholder="e.g. IIT Bombay, IISc, BITS…"
+             {% if institution_suggestions %}list="institution-list"{% endif %}>
+      {% if institution_suggestions %}
+      <datalist id="institution-list">
+        {% for inst in institution_suggestions %}
+        <option value="{{ inst }}"></option>
+        {% endfor %}
+      </datalist>
+      {% endif %}
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="min_papers">Minimum Indexed Papers</label>
+      <select class="select" id="min_papers" name="min_papers" form="search-form">
+        {% for val, label in min_papers_options %}
+        <option value="{{ val }}"{% if val == settings.min_papers %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="since_year">Published Since</label>
+      <select class="select" id="since_year" name="since_year" form="search-form">
+        {% set active_year = (settings.since_year | string) if settings.since_year else '' %}
+        {% for val, label in since_year_options %}
+        <option value="{{ val }}"{% if val == active_year %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <h3 class="panel-subtitle">AI Dataset Reasoning</h3>
+
+    <div class="field">
+      <label class="checkbox-label" for="enable_reason">
+        <input type="checkbox" id="enable_reason" name="reason" value="1" form="search-form"{% if settings.reason %} checked{% endif %}>
+        <span>Ground with Gemini / Groq</span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="reason_provider">Reasoning Provider</label>
+      <select class="select" id="reason_provider" name="reason_provider" form="search-form">
+        <option value="auto"{% if settings.reason_provider == 'auto' %} selected{% endif %}>Auto (Groq ↔ Gemini)</option>
+        <option value="groq"{% if settings.reason_provider == 'groq' %} selected{% endif %}>Groq (Llama-3.3-70B)</option>
+        <option value="gemini"{% if settings.reason_provider == 'gemini' %} selected{% endif %}>Google Gemini 2.5 Flash</option>
+      </select>
+    </div>
   </div>
 </section>
 {% endblock %}
@@ -68,6 +125,27 @@
               placeholder="e.g. Seeking collaborators working on deep learning for biomedical text summarization and named entity recognition...">{{ query }}</textarea>
     <button class="button button-primary button-block" type="submit" data-busy-label="Searching…">Find Relevant Researchers</button>
   </form>
+</section>
+
+<section class="card shortlist-drawer" id="shortlist-drawer" data-shortlist-drawer hidden aria-labelledby="shortlist-heading">
+  <details class="collapsible shortlist-collapsible" open>
+    <summary class="collapsible-summary shortlist-summary">
+      <h2 class="section-title" id="shortlist-heading">
+        Researcher Shortlist <span class="badge badge-diversity" data-shortlist-count>0</span>
+      </h2>
+    </summary>
+    <div class="shortlist-toolbar">
+      <p class="shortlist-lead muted">Bookmarked across searches · export a collaboration brief or copy an evidence-grounded outreach draft.</p>
+      <div class="shortlist-buttons">
+        <button class="button button-secondary button-small" type="button" data-shortlist-export="md">Export Markdown</button>
+        <button class="button button-secondary button-small" type="button" data-shortlist-export="csv">Export CSV</button>
+        <button class="button button-secondary button-small" type="button" data-shortlist-copy-brief>Copy Brief</button>
+        <button class="button button-secondary button-small" type="button" data-shortlist-clear>Clear All</button>
+      </div>
+    </div>
+    <p class="shortlist-feedback" data-shortlist-status role="status" aria-live="polite" hidden></p>
+    <ul class="shortlist-list" data-shortlist-list></ul>
+  </details>
 </section>
 
 {% if outcome %}

@@ -29,9 +29,13 @@ class ConfidenceCalibrator:
     # Empirical midpoints (mu) and temperatures (tau) per ranking strategy
     _CALIBRATION_PARAMS = {
         "top_k_average_author_discount": {"mu": 0.32, "tau": 0.08},
+        "paper_discount": {"mu": 0.32, "tau": 0.08},
         "top_k_average": {"mu": 0.48, "tau": 0.10},
         "best_paper": {"mu": 0.52, "tau": 0.10},
         "average": {"mu": 0.45, "tau": 0.09},
+        "semantic": {"mu": 0.45, "tau": 0.09},
+        "hybrid": {"mu": 0.68, "tau": 0.12},
+        "tfidf": {"mu": 0.24, "tau": 0.08},
         "default": {"mu": 0.45, "tau": 0.10},
     }
 

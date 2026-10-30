@@ -67,7 +67,24 @@ def _print_table(response_dict: dict) -> None:
             title = top_paper["title"][:60]
             year = top_paper["year"]
             sim = top_paper["similarity"]
-            print(f"      |-- Top Paper ({year}) [sim={sim:.2f}]: \"{title}\"")
+            cls_info = top_paper.get("classification")
+            cls_tag = ""
+            if isinstance(cls_info, dict):
+                lbl = cls_info.get("paper_type_label", "")
+                rel = cls_info.get("relevance_label", "")
+                cls_tag = f" [Laya: {lbl}" + (f" | {rel}" if rel else "") + "]"
+            print(f"      |-- Top Paper ({year}) [sim={sim:.2f}]{cls_tag}: \"{title}\"")
+        print()
+
+    reasoning = data.get("reasoning")
+    if reasoning and isinstance(reasoning, dict):
+        prov = reasoning.get("provider_used", "auto")
+        model = reasoning.get("model_name", "unknown")
+        fallback_str = " (extractive fallback)" if reasoning.get("is_fallback") else ""
+        print("-" * 80)
+        print(f" DATASET AI REASONING [Provider: {prov} | Model: {model}{fallback_str}]")
+        print("-" * 80)
+        print(reasoning.get("answer", "").strip())
         print()
 
     print("=" * 80 + "\n")
@@ -100,6 +117,23 @@ def main() -> None:
         type=float,
         default=0.0,
         help="Minimum calibrated confidence threshold (0.0 to 1.0).",
+    )
+    parser.add_argument(
+        "--classify",
+        action="store_true",
+        help="Classify retrieved evidence publications and query intent with Laya System-1 model.",
+    )
+    parser.add_argument(
+        "--reason",
+        action="store_true",
+        help="Synthesize citation-backed grounded answer from OpenAlex papers using Groq / Gemini.",
+    )
+    parser.add_argument(
+        "--provider",
+        type=str,
+        default="auto",
+        choices=["auto", "groq", "gemini"],
+        help="LLM provider for grounded reasoning (default: auto).",
     )
     parser.add_argument(
         "--json",
@@ -143,6 +177,9 @@ def main() -> None:
         top_k=args.top_k,
         strategy=args.strategy,
         min_confidence=args.min_confidence,
+        classify_papers=args.classify,
+        include_reasoning=args.reason,
+        reasoning_provider=args.provider,
     )
 
     response = asset.recommend(req)

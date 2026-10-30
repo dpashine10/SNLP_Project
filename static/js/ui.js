@@ -142,23 +142,36 @@
   if (group6Health) {
     var group6Dot = group6Health.querySelector(".service-health-dot");
     var group6Text = group6Health.querySelector("span:last-child");
+    var onIntegrationPage = group6Health.getAttribute("data-integration-page") === "true";
 
     var renderGroup6Health = function (health) {
       var state = health && health.state ? health.state : "unreachable";
-      var label = state === "ready" || state === "ok"
-        ? "reachable"
-        : state === "starting"
-          ? "starting"
-        : state === "incompatible"
-          ? "wrong endpoint"
-          : state === "unhealthy"
-            ? "unhealthy"
-            : "unreachable";
-      group6Health.classList.remove("is-ready", "is-warning", "is-error");
-      group6Health.classList.add(state === "ready" || state === "ok" ? "is-ready" : state === "starting" || state === "incompatible" || state === "unhealthy" ? "is-warning" : "is-error");
-      group6Health.title = (health && health.detail) || "Group 6 integration status unavailable.";
+      var isConnected = state === "ready" || state === "ok";
+      var isStarting = state === "starting";
+      group6Health.classList.remove("is-ready", "is-standby", "is-warning", "is-error");
+
+      var label;
+      if (isConnected) {
+        label = "Group 6: connected";
+        group6Health.classList.add("is-ready");
+        group6Health.title = (health && health.detail) || "Group 6 integration UI is connected.";
+      } else if (isStarting) {
+        label = "Group 6: starting";
+        group6Health.classList.add("is-warning");
+        group6Health.title = (health && health.detail) || "Group 6 integration UI is starting.";
+      } else if (onIntegrationPage) {
+        label = state === "unhealthy" ? "Group 6: unhealthy" : "Group 6: local demo standby";
+        group6Health.classList.add(state === "unhealthy" ? "is-warning" : "is-standby");
+        group6Health.title = ((health && health.detail) ? health.detail + " " : "") +
+          "Group 7 runs standalone; launch the Group 6 bridge locally for the cross-project demo.";
+      } else {
+        label = "Bridge: standalone";
+        group6Health.classList.add("is-standby");
+        group6Health.title = "Running standalone · Group 6 bridge connects during the University integration demo.";
+      }
+
       if (group6Text) {
-        group6Text.textContent = "Group 6: " + label;
+        group6Text.textContent = label;
       }
       if (group6Dot) {
         group6Dot.setAttribute("aria-label", label);

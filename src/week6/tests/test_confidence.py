@@ -72,6 +72,17 @@ class TestConfidenceCalibrator(unittest.TestCase):
         )
         self.assertGreater(conf_multi.score, conf_single.score)
 
+    def test_web_retrieval_modes_have_tailored_calibration(self) -> None:
+        for mode, strong_raw in (
+            ("paper_discount", 0.55),
+            ("semantic", 0.65),
+            ("hybrid", 0.88),
+            ("tfidf", 0.42),
+        ):
+            cal = ConfidenceCalibrator(strategy=mode)
+            conf = cal.calibrate(raw_score=strong_raw, rank=1, matched_papers=2, next_score=strong_raw - 0.1)
+            self.assertEqual(conf.level, ConfidenceLevel.HIGH.value, mode)
+
 
 if __name__ == "__main__":
     unittest.main()
