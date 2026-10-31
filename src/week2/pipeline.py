@@ -11,6 +11,7 @@ from collections import defaultdict
 from collections.abc import Mapping, Sequence
 import math
 from pathlib import Path
+import pickle
 import re
 import sys
 from typing import Any, Dict, List, Optional, Tuple
@@ -37,6 +38,8 @@ PROFILES_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_profiles.csv"
 
 PAPER_EMB_PATH = PROJECT_ROOT / "Data" / "processed" / "paper_embeddings.npz"
 RESEARCHER_EMB_PATH = PROJECT_ROOT / "Data" / "processed" / "researcher_embeddings.npz"
+TFIDF_CACHE_PATH = PROJECT_ROOT / "Data" / "processed" / "calculated" / "tfidf_cache.pkl"
+PAPER_AUTHOR_CACHE_PATH = PROJECT_ROOT / "Data" / "processed" / "calculated" / "paper_author_cache.pkl" 
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 MAX_TOPIC_BADGES = 6
@@ -148,21 +151,40 @@ class ResearchDiscoveryPipeline:
 
         print("Loading papers dataset...")
         self.papers_df = pd.read_csv(PAPERS_PATH, keep_default_na=False)
+        paper_records = self.papers_df.to_dict(orient="records")
         self.papers_by_id = {
-            row["work_id"]: row.to_dict() for _, row in self.papers_df.iterrows()
+            str(row["work_id"]): row for row in paper_records
         }
 
         print(f"Loading Sentence Transformer model ({self.model_name})...")
-        self.model = SentenceTransformer(self.model_name)
+        try:
+            self.model = SentenceTransformer(self.model_name, local_files_only=True)
+        except Exception:
+            self.model = SentenceTransformer(self.model_name)
 
-        print("Fitting TF-IDF baseline vectorizer...")
-        self.vectorizer = TfidfVectorizer(
-            lowercase=True,
-            stop_words="english",
-            ngram_range=(1, 2),
-            max_features=20000
-        )
-        self.tfidf_matrix = self.vectorizer.fit_transform(self.profiles_df["profile_text"])
+        print("Loading or fitting TF-IDF baseline vectorizer...")
+        if TFIDF_CACHE_PATH.exists():
+            try:
+                with open(TFIDF_CACHE_PATH, "rb") as f:
+                    tfidf_cached = pickle.load(f)
+                self.vectorizer = tfidf_cached["vectorizer"]
+                self.tfidf_matrix = tfidf_cached["tfidf_matrix"]
+            except Exception:
+                self.vectorizer = None
+                self.tfidf_matrix = None
+        if self.vectorizer is None or self.tfidf_matrix is None:
+            self.vectorizer = TfidfVectorizer(
+                lowercase=True,
+                stop_words="english",
+                ngram_range=(1, 2),
+                max_features=20000
+            )
+            self.tfidf_matrix = self.vectorizer.fit_transform(self.profiles_df["profile_text"])
+            try:
+                with open(TFIDF_CACHE_PATH, "wb") as f:
+                    pickle.dump({"vectorizer": self.vectorizer, "tfidf_matrix": self.tfidf_matrix}, f, protocol=pickle.HIGHEST_PROTOCOL)
+            except Exception:
+                pass
 
         # Load dense embeddings
         if not PAPER_EMB_PATH.exists() or not RESEARCHER_EMB_PATH.exists():
@@ -189,49 +211,87 @@ class ResearchDiscoveryPipeline:
         if self._paper_index_built:
             return
         if self.profiles_df is not None and not self.profile_by_author_id:
+            profile_records = self.profiles_df.to_dict(orient="records")
             self.profile_by_author_id = {
-                str(row["author_id"]): row.to_dict() for _, row in self.profiles_df.iterrows()
+                str(row["author_id"]): row for row in profile_records
             }
-            valid_profiles = np.ones(len(self.profiles_df), dtype=bool)
-            for idx, row in enumerate(self.profiles_df.itertuples(index=False)):
-                pids = [pid for pid in str(getattr(row, "paper_ids", "")).split("|") if pid]
-                if pids and self.papers_by_id:
-                    has_real_paper = any(
-                        pid in self.papers_by_id
-                        and not is_non_research_artifact(self.papers_by_id[pid].get("title"))
-                        for pid in pids
+
+        loaded_from_cache = False
+        if (
+            PAPER_AUTHOR_CACHE_PATH.exists()
+            and self.paper_work_ids is not None
+            and len(self.paper_work_ids) > 1000
+        ):
+            try:
+                with open(PAPER_AUTHOR_CACHE_PATH, "rb") as f:
+                    idx_cache = pickle.load(f)
+                if len(idx_cache.get("valid_paper_mask", [])) == len(self.paper_work_ids):
+                    self._valid_paper_mask = idx_cache["valid_paper_mask"]
+                    self._paper_authors_by_emb_idx = idx_cache["paper_authors_by_emb_idx"]
+                    self._valid_profile_mask = idx_cache["valid_profile_mask"]
+                    self._norm_paper_embeddings = idx_cache["norm_paper_embeddings"]
+                    loaded_from_cache = True
+            except Exception:
+                loaded_from_cache = False
+
+        if not loaded_from_cache:
+            if self.profiles_df is not None and self._valid_profile_mask is None:
+                valid_profiles = np.ones(len(self.profiles_df), dtype=bool)
+                for idx, row in enumerate(self.profiles_df.itertuples(index=False)):
+                    pids = [pid for pid in str(getattr(row, "paper_ids", "")).split("|") if pid]
+                    if pids and self.papers_by_id:
+                        has_real_paper = any(
+                            pid in self.papers_by_id
+                            and not is_non_research_artifact(self.papers_by_id[pid].get("title"))
+                            for pid in pids
+                        )
+                        if not has_real_paper:
+                            valid_profiles[idx] = False
+                self._valid_profile_mask = valid_profiles
+
+            if self.paper_work_ids is not None:
+                n_papers = len(self.paper_work_ids)
+                valid_mask = np.zeros(n_papers, dtype=bool)
+                authors_by_idx: List[Tuple[Tuple[str, str], ...]] = [() for _ in range(n_papers)]
+                for i, wid_raw in enumerate(self.paper_work_ids):
+                    wid = str(wid_raw)
+                    paper = self.papers_by_id.get(wid)
+                    if paper is None or is_non_research_artifact(paper.get("title")):
+                        continue
+                    names = [n.strip() for n in str(paper.get("authors", "")).split(";") if n.strip()]
+                    aids = [a.strip() for a in str(paper.get("author_ids", "")).split("|") if a.strip()]
+                    if not names or not aids:
+                        continue
+                    pairs = tuple(
+                        (aids[j] if j < len(aids) else f"auth_{name}", name)
+                        for j, name in enumerate(names)
                     )
-                    if not has_real_paper:
-                        valid_profiles[idx] = False
-            self._valid_profile_mask = valid_profiles
+                    authors_by_idx[i] = pairs
+                    valid_mask[i] = True
+                self._valid_paper_mask = valid_mask
+                self._paper_authors_by_emb_idx = authors_by_idx
 
-        if self.paper_work_ids is not None:
-            n_papers = len(self.paper_work_ids)
-            valid_mask = np.zeros(n_papers, dtype=bool)
-            authors_by_idx: List[Tuple[Tuple[str, str], ...]] = [() for _ in range(n_papers)]
-            for i, wid_raw in enumerate(self.paper_work_ids):
-                wid = str(wid_raw)
-                paper = self.papers_by_id.get(wid)
-                if paper is None or is_non_research_artifact(paper.get("title")):
-                    continue
-                names = [n.strip() for n in str(paper.get("authors", "")).split(";") if n.strip()]
-                aids = [a.strip() for a in str(paper.get("author_ids", "")).split("|") if a.strip()]
-                if not names or not aids:
-                    continue
-                pairs = tuple(
-                    (aids[j] if j < len(aids) else f"auth_{name}", name)
-                    for j, name in enumerate(names)
-                )
-                authors_by_idx[i] = pairs
-                valid_mask[i] = True
-            self._valid_paper_mask = valid_mask
-            self._paper_authors_by_emb_idx = authors_by_idx
+            if self.paper_embeddings is not None and self._norm_paper_embeddings is None:
+                emb = np.asarray(self.paper_embeddings, dtype=np.float32)
+                norms = np.linalg.norm(emb, axis=1, keepdims=True)
+                norms[norms == 0] = 1.0
+                self._norm_paper_embeddings = emb / norms
 
-        if self.paper_embeddings is not None:
-            emb = np.asarray(self.paper_embeddings, dtype=np.float32)
-            norms = np.linalg.norm(emb, axis=1, keepdims=True)
-            norms[norms == 0] = 1.0
-            self._norm_paper_embeddings = emb / norms
+            try:
+                with open(PAPER_AUTHOR_CACHE_PATH, "wb") as f:
+                    pickle.dump(
+                        {
+                            "valid_paper_mask": self._valid_paper_mask,
+                            "paper_authors_by_emb_idx": self._paper_authors_by_emb_idx,
+                            "valid_profile_mask": self._valid_profile_mask,
+                            "norm_paper_embeddings": self._norm_paper_embeddings,
+                        },
+                        f,
+                        protocol=pickle.HIGHEST_PROTOCOL,
+                    )
+            except Exception:
+                pass
+
         self._paper_index_built = True
 
     def _get_query_embedding(self, query: str) -> np.ndarray:

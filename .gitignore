@@ -29,3 +29,4 @@ Data/week4/chroma/
 # Local archives of Week 4 code and data (not part of the repository)
 src/week4.zip
 Data/week4_data.zip
+*.pkl

@@ -137,7 +137,10 @@ class Embedder:
                             sys.modules[_ext] = None  # type: ignore[assignment]
                 from sentence_transformers import SentenceTransformer
 
-                model = SentenceTransformer(self._model_name, device=device)
+                try:
+                    model = SentenceTransformer(self._model_name, device=device, local_files_only=True)
+                except Exception:
+                    model = SentenceTransformer(self._model_name, device=device)
             except Exception as error:
                 raise RuntimeError(
                     f"Could not load embedding model {self._model_name!r}: {error}"
