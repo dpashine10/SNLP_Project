@@ -43,7 +43,7 @@ class TestGroundedReasoningEngine(unittest.TestCase):
         status = self.engine.status()
         self.assertTrue(status["groq_configured"])
         self.assertTrue(status["gemini_configured"])
-        self.assertIn("llama-3.3-70b", status["groq_model"])
+        self.assertTrue(bool(status["groq_model"]))
         self.assertEqual(status["fallback_backend"], "extractive-synthesis")
 
     def test_empty_papers_returns_helpful_notice(self) -> None:

@@ -28,9 +28,23 @@ GEMINI_ENDPOINT_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 )
 
-DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
-FALLBACK_GROQ_MODEL = "llama-3.1-8b-instant"
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+DEFAULT_GROQ_MODELS: tuple[str, ...] = (
+    "qwen/qwen3.8-27b",
+    "openai/gpt-oss-20b",
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "llama3-70b-8192",
+)
+
+DEFAULT_GEMINI_MODELS: tuple[str, ...] = (
+    "gemini-3.5-flash-lite",
+    "gemini-flash-latest",
+    "gemini-3.8-flash",
+    "gemini-3.7-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-1.5-flash",
+)
 
 
 def _find_repo_root() -> Path:
@@ -60,15 +74,17 @@ class GroundedReasoningEngine:
         *,
         groq_api_key: str | None = None,
         gemini_api_key: str | None = None,
-        groq_model: str = DEFAULT_GROQ_MODEL,
-        gemini_model: str = DEFAULT_GEMINI_MODEL,
+        groq_models: Sequence[str] = DEFAULT_GROQ_MODELS,
+        gemini_models: Sequence[str] = DEFAULT_GEMINI_MODELS,
         timeout_seconds: float = 12.0,
     ) -> None:
         loaded_gemini, loaded_groq = _load_env_keys()
         self.gemini_api_key = gemini_api_key if gemini_api_key is not None else loaded_gemini
         self.groq_api_key = groq_api_key if groq_api_key is not None else loaded_groq
-        self.groq_model = groq_model
-        self.gemini_model = gemini_model
+        self.groq_models = tuple(groq_models)
+        self.gemini_models = tuple(gemini_models)
+        self.groq_model = self.groq_models[0] if self.groq_models else "qwen/qwen3.8-27b"
+        self.gemini_model = self.gemini_models[0] if self.gemini_models else "gemini-3.5-flash-lite"
         self.timeout_seconds = timeout_seconds
 
     def status(self) -> dict[str, Any]:
@@ -122,13 +138,24 @@ class GroundedReasoningEngine:
         prompt = self._build_user_prompt(query, papers)
         system_prompt = self._build_system_prompt()
 
-        attempts: list[str] = []
+        # Multi-tier provider failover plan:
+        # If user chooses 'groq', try Groq first -> failover to Gemini
+        # If user chooses 'gemini', try Gemini first -> failover to Groq
+        # If user chooses 'auto', try whichever has valid credentials, falling over gracefully
         if provider == "groq":
-            target_providers = ["groq"]
-        elif provider == "gemini":
-            target_providers = ["gemini"]
-        else:  # "auto"
             target_providers = ["groq", "gemini"]
+        elif provider == "gemini":
+            target_providers = ["gemini", "groq"]
+        else:  # "auto"
+            # Prioritize Gemini if configured, then Groq
+            if self.gemini_api_key and self.groq_api_key:
+                target_providers = ["gemini", "groq"]
+            elif self.groq_api_key:
+                target_providers = ["groq", "gemini"]
+            else:
+                target_providers = ["gemini", "groq"]
+
+        attempts: list[str] = []
 
         for prov in target_providers:
             if prov == "groq":
@@ -188,42 +215,50 @@ class GroundedReasoningEngine:
         )
 
     def _call_groq(self, prompt: str, system_prompt: str, max_tokens: int) -> tuple[str, str]:
-        """Invoke Groq OpenAI-compatible Chat Completions REST API."""
+        """Invoke Groq OpenAI-compatible Chat Completions REST API with model fallback."""
         headers = {
             "Authorization": f"Bearer {self.groq_api_key}",
             "Content-Type": "application/json",
             "User-Agent": "AI-University-ResearchDiscovery/1.0",
         }
-        payload = {
-            "model": self.groq_model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
-            ],
-            "temperature": 0.2,
-            "max_tokens": max_tokens,
-        }
-        res = requests.post(
-            GROQ_ENDPOINT,
-            headers=headers,
-            json=payload,
-            timeout=self.timeout_seconds,
-        )
-        if res.status_code != 200:
-            raise RuntimeError(f"Groq API returned HTTP {res.status_code}: {res.text[:200]}")
-        data = res.json()
-        content = data["choices"][0]["message"]["content"].strip()
-        return content, self.groq_model
+
+        last_error: Exception | None = None
+        for model in self.groq_models:
+            payload = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.2,
+                "max_tokens": max_tokens,
+            }
+            try:
+                res = requests.post(
+                    GROQ_ENDPOINT,
+                    headers=headers,
+                    json=payload,
+                    timeout=self.timeout_seconds,
+                )
+                if res.status_code == 200:
+                    data = res.json()
+                    content = data["choices"][0]["message"]["content"].strip()
+                    if content:
+                        self.groq_model = model
+                        return content, model
+                last_error = RuntimeError(f"Groq {model} returned HTTP {res.status_code}")
+            except Exception as exc:  # noqa: BLE001
+                last_error = exc
+                continue
+
+        raise last_error or RuntimeError("All candidate Groq models failed.")
 
     def _call_gemini(self, prompt: str, system_prompt: str, max_tokens: int) -> tuple[str, str]:
-        """Invoke Google Gemini REST API."""
-        url = GEMINI_ENDPOINT_TEMPLATE.format(model=self.gemini_model)
-        headers = {"Content-Type": "application/json"}
-        # Support both AIza... API keys and OAuth/Bearer tokens
-        if self.gemini_api_key.startswith("AIza"):
-            url = f"{url}?key={self.gemini_api_key}"
-        else:
-            headers["Authorization"] = f"Bearer {self.gemini_api_key}"
+        """Invoke Google Gemini REST API with multi-model fallback."""
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.gemini_api_key,
+        }
 
         payload = {
             "contents": [
@@ -237,19 +272,28 @@ class GroundedReasoningEngine:
                 "maxOutputTokens": max_tokens,
             },
         }
-        res = requests.post(url, headers=headers, json=payload, timeout=self.timeout_seconds)
-        if res.status_code != 200:
-            raise RuntimeError(f"Gemini API returned HTTP {res.status_code}: {res.text[:200]}")
-        data = res.json()
-        candidates = data.get("candidates", [])
-        if not candidates:
-            raise RuntimeError(f"Gemini returned no candidates: {data}")
-        parts = candidates[0].get("content", {}).get("parts", [])
-        text_parts = [p.get("text", "") for p in parts if "text" in p]
-        content = "\n".join(text_parts).strip()
-        if not content:
-            raise RuntimeError("Gemini candidate had empty text response.")
-        return content, self.gemini_model
+
+        last_error: Exception | None = None
+        for model in self.gemini_models:
+            url = f"{GEMINI_ENDPOINT_TEMPLATE.format(model=model)}?key={self.gemini_api_key}"
+            try:
+                res = requests.post(url, headers=headers, json=payload, timeout=self.timeout_seconds)
+                if res.status_code == 200:
+                    data = res.json()
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        text_parts = [p.get("text", "") for p in parts if "text" in p]
+                        content = "\n".join(text_parts).strip()
+                        if content:
+                            self.gemini_model = model
+                            return content, model
+                last_error = RuntimeError(f"Gemini {model} returned HTTP {res.status_code}")
+            except Exception as exc:  # noqa: BLE001
+                last_error = exc
+                continue
+
+        raise last_error or RuntimeError("All candidate Gemini models failed.")
 
     @staticmethod
     def _build_system_prompt() -> str:
@@ -323,6 +367,12 @@ class GroundedReasoningEngine:
 
         mentors_block = ", ".join(mentors) if mentors else f"`{lead_authors}`"
 
+        # Provide a clean, elegant note without raw stack traces
+        if "offline" in fallback_reason.lower() or "network" in fallback_reason.lower():
+            note_text = "Generated using local grounded extractive synthesis (offline mode)."
+        else:
+            note_text = "Generated using local grounded extractive synthesis (cloud provider failover)."
+
         return (
             f"### Grounded Research Synthesis\n\n"
             f"Based on **{len(papers)} retrieved OpenAlex publications** relevant to *“{query}”*, "
@@ -331,8 +381,7 @@ class GroundedReasoningEngine:
             f"{findings_block}\n\n"
             f"#### Candidate Mentors & Subject-Matter Experts\n"
             f"The primary indexed researchers demonstrating direct publication evidence for this topic include {mentors_block}.\n\n"
-            f"> *Note: Generated using local grounded extractive synthesis ({fallback_reason}). "
-            f"All claims map directly to the retrieved OpenAlex dataset records above.*"
+            f"> *Note: {note_text} All claims map directly to the retrieved OpenAlex dataset records above.*"
         )
 
 
@@ -345,4 +394,3 @@ def get_shared_reasoning_engine() -> GroundedReasoningEngine:
     if _SHARED_REASONING_ENGINE is None:
         _SHARED_REASONING_ENGINE = GroundedReasoningEngine()
     return _SHARED_REASONING_ENGINE
-
