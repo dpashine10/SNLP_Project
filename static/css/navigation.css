@@ -1,4 +1,4 @@
-/* Main navigation tabs in the header: compact segmented control. */
+/* Main navigation tabs in the header: NMIMS Institutional Portal style. */
 
 .main-nav {
   position: relative;
@@ -8,42 +8,55 @@
 .nav-list {
   position: relative;
   display: flex;
+  align-items: center;
   gap: var(--space-4);
   list-style: none;
   margin: 0;
-  padding: var(--space-4);
-  background: var(--color-segment-bg);
-  border-radius: var(--radius-md);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+
+.nav-list > li {
+  display: flex;
+  min-width: 0;
 }
 
 .nav-link {
   position: relative;
   z-index: 1;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   padding: var(--space-8) var(--space-16);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-sm);
-  line-height: var(--line-height-base);
+  line-height: var(--line-height-snug);
   text-decoration: none;
+  text-align: center;
   white-space: nowrap;
-  transition: color var(--dur) var(--ease);
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
 
 .nav-link:hover {
   color: var(--color-heading);
+  background: rgba(231, 240, 250, 0.55);
 }
 
 .nav-link[aria-current="page"] {
-  color: var(--color-primary-strong);
+  color: var(--color-primary-dark);
   font-weight: var(--font-weight-semibold);
-  background: var(--color-surface-solid);
-  box-shadow: var(--shadow-sm), 0 0 0 var(--border-width-thin) var(--color-border);
+  background: var(--color-primary-soft);
 }
 
 .nav-link:focus-visible {
-  outline-offset: 0;
+  outline: var(--border-width-medium) solid var(--color-focus);
+  outline-offset: 1px;
 }
 
 .service-health {
@@ -51,20 +64,25 @@
   align-items: center;
   gap: var(--space-8);
   flex-shrink: 0;
-  padding: var(--space-8) var(--space-16);
+  padding: var(--space-6) var(--space-12);
   border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
   font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
   transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
 
 .service-health-dot {
+  flex-shrink: 0;
   width: 8px;
   height: 8px;
   border-radius: var(--radius-circle);
-  background: var(--color-text-subtle);
+  background: var(--color-primary);
+  transition: background var(--dur-fast) var(--ease);
 }
 
 .service-health.is-ready {
@@ -76,12 +94,12 @@
 .service-health.is-ready .service-health-dot { background: var(--color-success); }
 
 .service-health.is-standby {
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   border-color: var(--color-border);
-  background: var(--color-surface-glass);
+  background: rgba(255, 255, 255, 0.72);
 }
 
-.service-health.is-standby .service-health-dot { background: var(--color-teal); }
+.service-health.is-standby .service-health-dot { background: var(--color-primary); }
 
 .service-health.is-warning {
   color: var(--color-warning);
@@ -103,16 +121,17 @@
 .nav-indicator {
   position: absolute;
   z-index: 0;
-  top: var(--space-4);
+  top: 0;
   left: 0;
-  height: calc(100% - var(--space-8));
+  height: 0;
   width: 0;
   border-radius: var(--radius-sm);
-  background: var(--color-surface-solid);
-  box-shadow: var(--shadow-sm), 0 0 0 var(--border-width-thin) var(--color-border);
+  background: rgba(231, 240, 250, 0.85);
+  border: var(--border-width-thin) solid rgba(33, 102, 168, 0.2);
+  box-shadow: none;
   pointer-events: none;
   opacity: 0;
-  transition: transform var(--dur) var(--ease), width var(--dur) var(--ease), opacity var(--dur-fast) linear, background var(--dur-fast) linear;
+  transition: transform var(--dur) var(--ease), width var(--dur) var(--ease), height var(--dur) var(--ease), opacity var(--dur-fast) linear, background var(--dur-fast) linear;
 }
 
 .nav-indicator.is-ready {
@@ -120,11 +139,13 @@
 }
 
 .nav-indicator.is-hover {
-  background: var(--color-white-glass);
-  box-shadow: var(--shadow-none);
+  background: rgba(231, 240, 250, 0.55);
+  border-color: rgba(33, 102, 168, 0.12);
+  box-shadow: none;
 }
 
-.js .main-nav.has-indicator .nav-link[aria-current="page"] {
+.js .main-nav.has-indicator .nav-link[aria-current="page"],
+.js .main-nav.has-indicator .nav-link:hover {
   background: transparent;
-  box-shadow: var(--shadow-none);
+  box-shadow: none;
 }

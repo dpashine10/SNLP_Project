@@ -207,7 +207,8 @@
       var navBox = nav.getBoundingClientRect();
       var box = link.getBoundingClientRect();
       indicator.style.width = box.width + "px";
-      indicator.style.transform = "translateX(" + (box.left - navBox.left) + "px)";
+      indicator.style.height = box.height + "px";
+      indicator.style.transform = "translate(" + (box.left - navBox.left) + "px, " + (box.top - navBox.top) + "px)";
       indicator.classList.add("is-ready");
       indicator.classList.toggle("is-hover", Boolean(hover) && link !== active);
     };
@@ -259,4 +260,103 @@
   document.querySelectorAll(".compare-column").forEach(function (item, i) {
     item.style.animationDelay = i * 40 + "ms";
   });
+
+  // ---- Lenis smooth document scrolling (subtle, institutional) --------------
+  if (sidebar && !sidebar.hasAttribute("data-lenis-prevent")) {
+    sidebar.setAttribute("data-lenis-prevent", "");
+  }
+
+  var reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function destroyLenis() {
+    if (window.__lenis) {
+      try {
+        window.__lenis.destroy();
+      } catch (e) {}
+      window.__lenis = null;
+    }
+  }
+
+  function createLenisInstance() {
+    if (typeof window.Lenis !== "function") {
+      return null;
+    }
+    var instance = new window.Lenis({
+      duration: 0.65,
+      easing: function (t) {
+        return 1 - Math.pow(1 - t, 3);
+      },
+      smoothWheel: true,
+      syncTouch: false,
+      wheelMultiplier: 1,
+      touchMultiplier: 1,
+      autoResize: true,
+      autoRaf: true,
+      anchors: {
+        offset: -76
+      },
+      prevent: function (node) {
+        if (!node || !node.tagName) {
+          return false;
+        }
+        if (node.id === "sidebar" || (node.hasAttribute && node.hasAttribute("data-lenis-prevent"))) {
+          return true;
+        }
+        if (node.tagName === "TEXTAREA" && node.scrollHeight > node.clientHeight) {
+          return true;
+        }
+        return false;
+      }
+    });
+    window.__lenis = instance;
+    return instance;
+  }
+
+  function initLenis() {
+    destroyLenis();
+    if (reducedMotionQuery && reducedMotionQuery.matches) {
+      return null;
+    }
+    if (typeof window.Lenis === "function") {
+      return createLenisInstance();
+    }
+    if (!document.querySelector('script[data-lenis-loader]')) {
+      var script = document.createElement("script");
+      script.src = "/static/js/lenis.min.js?v=1.1.20";
+      script.async = true;
+      script.setAttribute("data-lenis-loader", "true");
+      script.onload = function () {
+        if (!reducedMotionQuery || !reducedMotionQuery.matches) {
+          destroyLenis();
+          createLenisInstance();
+        }
+      };
+      document.head.appendChild(script);
+    }
+    return null;
+  }
+
+  initLenis();
+
+  if (reducedMotionQuery && reducedMotionQuery.addEventListener) {
+    reducedMotionQuery.addEventListener("change", function (event) {
+      if (event.matches) {
+        destroyLenis();
+      } else {
+        initLenis();
+      }
+    });
+  }
+
+  document.addEventListener(
+    "toggle",
+    function () {
+      if (window.__lenis && typeof window.__lenis.resize === "function") {
+        window.__lenis.resize();
+      }
+    },
+    true
+  );
+
+  window.addEventListener("pagehide", destroyLenis);
 })();

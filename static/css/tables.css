@@ -1,4 +1,4 @@
-/* Data tables: toolbar (filter, count, download) above a compact table. */
+/* Data tables: toolbar (filter, count, download) above a compact institutional table. */
 
 .table-tools {
   display: flex;
@@ -15,14 +15,37 @@
 .table-count {
   font-size: var(--font-size-xs);
   margin-right: auto;
+  color: var(--color-text-muted);
 }
 
 .table-scroll {
-  overflow: auto;
-  max-height: var(--table-max-height);
-  background: var(--color-surface-solid);
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  background: var(--color-surface);
   border: var(--border-width-thin) solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 210, 220, 0.85) transparent;
+}
+
+.table-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
 }
 
 .data-table {
@@ -46,16 +69,14 @@
   top: 0;
   z-index: 2;
   background: var(--color-surface-table-head);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-xs);
-  color: var(--color-text);
+  color: var(--color-heading);
   border-bottom: var(--border-width-thin) solid var(--color-border);
 }
 
 .data-table thead th[aria-sort] {
-  color: var(--color-primary-strong);
+  color: var(--color-primary-dark);
   background: var(--color-surface-table-head-active);
 }
 
@@ -79,10 +100,11 @@
   align-items: center;
   gap: var(--space-8);
   border-radius: var(--radius-xs);
+  color: inherit;
 }
 
 .sort-button:hover {
-  color: var(--color-heading);
+  color: var(--color-primary);
 }
 
 .sort-button:focus-visible {
@@ -99,7 +121,7 @@
 }
 
 th[aria-sort] .sort-indicator {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 th[aria-sort="ascending"] .sort-indicator::after {

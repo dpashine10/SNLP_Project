@@ -1,4 +1,4 @@
-/* Buttons and button-styled links. */
+/* Buttons and button-styled links: Institutional Portal style. */
 
 .button {
   display: inline-flex;
@@ -6,6 +6,7 @@
   justify-content: center;
   gap: var(--space-8);
   font: inherit;
+  font-family: var(--font-sans);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-tight);
@@ -16,40 +17,40 @@
   cursor: pointer;
   text-decoration: none;
   text-align: center;
-  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
 
 .button:active {
-  transform: translateY(0) scale(0.985);
+  transform: none;
 }
 
 .button-primary {
-  background: linear-gradient(180deg, var(--blue-500) 0%, var(--color-primary) 100%);
-  border-color: var(--blue-border);
-  color: var(--white);
-  font-weight: var(--font-weight-semibold);
+  background: var(--color-primary);
+  border-color: var(--color-primary-dark);
+  color: #FFFFFF;
+  font-weight: var(--font-weight-medium);
   box-shadow: var(--shadow-button);
 }
 
 .button-primary:hover {
-  color: var(--white);
-  background: linear-gradient(180deg, var(--blue-500-hover) 0%, var(--blue-600) 100%);
-  transform: translateY(-1px);
+  color: #FFFFFF;
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-dark);
   box-shadow: var(--shadow-button-hover);
 }
 
 .button-secondary {
-  background: linear-gradient(180deg, var(--white) 0%, var(--color-surface-muted) 100%);
-  border-color: var(--color-border-strong);
+  background: var(--color-surface);
+  border-color: var(--color-border);
   color: var(--color-text);
-  box-shadow: var(--shadow-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: none;
 }
 
 .button-secondary:hover {
-  background: linear-gradient(180deg, var(--white) 0%, var(--color-hover-strong) 100%);
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
   color: var(--color-heading);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-hover);
 }
 
 /* The search button sizes to its label and sits at the left under the query box. */
@@ -62,24 +63,26 @@
 .button-small {
   font-size: var(--font-size-xs);
   min-height: var(--control-height-sm);
-  padding: var(--space-4) var(--space-8);
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-xs);
 }
 
-/* Preset chips stay quiet. */
+/* Preset query buttons in clean institutional portal style. */
 .preset-list .button {
   font-size: var(--font-size-xs);
   min-height: var(--control-height-sm);
-  padding: var(--space-4) var(--space-8);
-  box-shadow: var(--shadow-none);
-  background: var(--color-chip-bg);
-  border-color: transparent;
-  color: var(--color-primary-strong);
+  padding: var(--space-4) var(--space-12);
+  box-shadow: none;
+  background: var(--color-surface-hover);
+  border: var(--border-width-thin) solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-xs);
 }
 
 .preset-list .button:hover {
-  background: var(--color-chip-bg-hover);
-  box-shadow: var(--shadow-none);
-  transform: none;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 
 .button:disabled,
